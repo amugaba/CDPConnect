@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8" ?> 
+<definitions xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:s0="http://tempuri.org/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" targetNamespace="http://tempuri.org/" xmlns="http://schemas.xmlsoap.org/wsdl/"> 
+<types> 
+<s:schema elementFormDefault="qualified" targetNamespace="http://tempuri.org/"> 
+	<s:element name="UploadResponse"> 
+		<s:complexType> 
+		<s:sequence> 
+			<s:element minOccurs="0" maxOccurs="1" name="callerIdentifier" type="s:string" /> 
+			<s:element minOccurs="0" maxOccurs="1" name="serviceName" type="s:string" /> 
+			<s:element minOccurs="0" maxOccurs="1" name="referenceIdentifier" type="s:string" /> 
+			<s:element minOccurs="0" maxOccurs="1" name="content" type="s:string" /> 
+			<s:element minOccurs="0" maxOccurs="1" name="contentFormat" type="s:string" /> 
+		</s:sequence> 
+		</s:complexType> 
+	</s:element> 
+	<s:element name="UploadResponseResponse"> 
+		<s:complexType> 
+		<s:sequence> 
+			<s:element minOccurs="0" maxOccurs="1" name="UploadResponseResult" type="s:string" /> 
+		</s:sequence> 
+		</s:complexType> 
+	</s:element> 
+	<s:element name="EDIServiceSOAPHeader" type="s0:EDIServiceSOAPHeader" /> 
+		<s:complexType name="EDIServiceSOAPHeader"> 
+		<s:sequence> 
+			<s:element minOccurs="0" maxOccurs="1" name="userName" type="s:string" /> 
+			<s:element minOccurs="0" maxOccurs="1" name="passWord" type="s:string" /> 
+		</s:sequence> 
+		</s:complexType> 
+</s:schema> 
+</types> 
+<message name="UploadResponseSoapIn"> 
+	<part name="parameters" element="s0:UploadResponse" /> 
+</message> 
+<message name="UploadResponseSoapOut"> 
+	<part name="parameters" element="s0:UploadResponseResponse" /> 
+</message>
+<message name="UploadResponseEDIServiceSOAPHeader"> 
+	<part name="EDIServiceSOAPHeader" element="s0:EDIServiceSOAPHeader" /> 
+</message> 
+<portType name="UploadResponseServiceSoap"> 
+	<operation name="UploadResponse"> 
+	<input message="s0:UploadResponseSoapIn" /> 
+	<output message="s0:UploadResponseSoapOut" /> 
+	</operation> 
+</portType> 
+<binding name="UploadResponseServiceSoap" type="s0:UploadResponseServiceSoap"> 
+	<soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" /> 
+	<operation name="UploadResponse"> 
+	<soap:operation soapAction="http://tempuri.org/UploadResponse" style="document" /> 
+	<input> 
+		<soap:body use="literal" /> 
+		<soap:header message="s0:UploadResponseEDIServiceSOAPHeader" part="EDIServiceSOAPHeader" use="literal" /> 
+	</input> 
+	<output> 
+		<soap:body use="literal" /> 
+	</output> 
+	</operation> 
+</binding> 
+<service name="UploadResponseService"> 
+	<port name="UploadResponseServiceSoap" binding="s0:UploadResponseServiceSoap"> 
+	<soap:address location="http://localhost/GPRA/services/SoapServer.php" /> 
+	</port> 
+</service> 
+</definitions> 

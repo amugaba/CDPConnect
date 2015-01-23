@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:NavigatorContent xmlns:fx="http://ns.adobe.com/mxml/2009"
+					xmlns:s="library://ns.adobe.com/flex/spark"
+					xmlns:mx="library://ns.adobe.com/flex/mx"
+					xmlns:custom="components.*"
+					xmlns:userservice="services.userservice.*"
+					xmlns:styles="com.adobe.fiber.styles.*"
+					xmlns:clientservice="services.clientservice.*"
+					width="715" height="800">
+	<fx:Script>
+		<![CDATA[
+			import flash.globalization.DateTimeFormatter;
+			import flash.globalization.LocaleID;
+			
+			import mx.collections.ArrayCollection;
+			import mx.collections.ArrayList;
+			import mx.controls.Alert;
+			import mx.controls.DateField;
+			import mx.controls.Text;
+			import mx.core.FlexGlobals;
+			import mx.events.CloseEvent;
+			import mx.events.ValidationResultEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.validators.NumberValidator;
+			import mx.validators.StringValidator;
+			import mx.validators.ValidationResult;
+			import mx.validators.Validator;
+			
+			import valueObjects.ClientVO;
+			import valueObjects.GpraVO;
+			import valueObjects.UserVO;
+			
+			protected var global:CDPConnectFlex = FlexGlobals.topLevelApplication as CDPConnectFlex;
+			protected var updateAccount:Boolean;
+			
+			public function creationCompleteHandler():void
+			{
+			}
+			
+			protected function loginButton_clickHandler(event:MouseEvent):void
+			{
+				updateAccount = false;
+				loginUserResult.token = userService.loginUser(usernameInput.text, passwordInput.text);
+			}
+			
+			protected function updateAccountButton_clickHandler(event:MouseEvent):void
+			{
+				updateAccount = true;
+				loginUserResult.token = userService.loginUser(usernameInput.text, passwordInput.text);
+			}
+			
+			protected function loginUserResult_resultHandler(event:ResultEvent):void
+			{
+				//Alert.show(ObjectUtil.toString(loginUserResult.lastResult));
+				if(loginUserResult.lastResult == null)
+				{
+					Alert.show("Username and password are incorrect.", "Login Failed");
+				}
+				else
+				{
+					global.activeUser = loginUserResult.lastResult as UserVO;
+					if(updateAccount)
+					{
+						accountFacility.dataProvider = global.facilityList;
+						accountFacility.selectedItem = global.activeUser.facility;
+						updateAccountPanel.visible = true;
+						loginPanel.visible = false;
+					}
+					else
+					{
+						global.adminMode = global.activeUser.admin == 1;
+						global.currentState = "State1";
+					}
+				}
+			}			
+			
+			
+			protected function changePasswordButton_clickHandler(event:MouseEvent):void
+			{
+				if(newPasswordInput.text == confirmPassowrdInput.text && newPasswordInput.text.length > 4)
+				{
+					global.activeUser.password = newPasswordInput.text;
+					updateUserResult.token = userService.updateUser(global.activeUser);
+				}
+				else
+					Alert.show("The passwords must match and be 5 or more characters.", "Password NOT changed");
+			}
+			
+			protected function changeFacilityButton_clickHandler(event:MouseEvent):void
+			{
+				if(accountFacility.selectedIndex >= 0)
+				{
+					global.activeUser.facility = accountFacility.selectedItem;
+					updateUserResult.token = userService.updateUser(global.activeUser);
+				}
+				else
+					Alert.show("Select a Facility first.","Facility NOT changed");
+			}
+			
+			protected function updateUserResult_resultHandler(event:ResultEvent):void
+			{
+				resetPage();
+				if(updateUserResult.lastResult == null)
+					Alert.show("Account NOT updated.", "ERROR");
+				else
+					Alert.show("Account updated.", "SUCCESS");
+			}
+			
+			protected function forgotPasswordButton_clickHandler(event:MouseEvent):void
+			{
+				emailPasswordResult.token = userService.emailPassword(usernameInput.text);
+			}
+			
+			protected function emailPasswordResult_resultHandler(event:ResultEvent):void
+			{
+				if(emailPasswordResult.lastResult)
+					Alert.show("Password has been sent to your email address.", "SUCCESS");
+				else
+					Alert.show("Username not found.", "ERROR");
+			}
+			
+			protected function getUsers_resultHandler(event:ResultEvent):void
+			{
+				//initialize BHS name and intials arrays
+				for each(var user:UserVO in getUsers.lastResult)
+				{
+					global.userList.addItem(user.name);
+				}
+			}
+			public function resetPage():void
+			{
+				updateAccountPanel.visible = false;
+				loginPanel.visible = true;
+				usernameInput.text = "";
+				passwordInput.text = "";
+				newPasswordInput.text = "";
+				confirmPassowrdInput.text = "";
+				accountFacility.selectedIndex = -1;
+			}
+	
+			protected function cancelButton_clickHandler(event:MouseEvent):void
+			{
+				resetPage();
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Style> 
+		@namespace s "library://ns.adobe.com/flex/spark"; 
+		@namespace mx "library://ns.adobe.com/flex/mx"; 
+		@namespace components "components.*"; 
+		
+	</fx:Style>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<s:CallResponder id="loginUserResult"
+						 result="loginUserResult_resultHandler(event)"/>
+		<s:CallResponder id="emailPasswordResult"
+						 result="emailPasswordResult_resultHandler(event)"/>
+		<s:CallResponder id="updateUserResult" result="updateUserResult_resultHandler(event)"/>
+		<s:CallResponder id="getUsers" result="getUsers_resultHandler(event)"/>
+		<userservice:UserService id="userService"
+								 fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
+								 showBusyCursor="true"/>
+	</fx:Declarations>
+	<s:Group x="0" y="0" width="1024" height="768" chromeColor="#6376A5" >
+		<s:Image x="-93" y="-137" source="assets/blueWallpaperCropped.jpg"/>
+		<s:Panel id="loginPanel" y="326" width="277" height="236"
+				 horizontalCenter="-155" title="Log In">
+			<s:Form id="logingForm" x="10" y="6" width="258" height="187"
+					defaultButton="{loginButton}">
+				<s:FormItem label="Username:">
+					<s:TextInput id="usernameInput"/>
+				</s:FormItem>
+				<s:FormItem label="Password:">
+					<s:TextInput id="passwordInput" displayAsPassword="true"/>
+				</s:FormItem>
+				<s:Group width="248" height="76">
+					<s:Button id="loginButton" x="3" y="8" label="Login"
+							  click="loginButton_clickHandler(event)"/>
+					<s:Button id="updateAccountButton" x="138" y="8" label="Update Account"
+							  click="updateAccountButton_clickHandler(event)"/>
+					<s:Button id="forgotPasswordButton" x="129" y="54" label="Forgot Password"
+							  click="forgotPasswordButton_clickHandler(event)"/>
+				</s:Group>
+			</s:Form>
+		</s:Panel>
+		<s:Panel id="updateAccountPanel" x="204" y="326" width="295" height="283" visible="false"
+				 title="Update Account">
+			<s:Form x="10" y="10">
+				<s:FormItem label="New password:">
+					<s:TextInput id="newPasswordInput" displayAsPassword="true"/>
+				</s:FormItem>
+				<s:FormItem label="Confirm password:">
+					<s:TextInput id="confirmPassowrdInput" displayAsPassword="true"/>
+				</s:FormItem>
+				<s:Button id="changePasswordButton" label="Change Password" click="changePasswordButton_clickHandler(event)"/>
+			</s:Form>
+			<s:Form x="10" y="157">
+				<s:FormItem label="Default facility:">
+					<s:DropDownList id="accountFacility"/>
+				</s:FormItem>
+				<s:Button label="Change Facility" id="changeFacilityButton" click="changeFacilityButton_clickHandler(event)"/>
+			</s:Form>
+			<s:Button id="cancelButton" x="210" y="215" label="Cancel"
+					  click="cancelButton_clickHandler(event)"/>
+		</s:Panel>	
+		<s:Image y="10" horizontalCenter="-155" source="assets/ConnectLogoMedium.png"/>
+	</s:Group>
+	
+</s:NavigatorContent>

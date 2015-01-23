@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+CDP Connect
+GPRA Upload System
+By David Tidd
+
+-->
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009"
+			   xmlns:s="library://ns.adobe.com/flex/spark"
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
+			   xmlns:custom="components.*"
+			   xmlns:gpraservice="services.gpraservice.*"
+			   xmlns:styles="com.adobe.fiber.styles.*"
+			   xmlns:clientservice="services.clientservice.*"
+			   xmlns:userservice="services.userservice.*"
+			   xmlns:miscservice="services.miscservice.*"
+			   width="715" height="800" minWidth="955" minHeight="620"
+			   backgroundColor="#E2E2E8" currentState="Login"
+			   pageTitle="CDP Connect Test Site">
+	<fx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import mx.collections.ArrayList;
+			import mx.controls.Alert;
+			import mx.controls.buttonBarClasses.ButtonBarButton;
+			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			import valueObjects.ClientVO;
+			import valueObjects.GpraVO;
+			import valueObjects.UserVO;			
+
+			[Bindable] public var activeClient:ClientVO = null;
+			[Bindable] public var activeGPRA:GpraVO = null;
+			[Bindable] public var activeUser:UserVO = null;
+			public var pageHomeButton:ButtonBarButton;
+			public var pageClientButton:ButtonBarButton;
+			public var pageGpraButton:ButtonBarButton;
+			public var pageAdminButton:ButtonBarButton;
+			public var userList:ArrayList = new ArrayList();
+			public var facilityList:ArrayCollection;
+			public var adminMode:Boolean = false;
+			private var creationComplete:Boolean = false;
+			public static var DEBUG_MODE:int = 2;//0 = release, 1 = remote debug, 2 = local debug
+			
+			protected function loginCompleteHandler(event:FlexEvent):void
+			{
+				//for subsequent logins, do setup upon entering the state immediately
+				if(creationComplete)
+					loginHelper();
+			}
+			
+			protected function pageViewstack_creationCompleteHandler(event:FlexEvent):void
+			{
+				//The first time login is done during the application, do setup after creation
+				loginHelper();
+			}
+			
+			protected function loginHelper():void
+			{
+				getUsers.token = userService.getUsers();
+				pageHomeButton = pageButtonBar.getChildAt(0) as ButtonBarButton;
+				pageClientButton = pageButtonBar.getChildAt(1) as ButtonBarButton;
+				pageGpraButton = pageButtonBar.getChildAt(2) as ButtonBarButton;
+				pageAdminButton = pageButtonBar.getChildAt(3) as ButtonBarButton;
+				pageHomeButton.enabled = true;
+				pageClientButton.enabled = false;
+				pageGpraButton.enabled = false;
+				pageViewstack.selectedChild = pageHome;
+				getFacilities.token = miscService.getFacilities();
+				adminButton.visible = adminMode;
+				pageAdminButton.visible = adminMode;
+				creationComplete = true;
+			}
+			
+			protected function headerClientText(activeClient:ClientVO):String
+			{
+				var s:String = "";
+				if(activeClient.autoid == 0)
+					s = "New Client";
+				else
+					s = "ID: "+activeClient.autoid+" Name: "+activeClient.lastname+", "+activeClient.firstname;
+				return s;
+			}
+			protected function headerGpraText(activeGPRA:GpraVO):String
+			{
+				var s:String = "";
+				if(activeGPRA.autoid == 0) //distinguish between none and new
+				{
+					s = "New GPRA";
+				}
+				else
+				{
+					s = "Type: ";
+					if(activeGPRA.type == 1) s += "Intake";
+					if(activeGPRA.type == 2) s += "6 Month Followup";
+					if(activeGPRA.type == 3) s += "12 Month Followup";
+					if(activeGPRA.type == 4) s += "3 Month Followup";
+					if(activeGPRA.type == 5) s += "Discharge";
+					/*s += " Status: ";
+					if(activeGPRA.status == 0) s += "In Progress";
+					if(activeGPRA.status == 1) s += "Complete";*/
+				}
+				return s;
+			}
+			protected function getFacilities_resultHandler(event:ResultEvent):void
+			{
+				facilityList = getFacilities.lastResult;
+			}
+			
+			protected function getUsers_resultHandler(event:ResultEvent):void
+			{
+				//initialize BHS name and intials arrays
+				for each(var user:UserVO in getUsers.lastResult)
+				{
+					userList.addItem(user.name);
+				}
+				pageHome.creationCompleteHandler();
+				pageClient.creationCompleteHandler();
+				pageGPRA.creationCompleteHandler();
+			}
+
+			protected function logoutButton_clickHandler(event:MouseEvent):void
+			{
+				// TODO Auto-generated method stub
+				activeUser = null;
+				activeClient = null;
+				activeGPRA = null;
+				pageHomeButton.enabled = false;
+				pageClientButton.enabled = false;
+				pageGpraButton.enabled = false;
+				pageHome.resetPage();
+				pageLogin.resetPage();
+				currentState = "Login";
+			}
+			
+			protected function adminButton_clickHandler(event:MouseEvent):void
+			{
+				pageViewstack.selectedChild = pageAdmin;
+			}
+			
+
+			
+		]]>
+	</fx:Script>
+	<s:states>
+		<s:State name="State1" enterState="loginCompleteHandler(event)"/>
+		<s:State name="Login"/>
+	</s:states>
+	<fx:Declarations>
+		<gpraservice:GpraService id="gpraService"
+								 fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
+								 showBusyCursor="true"/>
+		<clientservice:ClientService id="clientService"
+									 fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
+									 showBusyCursor="true"/>
+		<miscservice:MiscService id="miscService"
+								 fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
+								 showBusyCursor="true"/>
+		<s:CallResponder id="getFacilities" result="getFacilities_resultHandler(event)"/>
+		<s:CallResponder id="getUsers" result="getUsers_resultHandler(event)"/>
+		<userservice:UserService id="userService"
+								 fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
+								 showBusyCursor="true"/>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		
+	</fx:Declarations>
+	<mx:ViewStack id="pageViewstack" x="0" y="100" width="100%" height="100%"  includeIn="State1"
+				  backgroundColor="#E2E2E8" chromeColor="#6376A5" color="#000000"
+				  contentBackgroundColor="#FFFFFF" creationPolicy="all" creationComplete="pageViewstack_creationCompleteHandler(event)">
+		<custom:HomePage id="pageHome" width="100%" height="100%" label="Home" />
+		<custom:ClientPage id="pageClient" width="100%" height="100%" label="Client" />
+		<custom:GpraPage id="pageGPRA" width="100%" height="100%" label="GPRA"/>
+		<custom:AdminPage id="pageAdmin" width="100%" height="100%" label="Admin"/>
+	</mx:ViewStack>
+	<s:Image x="0" y="0" source="assets/ConnectBanner.png"/>
+	<s:Group includeIn="State1" x="10" y="3" width="695" height="90"
+					   >
+		<s:layout>
+			<s:BasicLayout/>
+		</s:layout>
+		<s:FormItem x="156" y="27" label="Open Client:">
+			<s:Label id="headerClientLabel" text="{headerClientText(activeClient)}"/>
+		</s:FormItem>
+		<s:FormItem x="156" y="46" label="Open GPRA:">
+			<s:Label id="headerGpraLabel" text="{headerGpraText(activeGPRA)}"/>
+		</s:FormItem>
+		<s:Button id="logoutButton" x="606" y="5" label="Logout"
+				  click="logoutButton_clickHandler(event)"/>
+		<s:Button id="adminButton" x="512" y="4" width="86" height="49" label="Admin"
+				  click="adminButton_clickHandler(event)"/>
+	</s:Group>
+	<mx:ToggleButtonBar id="pageButtonBar" x="171" y="10" dataProvider="{pageViewstack}" includeIn="State1"/>
+	
+	<custom:LoginPage id="pageLogin" width="100%" height="100%" label="Login" includeIn="Login"/>
+</s:Application>

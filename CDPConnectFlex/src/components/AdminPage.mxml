@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:NavigatorContent xmlns:fx="http://ns.adobe.com/mxml/2009"
+					xmlns:s="library://ns.adobe.com/flex/spark"
+					xmlns:mx="library://ns.adobe.com/flex/mx"
+					xmlns:custom="components.*"
+					xmlns:gpraservice="services.gpraservice.*"
+					xmlns:styles="com.adobe.fiber.styles.*"
+					xmlns:clientservice="services.clientservice.*"
+					width="400" height="300">
+	<fx:Script>
+		<![CDATA[
+			import flash.globalization.DateTimeFormatter;
+			import flash.globalization.LocaleID;
+			
+			import mx.collections.ArrayCollection;
+			import mx.collections.ArrayList;
+			import mx.controls.Alert;
+			import mx.controls.DateField;
+			import mx.controls.Text;
+			import mx.core.FlexGlobals;
+			import mx.events.CloseEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			import valueObjects.ClientVO;
+			import valueObjects.GpraVO;
+			
+			protected var global:CDPConnectFlex = FlexGlobals.topLevelApplication as CDPConnectFlex;
+			protected var gpraHeaders:String = "autoid,ClientID,ClientType,InterviewTypeCode,InterviewDate,CooccurringScreen,CooccurringScreenStatus,GrantNo,ConductedInterview,DateOfBirth," +
+				"GenderCode,GenderOtherSpecify,HispanicLatino,EthnicCentralAmerican,EthnicCuban,EthnicDominican,EthnicMexican,EthnicPuertoRican,EthnicSouthAmerican,EthnicOther," +
+				"EthnicOtherSpec,RaceBlack,RaceAsian,RaceAmericanIndian,RaceNativeHawaiian,RaceAlaskaNative,RaceWhite,MilitaryServed,ActiveDuty,NeverDeployed,IraqAfghanistan,PersianGulf," +
+				"VietnamSoutheastAsia,Korea,WWII,DeployedCombatZone,FamilyActiveDuty,ServiceMemRelationship1,ServiceMemExpOther1,ServiceMemExpDeployed1,ServiceMemExpInjured1," +
+				"ServiceMemExpCombatStress1,ServiceMemExpDeceased1,ServiceMemRelationship2,ServiceMemExpOther2,ServiceMemExpDeployed2,ServiceMemExpInjured2,ServiceMemExpCombatStress2," +
+				"ServiceMemExpDeceased2,ServiceMemRelationship3,ServiceMemExpOther3,ServiceMemExpDeployed3,ServiceMemExpInjured3,ServiceMemExpCombatStress3,ServiceMemExpDeceased3," +
+				"ServiceMemRelationship4,ServiceMemExpOther4,ServiceMemExpDeployed4,ServiceMemExpInjured4,ServiceMemExpCombatStress4,ServiceMemExpDeceased4,ServiceMemRelationship5," +
+				"ServiceMemExpOther5,ServiceMemExpDeployed5,ServiceMemExpInjured5,ServiceMemExpCombatStress5,ServiceMemExpDeceased5,ServiceMemRelationship6,ServiceMemExpOther6," +
+				"ServiceMemExpDeployed6,ServiceMemExpInjured6,ServiceMemExpCombatStress6,ServiceMemExpDeceased6,DAUseAlcoholDays,DAUseAlcoholIntox5Days,DAUseAlcoholIntox4Days," +
+				"DAUseIllegDrugsDays,DAUseBothDays,CocaineCrackDays,CocaineCrackRoute,MarijuanaHashDays,MarijuanaHashRoute,OpiatesHeroinDays,OpiatesHeroinRoute,OpiatesMorphineDays," +
+				"OpiatesMorphineRoute,OpiatesDiluadidDays,OpiatesDiluadidRoute,OpiatesDemerolDays,OpiatesDemerolRoute,OpiatesPercocetDays,OpiatesPercocetRoute,OpiatesDarvonDays," +
+				"OpiatesDarvonRoute,OpiatesCodeineDays,OpiatesCodeineRoute,OpiatesTylenolDays,OpiatesTylenolRoute,OpiatesOxycoDays,OpiatesOxycoRoute,NonPresMethadoneDays," +
+				"NonPresMethadoneRoute,HallucPsychDays,HallucPsychRoute,MethamDays,MethamRoute,BenzodiazepinesDays,BenzodiazepinesRoute,BarbituatesDays,BarbituatesRoute,NonPrescGhbDays," +
+				"NonPrescGhbRoute,KetamineDays,KetamineRoute,OtherTranquilizersDays,OtherTranquilizersRoute,InhalantsDays,InhalantsRoute,OtherIllegalDrugsDays,OtherIllegalDrugsRoute," +
+				"OtherIllegalDrugsSpec,InjectedDrugs,ParaphenaliaUsedOthers,LivingWhere,LivingHoused,LivingHousedSpec,ImpactStress,ImpactActivity,ImpactEmotional,Pregnant,Children," +
+				"ChildrenNr,ChildrenCustody,ChildrenCustodyNr,ChildrenCustodyLost,TrainingProgram,TrainingProgramSpec,EducationYears,EmployStatus,EmployStatusSpec,IncomeWages," +
+				"IncomePubAssist,IncomeRetirement,IncomeDisability,IncomeNonLegal,IncomeFamFriends,IncomeOther,IncomeOtherSpec,ArrestedDays,ArrestedDrugDays,ArrestedConfineDays,NrCrimes," +
+				"AwaitTrial,ParoleProbation,HealthStatus,InpatientPhysical,InpatientPhysicalNights,InpatientMental,InpatientMentalNights,InpatientAlcoholSA,InpatientAlcoholSANights," +
+				"OutpatientPhysical,OutpatientPhysicalTimes,OutpatientMental,OutpatientMentalTimes,OutpatientAlcoholSA,OutpatientAlcoholSATimes,ERPhysical,ERPhysicalTimes,ERMental," +
+				"ERMentalTimes,ERAlcoholSA,ERAlcoholSATimes,SexActivity,SexContacts,SexUnprot,SexUnprotHIVAids,SexUnprotInjDrugUser,SexUnprotHigh,fHIVTest,fHIVTestResult,Depression,Anxiety," +
+				"Hallucinations,BrainFunction,ViolentBehavior,Suicide,PsycholEmotMedication,PsycholEmotImpact,AnyViolence,Nightmares,TriedHard,ConstantGuard,NumbAndDetach,PhysicallyHurt," +
+				"AttendVoluntary,AttendVoluntaryTimes,AttendReligious,AttendReligiousTimes,AttendOtherOrg,AttendOtherOrgTimes,InteractFamilyFriends,WhomInTrouble,WhomInTroubleSpec,DarmhaID," +
+				"FLWPStatus,FLWPStatusSpec,ReceivingServices,DischargeDate,DischargeStatusCompl,DischargeStatusTermReason,OtherDischargeStatTermRsnSpec,jHIVTest,jHIVTestResult,SvcAfterCare," +
+				"SvcAlcoholDrugTesting,SvcAmbulatoryDetox,SvcAssessment,SvcBriefIntervention,SvcBriefTreatment,SvcCaseManagement,SvcChildCare,SvcCoOccurring,SvcContinuingCare," +
+				"SvcDayTreatment,SvcDrugFreeHousing,SvcDrugFreeSocial,SvcEmploymentCoaching,SvcFamilyMarriageCouns,SvcFamilyServices,SvcFreeStandingRes,SvcGroupCouns,SvcHIVAIDSCouns," +
+				"SvcHIVAIDSEdu,SvcHIVAIDSMedical,SvcHIVAIDSServices,SvcHospitalInpatient,SvcHousingSupport,SvcIndividualCoord,SvcIndividualCouns,SvcInformationReferral,SvcInpatient," +
+				"SvcIntensiveOutpatient,SvcMedicalCare,SvcMethadone,SvcOtherAfterCare,SvcOtherAfterCareSpec,SvcOtherCaseMgmt,SvcOtherCaseMgmtSpec,SvcOtherClinicalCouns," +
+				"SvcOtherClinicalCounsSpec,SvcOtherEdu,SvcOtherEduSpec,SvcOtherMedical,SvcOtherMedicalSpec,SvcOtherModalitiesSpec,SvcOtherModalities,SvcOutpatient,SvcOutreach," +
+				"SvcPeerCoaching,SvcPharmacological,SvcPreEmployment,SvcRecoveryCoaching,SvcRecoverySupport,SvcReferralTreatment,SvcRelapsePrevention,SvcResidentialRehab,SvcScreening," +
+				"SvcSelfHelpSupport,SvcSpiritualSupport,SvcSubstanceAbuseEdu,SvcTransportation,SvcTreatmentPlanning,SvcOtherRecovery,SvcOtherRecoverySpec,IntakeDate,InterviewCreateDate," +
+				"SAISID,uploaded,upload_action\r\n";
+			protected var clientHeaders:String = "autoid,firstname,lastname,dob,ssn,intakestaff,createddate\r\n";
+			
+			protected function exportNewGPRAsButton_clickHandler(event:MouseEvent):void
+			{
+				getGprasResult.token = gpraService.getGprasNotUploadedArray();
+			}
+			
+			protected function exportAllGPRAsButton_clickHandler(event:MouseEvent):void
+			{
+				getGprasResult.token = gpraService.getAllGprasArray();
+			}
+			
+			protected function getGprasResult_resultHandler(event:ResultEvent):void
+			{
+				if(getGprasResult.lastResult != null)
+				{
+					Alert.show("Save file?","",Alert.YES|Alert.NO,null,exportGPRAsCloseHandler);
+				}
+				else
+				{
+					Alert.show("There are no GPRAs to export.");
+				}
+			}
+			
+			protected function exportGPRAsCloseHandler( event:CloseEvent ):void
+			{
+				var output:String = gpraHeaders;
+				if(event.detail == Alert.YES)
+				{
+					var file:FileReference = new FileReference();
+
+					for each(var gpra:Array in getGprasResult.lastResult)
+					{
+						//put everything in quotes
+						output += "\"" + gpra.join("\",\"") + "\"\r\n";
+					}
+					var date:Date = new Date();
+					file.save(output,"GPRAs " + (date.month+1).toString() + "-" + date.date.toString() + "-" + date.fullYear.toString() + ".csv");
+				}
+			}
+			
+			protected function exportClientsButton_clickHandler(event:MouseEvent):void
+			{
+				getAllClientsArrayResult.token = clientService.getAllClientsArray();
+			}
+			
+			protected function getAllClientsArrayResult_resultHandler(event:ResultEvent):void
+			{
+				if(getAllClientsArrayResult.lastResult != null)
+				{
+					Alert.show("Save file?","",Alert.YES|Alert.NO,null,exportClientsCloseHandler);
+				}
+			}
+			
+			protected function exportClientsCloseHandler( event:CloseEvent ):void
+			{
+				var output:String = clientHeaders;
+				if(event.detail == Alert.YES)
+				{
+					var file:FileReference = new FileReference();
+					
+					for each(var client:Array in getAllClientsArrayResult.lastResult)
+					{
+						//put everything in quotes
+						output += "\"" + client.join("\",\"") + "\"\r\n";
+					}
+					var date:Date = new Date();
+					file.save(output,"Clients " + (date.month+1).toString() + "-" + date.date.toString() + "-" + date.fullYear.toString() + ".csv");
+				}
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Style> 
+		@namespace s "library://ns.adobe.com/flex/spark"; 
+		@namespace mx "library://ns.adobe.com/flex/mx"; 
+		@namespace components "components.*"; 
+
+	</fx:Style>
+	<fx:Declarations>
+		<s:CallResponder id="getGprasResult" result="getGprasResult_resultHandler(event)"/>
+		<gpraservice:GpraService id="gpraService"
+								 fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
+								 showBusyCursor="true"/>
+		<s:CallResponder id="getAllClientsArrayResult" result="getAllClientsArrayResult_resultHandler(event)"/>
+		<clientservice:ClientService id="clientService"
+									 fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
+									 showBusyCursor="true"/>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<s:Group x="0" y="0" width="1024" height="768">
+		<s:Panel x="162" y="0" width="372" height="291" title="Reports">
+			<s:layout>
+				<s:TileLayout horizontalGap="20" paddingLeft="10" paddingRight="10" paddingTop="15"
+							  requestedColumnCount="2" verticalGap="30"/>
+			</s:layout>
+			<s:Label text="Export New GPRAs to CSV"/>
+			<s:Button id="exportNewGPRAsButton" label="Run" click="exportNewGPRAsButton_clickHandler(event)"/>
+			<s:Label text="Export All GPRAs to CSV"/>
+			<s:Button id="exportAllGPRAsButton" label="Run" click="exportAllGPRAsButton_clickHandler(event)"/>
+			<s:Label text="Export All Clients to CSV"/>
+			<s:Button id="exportClientsButton" label="Run" click="exportClientsButton_clickHandler(event)"/>
+		</s:Panel>
+		<mx:ProgressBar id="uploadProgress" x="392" y="417" indeterminate="true" visible="false"/>
+	</s:Group>
+</s:NavigatorContent>

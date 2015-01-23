@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:GridItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+					xmlns:s="library://ns.adobe.com/flex/spark" 
+					xmlns:mx="library://ns.adobe.com/flex/mx" clipAndEnableScrolling="true">
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.controls.Button;
+			override public function prepare(hasBeenRecycled:Boolean):void {
+				if(column.dataField == "type")
+				{
+					if(data[column.dataField] == 1)
+						lblData.text = "Intake";
+					else if(data[column.dataField] == 2)
+						lblData.text = "Followup";
+					else if(data[column.dataField] == 5)
+						lblData.text = "Discharge";
+				}
+				else if(column.dataField == "status")
+				{
+					if(data[column.dataField] == 0)
+						lblData.text = "Active";
+					else if(data[column.dataField] == 1)
+						lblData.text = "Complete";
+				}
+				else
+					lblData.text = data[column.dataField];
+			}
+		]]>
+	</fx:Script>
+	
+	<s:Label id="lblData" top="9" left="7"/>
+	
+</s:GridItemRenderer>

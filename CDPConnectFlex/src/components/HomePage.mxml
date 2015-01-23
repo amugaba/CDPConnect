@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:NavigatorContent xmlns:fx="http://ns.adobe.com/mxml/2009" 
+					xmlns:s="library://ns.adobe.com/flex/spark" 
+					xmlns:mx="library://ns.adobe.com/flex/mx"
+					xmlns:custom="components.*"
+					xmlns:gpraservice="services.gpraservice.*"
+					xmlns:styles="com.adobe.fiber.styles.*"
+					xmlns:clientservice="services.clientservice.*"
+					width="400" height="300">
+	<fx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import mx.collections.ArrayList;
+			import mx.controls.Alert;
+			import mx.core.FlexGlobals;
+			import mx.events.CloseEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.utils.ArrayUtil;
+			import mx.validators.NumberValidator;
+			
+			import valueObjects.ClientVO;
+			import valueObjects.GpraVO;
+			
+			[Bindable] protected var clientList:ArrayCollection = new ArrayCollection();
+			[Bindable] protected var staffList:ArrayList = new ArrayList([""]);
+			protected var global:CDPConnectFlex = FlexGlobals.topLevelApplication as CDPConnectFlex;
+			
+			public function creationCompleteHandler():void
+			{
+				staffList.addAll(global.userList);
+				
+				var nv:NumberValidator = new NumberValidator();
+				nv.required = false;
+				nv.source = sfClientID;
+				nv.property = "text";
+				nv.minValue = 0;
+				nv.domain = "int";
+			}
+			
+			protected function addClientButton_clickHandler(event:MouseEvent):void
+			{
+				//global.activeClient = new ClientVO();
+				global.activeClient = null;
+				global.activeGPRA = null;
+				global.pageClient.populateClientForm();
+				global.pageViewstack.selectedChild = global.pageClient;
+				global.pageClientButton.enabled = false;
+				global.pageGpraButton.enabled = false;
+			}
+			
+			protected function loadClientButton_clickHandler(event:MouseEvent):void
+			{
+				if(clientGrid.selectedItem != null)
+				{
+					global.activeClient = clientGrid.selectedItem as ClientVO;
+					global.pageClient.populateClientForm();
+					global.pageViewstack.selectedChild = global.pageClient;
+					global.pageClientButton.enabled = true;
+					global.pageGpraButton.enabled = false;
+				}
+			}
+			
+			protected function sfSearchButton_clickHandler(event:MouseEvent):void
+			{
+				searchClientsResult.token = clientService.searchClients(Number(sfClientID.text), sfFirstName.text, sfLastName.text, sfDOB.text, sfSSN.text, sfStaff.selectedItem);
+			}
+			
+			protected function searchClientsResult_resultHandler(event:ResultEvent):void
+			{
+				if((searchClientsResult.lastResult as ArrayCollection).length != 0)
+				{
+					clientList = searchClientsResult.lastResult;
+				}
+				else
+					Alert.show("No clients found.");
+			}
+			protected function getClientByIDResult_resultHandler(event:ResultEvent):void
+			{
+				if(getClientByIDResult.lastResult != null)
+				{
+					global.activeClient = getClientByIDResult.lastResult;
+				}
+				else
+					Alert.show("No client found with this ID.","Client Not Loaded");
+			}
+			public function resetPage():void
+			{
+				sfClientID.text = "";
+				sfFirstName.text = "";
+				sfLastName.text = "";
+				sfSSN.text = "";
+				sfDOB.text = "";
+				sfStaff.selectedIndex = 0;
+				clientList = new ArrayCollection();
+			}
+		
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<clientservice:ClientService id="clientService"
+									 fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
+									 showBusyCursor="true"/>
+		<s:CallResponder id="getClientByIDResult" result="getClientByIDResult_resultHandler(event)"/>
+		<s:CallResponder id="searchClientsResult" result="searchClientsResult_resultHandler(event)"/>
+	</fx:Declarations>
+	<s:Form id="searchForm" x="10" y="5" width="695" height="200" defaultButton="{sfSearchButton}" fontWeight="bold">
+		<s:layout>
+			<s:TileLayout columnWidth="250" horizontalAlign="right" orientation="columns" verticalGap="30"
+						  requestedColumnCount="2" requestedRowCount="4"/>
+		</s:layout>
+		<mx:FormItem label="Client ID">
+			<s:TextInput id="sfClientID" fontWeight="normal"/>
+		</mx:FormItem>
+		<mx:FormItem label="First Name">
+			<s:TextInput id="sfFirstName" fontWeight="normal"/>
+		</mx:FormItem>
+		<mx:FormItem label="Last name">
+			<s:TextInput id="sfLastName" fontWeight="normal"/>
+		</mx:FormItem>
+		<mx:FormItem label="Last 4 SSN">
+			<s:TextInput id="sfSSN" fontWeight="normal"/>
+		</mx:FormItem>
+		<mx:FormItem label="Date of Birth">
+			<s:TextInput id="sfDOB" fontWeight="normal"/>
+		</mx:FormItem>
+		<mx:FormItem label="Intake Staff">
+			<s:DropDownList id="sfStaff" fontWeight="normal" width="128" dataProvider="{staffList}" selectedIndex="0"></s:DropDownList>
+		</mx:FormItem>
+		<mx:FormItem>
+			<s:Button id="sfSearchButton" fontWeight="normal" label="Search" click="sfSearchButton_clickHandler(event)"/>
+		</mx:FormItem>
+		<mx:FormItem>
+			<s:Button id="addClientButton" fontWeight="normal" x="595" y="241" label="Add Client" click="addClientButton_clickHandler(event)"/>
+		</mx:FormItem>
+	</s:Form>
+	<s:Button id="loadClientButton" x="560" y="281" label="Open Client Record" click="loadClientButton_clickHandler(event)"/>
+	<s:DataGrid id="clientGrid" x="20" y="225" dataProvider="{clientList}"
+				requestedRowCount="5" resizableColumns="false" width="530" height="150">
+		<s:columns>
+			<s:ArrayList>
+				<s:GridColumn dataField="autoid" headerText="ClientID" width="100"></s:GridColumn>
+				<s:GridColumn dataField="lastname" headerText="Last Name" width="100"></s:GridColumn>
+				<s:GridColumn dataField="firstname" headerText="First Name" width="100"></s:GridColumn>
+				<s:GridColumn dataField="dob" headerText="DOB" width="100"></s:GridColumn>
+				<s:GridColumn dataField="ssn" headerText="SSN" width="100"></s:GridColumn>
+			</s:ArrayList>
+		</s:columns>
+		<s:typicalItem>
+			<fx:Object clientid="00001" lastname="Smith" firstname="John" dob="11/11/1911" ssn="4444"></fx:Object>
+		</s:typicalItem>
+	</s:DataGrid>
+</s:NavigatorContent>
