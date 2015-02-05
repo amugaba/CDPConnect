@@ -1,5 +1,6 @@
 <?php
 include_once 'ConnectionManager.php';
+include_once 'GrantVO.php';
 
 class MiscService
 {
@@ -46,6 +47,63 @@ class MiscService
         mysqli_close($this->connection);
         
         return $facilities;
+    }
+    
+	/**
+	 * 
+	 * Get a grant's settings by ID
+	 * 
+	 * @param int $grantID
+	 * @return GrantVO
+	 */
+    public function getGrant($grantID)
+    {
+    	$stmt = $this->connection->prepare("SELECT autoid, name, samhsaCenter, programType, grantCode FROM grant_tbl WHERE autoid=?");
+    	$this->throwExceptionOnError();
+    	
+    	$stmt->bind_param('i', $grantID);
+        $this->throwExceptionOnError();
+        
+    	$stmt->execute();
+    	$this->throwExceptionOnError();
+    	
+    	$grant = new GrantVO();
+    	
+    	$stmt->bind_result($grant->autoid, $grant->name, $grant->samhsaCenter, $grant->programType, $grant->grantCode);
+    	
+    	if ($stmt->fetch()) 
+    	{
+    		$stmt->free_result();
+	        $this->connection->close();  
+        	return $grant;
+        }
+    	else 
+    	{
+	    	$stmt->free_result();
+	        $this->connection->close();  
+	        return null;
+    	}
+    }
+    
+/**
+	 * 
+	 * Update a grant's settings by ID
+	 * 
+	 * @param GrantVO $grant
+	 */
+    public function updateGrant($grantVO)
+    {
+    	$stmt = $this->connection->prepare("UPDATE grant_tbl SET samhsaCenter=?, programType=?, grantCode=? WHERE autoid=?");
+    	$this->throwExceptionOnError();
+    	
+    	$stmt->bind_param('iisi', $grantVO->samhsaCenter, $grantVO->programType, $grantVO->grantCode, $grantVO->autoid);
+        $this->throwExceptionOnError();
+        
+    	$stmt->execute();
+    	$this->throwExceptionOnError();
+    	
+    	$stmt->free_result();
+	    $this->connection->close();  
     }
     
 	/**

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dci:DCIForm xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			 xmlns:s="library://ns.adobe.com/flex/spark" 
+			 xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:dci="components.dci.*" width="100%" height="100%"
+			 labelWidth="190">
+	<fx:Script>
+		<![CDATA[
+			import components.DateAgeValidator;
+			import components.QuestionList;
+			import components.QuestionText;
+			import components.QuestionTextRefusable;
+			
+			import mx.binding.utils.BindingUtils;
+			import mx.collections.ArrayList;
+			import mx.validators.NumberValidator;
+			
+			public var qDischargeDate:QuestionText = new QuestionText("DischargeDate","What is the date of discharge?","");
+			public var qDischargeStatusCompl:QuestionList = new QuestionList("DischargeStatusCompl","What is the client’s discharge status?",new ArrayList(["Completion/Graduate","Termination"]),0);
+			public var qDischargeStatusTermReason:QuestionList = new QuestionList("DischargeStatusTermReason","If the client was terminated, what was the reason for termination?",new ArrayList(["Left on own against staff advice with satisfactory progress","Left on own against staff advice without satisfactory progress",
+				"Involuntarily discharged due to nonparticipation","Involuntarily discharged due to violation of rules","Referred to another program or other services with satisfactory progress","Referred to another program or other services with unsatisfactory progress",
+				"Incarcerated due to offense committed while in treatment/recovery with satisfactory progress","Incarcerated due to offense committed while in treatment/recovery with unsatisfactory progress","Incarcerated due to old warrant or charged from before entering treatment/recovery with satisfactory progress",
+				"Incarcerated due to old warrant or charged from before entering treatment/recovery with unsatisfactory progress","Transferred to another facility for health reasons","Death","Other"]),0);
+			public var qOtherDischargeStatTermRsnSpec:QuestionText = new QuestionText("OtherDischargeStatTermRsnSpec","Other, specify:","");
+			public var qjHIVTest:QuestionList = new QuestionList("jHIVTest","Did the program test this client for HIV?",new ArrayList(["Yes","No"]),1);
+			public var qjHIVTestResult:QuestionList = new QuestionList("jHIVTestResult","Did the program refer this client for testing?",new ArrayList(["Yes","No","Missing Data"]),1);
+			
+			//Discharge Form Area
+			public override function createForm():void
+			{				
+				//Questions
+				addQuestion(qDischargeDate);
+				addQuestion(qDischargeStatusCompl,130);
+				addQuestion(qDischargeStatusTermReason,260);
+				addQuestion(qOtherDischargeStatTermRsnSpec);
+				addQuestion(qjHIVTest);
+				addQuestion(qjHIVTestResult);
+				
+				//Validators
+				var dv1:DateAgeValidator = new DateAgeValidator();
+				dv1.required = true;
+				dv1.source = qDischargeDate.inputControl;
+				dv1.property = "text";
+				dv1.minType = DateAgeValidator.DAY;
+				dv1.min = 0;
+				dv1.maxType = DateAgeValidator.YEAR;
+				dv1.max = 1;
+				qDischargeDate.validator = dv1;
+				addRequiredValidator(qOtherDischargeStatTermRsnSpec);
+				
+				//Control Logic
+				addSkipDropDown(qDischargeStatusCompl,["Completion/Graduate"],[qDischargeStatusTermReason]);
+				addSkipDropDown(qDischargeStatusTermReason,["Left on own against staff advice with satisfactory progress","Left on own against staff advice without satisfactory progress",
+					"Involuntarily discharged due to nonparticipation","Involuntarily discharged due to violation of rules","Referred to another program or other services with satisfactory progress","Referred to another program or other services with unsatisfactory progress",
+					"Incarcerated due to offense committed while in treatment/recovery with satisfactory progress","Incarcerated due to offense committed while in treatment/recovery with unsatisfactory progress","Incarcerated due to old warrant or charged from before entering treatment/recovery with satisfactory progress",
+					"Incarcerated due to old warrant or charged from before entering treatment/recovery with unsatisfactory progress","Transferred to another facility for health reasons","Death"],[qOtherDischargeStatTermRsnSpec]);
+				addSkipDropDown(qjHIVTest,["No","Missing Data"],[qjHIVTestResult]);
+			}
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+</dci:DCIForm>

@@ -16,7 +16,7 @@ By David Tidd
 			   xmlns:miscservice="services.miscservice.*"
 			   width="715" height="800" minWidth="955" minHeight="620"
 			   backgroundColor="#E2E2E8" currentState="Login"
-			   pageTitle="CDP Connect Test Site">
+			   pageTitle="CDP Connect">
 	<fx:Script>
 		<![CDATA[
 			import mx.collections.ArrayCollection;
@@ -29,11 +29,13 @@ By David Tidd
 			
 			import valueObjects.ClientVO;
 			import valueObjects.GpraVO;
+			import valueObjects.GrantVO;
 			import valueObjects.UserVO;			
 
 			[Bindable] public var activeClient:ClientVO = null;
 			[Bindable] public var activeGPRA:GpraVO = null;
 			[Bindable] public var activeUser:UserVO = null;
+			[Bindable] public var activeGrant:GrantVO = null;
 			public var pageHomeButton:ButtonBarButton;
 			public var pageClientButton:ButtonBarButton;
 			public var pageGpraButton:ButtonBarButton;
@@ -69,6 +71,7 @@ By David Tidd
 				pageGpraButton.enabled = false;
 				pageViewstack.selectedChild = pageHome;
 				getFacilities.token = miscService.getFacilities();
+				getGrantResult.token = miscService.getGrant(activeUser.grantid);
 				adminButton.visible = adminMode;
 				pageAdminButton.visible = adminMode;
 				creationComplete = true;
@@ -138,9 +141,13 @@ By David Tidd
 			protected function adminButton_clickHandler(event:MouseEvent):void
 			{
 				pageViewstack.selectedChild = pageAdmin;
+				pageAdmin.populateSettings();
 			}
 			
-
+			protected function getGrantResult_resultHandler(event:ResultEvent):void
+			{
+				activeGrant = getGrantResult.lastResult;
+			}
 			
 		]]>
 	</fx:Script>
@@ -163,6 +170,7 @@ By David Tidd
 		<userservice:UserService id="userService"
 								 fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
 								 showBusyCursor="true"/>
+		<s:CallResponder id="getGrantResult" result="getGrantResult_resultHandler(event)"/>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 		
 	</fx:Declarations>

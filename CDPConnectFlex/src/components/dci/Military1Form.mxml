@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dci:DCIForm xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			 xmlns:s="library://ns.adobe.com/flex/spark" 
+			 xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:dci="components.dci.*" width="100%" height="100%">
+	<fx:Script>
+		<![CDATA[
+			import components.QuestionClass;
+			import components.QuestionList;
+			import components.QuestionText;
+			import components.SkipMultipleHandler;
+			
+			import mx.collections.ArrayList;
+			import mx.containers.FormItem;
+			
+			public var qMilitaryServed:QuestionList = new QuestionList("MilitaryServed","Have you ever served on active, reserve, or National Guard duty?",ynrdm,1);
+			public var qMilitaryBranch:QuestionList = new QuestionList("MilitaryBranch","In what branch of the military/uniformed services did you serve?",new ArrayList(["Army","Marine Corps","Navy","Air Force","Coast Guard","PHS","NOAA","Refused","Don't Know","Missing Data"]),0);
+			public var qMilitaryComponent:QuestionList = new QuestionList("MilitaryComponent","In which component did you serve?",new ArrayList(["Active","Reserve","National Guard","Refused","Don't Know","Missing Data"]),0);
+			public var qActiveDuty:QuestionList = new QuestionList("ActiveDuty","Are you currently on active duty or are you separated or retired?",new ArrayList(["On active duty","Separated","Retired","Refused","Don't Know","Missing Data"]),0);
+			public var qNeverDeployed:QuestionList = new QuestionList("NeverDeployed","Never Deployed",ynrdm,0);
+			public var qIraqAfghanistan:QuestionList = new QuestionList("IraqAfghanistan","Iraq or Afghanistan",new ArrayList(["Yes","No"]),1);
+			public var qPersianGulf:QuestionList = new QuestionList("PersianGulf","Persian Gulf",new ArrayList(["Yes","No"]),1);
+			public var qVietnamSoutheastAsia:QuestionList = new QuestionList("VietnamSoutheastAsia","Vietnam/Southeast Asia",new ArrayList(["Yes","No"]),1);
+			public var qKorea:QuestionList = new QuestionList("Korea","Korea",new ArrayList(["Yes","No"]),1);
+			public var qWWII:QuestionList = new QuestionList("WWII","World War II",new ArrayList(["Yes","No"]),1);
+			public var qDeployedOther:QuestionList = new QuestionList("DeployedOther","Other combat zone",new ArrayList(["Yes","No"]),1);
+			public var qDeployedOtherSpec:QuestionText = new QuestionText("DeployedOtherSpec","Other (Specify)","");
+			
+			//Military1 Form Area
+			public override function createForm():void
+			{
+				//Questions
+				addQuestion(qMilitaryServed, 175);
+				addQuestion(qMilitaryBranch, 175);
+				addQuestion(qMilitaryComponent, 175);
+				addQuestion(qActiveDuty, 175);
+				createText("Have you ever been deployed to a combat zone? Check all that apply.","h1");
+				addQuestion(qNeverDeployed);
+				addQuestion(qIraqAfghanistan);
+				addQuestion(qPersianGulf);
+				addQuestion(qVietnamSoutheastAsia);
+				addQuestion(qKorea);
+				addQuestion(qWWII);
+				addQuestion(qDeployedOther);
+				addQuestion(qDeployedOtherSpec);
+				
+				//Validators
+				
+				//Control Logic
+				addSkipDropDown(qMilitaryServed,["No","Refused","Don't Know","Missing Data"],[qMilitaryBranch,qMilitaryComponent,qActiveDuty,qNeverDeployed]);
+				addSkipDropDown(qNeverDeployed,["Yes","Refused","Don't Know","Missing Data"],[qIraqAfghanistan,qPersianGulf,qVietnamSoutheastAsia,qKorea,qWWII,qDeployedOther]);
+				//var handler:SkipMultipleHandler = createSkipMultipleHandler([qIraqAfghanistan,qPersianGulf,qVietnamSoutheastAsia,qKorea,qWWII,qDeployedOther]);
+				addSkipDropDown(qDeployedOther,["No"],[qDeployedOtherSpec]);
+				//addSkipTextNumberMultiple(handler,qNeverDeployed,["Yes","Refused","Don't Know","Missing Data"]);
+				//addSkipTextNumberMultiple(handler,qMilitaryServed,["No","Refused","Don't Know","Missing Data"]);
+			}
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+</dci:DCIForm>

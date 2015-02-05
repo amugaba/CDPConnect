@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dci:DCIForm xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			 xmlns:s="library://ns.adobe.com/flex/spark" 
+			 xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:dci="components.dci.*" width="100%" height="100%">
+	<fx:Script>
+		<![CDATA[
+			import components.QuestionList;
+			import components.QuestionText;
+			import components.QuestionTextRefusable;
+			
+			import mx.binding.utils.BindingUtils;
+			import mx.collections.ArrayList;
+			import mx.validators.NumberValidator;
+			
+			public var qHealthStatus:QuestionList = new QuestionList("HealthStatus","How would you rate your overall health right now?",new ArrayList(["Excellent","Very Good","Fair","Poor","Refused","Don't Know","Missing Data"]),0);
+			public var qInpatientPhysical:QuestionList = new QuestionList("InpatientPhysical","Physical complaint",ynrdm,1);
+			public var qInpatientPhysicalNights:QuestionTextRefusable = new QuestionTextRefusable("InpatientPhysicalNights","","0");
+			public var qInpatientMental:QuestionList = new QuestionList("InpatientMental","Mental or emotional difficulties",ynrdm,1);
+			public var qInpatientMentalNights:QuestionTextRefusable = new QuestionTextRefusable("InpatientMentalNights","","0");
+			public var qInpatientAlcoholSA:QuestionList = new QuestionList("InpatientAlcoholSA","Alcohol or substance abuse",ynrdm,1);
+			public var qInpatientAlcoholSANights:QuestionTextRefusable = new QuestionTextRefusable("InpatientAlcoholSANights","","0");
+			public var qOutpatientPhysical:QuestionList = new QuestionList("OutpatientPhysical","Physical complaint",ynrdm,1);
+			public var qOutpatientPhysicalTimes:QuestionTextRefusable = new QuestionTextRefusable("OutpatientPhysicalTimes","","0");
+			public var qOutpatientMental:QuestionList = new QuestionList("OutpatientMental","Mental or emotional difficulties",ynrdm,1);
+			public var qOutpatientMentalTimes:QuestionTextRefusable = new QuestionTextRefusable("OutpatientMentalTimes","","0");
+			public var qOutpatientAlcoholSA:QuestionList = new QuestionList("OutpatientAlcoholSA","Alcohol or substance abuse",ynrdm,1);
+			public var qOutpatientAlcoholSATimes:QuestionTextRefusable = new QuestionTextRefusable("OutpatientAlcoholSATimes","","0");
+			public var qERPhysical:QuestionList = new QuestionList("ERPhysical","Physical complaint",ynrdm,1);
+			public var qERPhysicalTimes:QuestionTextRefusable = new QuestionTextRefusable("ERPhysicalTimes","","0");
+			public var qERMental:QuestionList = new QuestionList("ERMental","Mental or emotional difficulties",ynrdm,1);
+			public var qERMentalTimes:QuestionTextRefusable = new QuestionTextRefusable("ERMentalTimes","","0");
+			public var qERAlcoholSA:QuestionList = new QuestionList("ERAlcoholSA","Alcohol or substance abuse",ynrdm,1);
+			public var qERAlcoholSATimes:QuestionTextRefusable = new QuestionTextRefusable("ERAlcoholSATimes","","0");
+			
+			//Health1 Form Area
+			public override function createForm():void
+			{
+				//Questions
+				addQuestion(qHealthStatus);
+				createText("During the past 30 days, did you receive:","h1");
+				createText("Inpatient Treatment for _____. [IF YES] For how many nights?","h1");
+				addTreatmentQuestion(qInpatientPhysical,qInpatientPhysicalNights,30);
+				addTreatmentQuestion(qInpatientMental,qInpatientMentalNights,30);
+				addTreatmentQuestion(qInpatientAlcoholSA,qInpatientAlcoholSANights,30);
+				createText("Outpatient Treatment for _____. [IF YES] For how many times?","h1");
+				addTreatmentQuestion(qOutpatientPhysical,qOutpatientPhysicalTimes,99);
+				addTreatmentQuestion(qOutpatientMental,qOutpatientMentalTimes,99);
+				addTreatmentQuestion(qOutpatientAlcoholSA,qOutpatientAlcoholSATimes,99);
+				createText("Emergency Room Treatment for _____. [IF YES] For how many times?","h1");
+				addTreatmentQuestion(qERPhysical,qERPhysicalTimes,99);
+				addTreatmentQuestion(qERMental,qERMentalTimes,99);
+				addTreatmentQuestion(qERAlcoholSA,qERAlcoholSATimes,99);
+				
+				//Validators
+				
+				//Control Logic
+				
+			}
+			protected function addTreatmentQuestion(treatmentQ:QuestionList, daysQ:QuestionTextRefusable, maxValue:int):void
+			{
+				addQuestion(treatmentQ);
+				treatmentQ.inputControl.width = 90;
+				treatmentQ.direction = "horizontal";
+				
+				questions.push(daysQ);
+				treatmentQ.addElement(daysQ.input);
+				treatmentQ.addElement(daysQ.refuseInput);
+				daysQ.inline = true;
+				
+				addNumberValidator(daysQ,1,maxValue,true);
+				addSkipDropDown(treatmentQ,["No","Refused","Don't Know","Missing Data"],[daysQ]);
+			}
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+</dci:DCIForm>

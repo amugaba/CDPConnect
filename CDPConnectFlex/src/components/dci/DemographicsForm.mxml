@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dci:DCIForm xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			 xmlns:s="library://ns.adobe.com/flex/spark" 
+			 xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:dci="components.dci.*" width="100%" height="100%"
+			 labelWidth="148">
+	<fx:Script>
+		<![CDATA[
+			import components.DateAgeValidator;
+			import components.DropDownValidator;
+			import components.QuestionClass;
+			import components.QuestionList;
+			import components.QuestionText;
+			import components.SkipPattern;
+			
+			import mx.binding.utils.BindingUtils;
+			import mx.collections.ArrayList;
+			
+			import spark.components.TileGroup;
+			
+			public var qDateOfBirth:QuestionText = new QuestionText("DateOfBirth","Date of Birth","");
+			public var qHispanicLatino:QuestionList = new QuestionList("HispanicLatino","Are you Hispanic or Latino?",ynrm,1);
+			public var qEthnicCentralAmerican:QuestionList = new QuestionList("EthnicCentralAmerican","Central American",ynrm,1);
+			public var qEthnicCuban:QuestionList = new QuestionList("EthnicCuban","Cuban",ynrm,1);
+			public var qEthnicDominican:QuestionList = new QuestionList("EthnicDominican","Dominican",ynrm,1);
+			public var qEthnicMexican:QuestionList = new QuestionList("EthnicMexican","Mexican",ynrm,1);
+			public var qEthnicPuertoRican:QuestionList = new QuestionList("EthnicPuertoRican","Puerto Rican",ynrm,1);
+			public var qEthnicSouthAmerican:QuestionList = new QuestionList("EthnicSouthAmerican","South American",ynrm,1);
+			public var qEthnicOther:QuestionList = new QuestionList("EthnicOther","Other",ynrm,1);
+			public var qEthnicOtherSpecify:QuestionText = new QuestionText("EthnicOtherSpec","Other, specify","");
+			
+			public var qRaceWhite:QuestionList = new QuestionList("RaceWhite","White",ynrm,1);
+			public var qRaceBlack:QuestionList = new QuestionList("RaceBlack","Black or African American",ynrm,1);
+			public var qRaceAsianIndian:QuestionList = new QuestionList("RaceAsianIndian","Asian Indian",ynrm,1);
+			public var qRaceChinese:QuestionList = new QuestionList("RaceChinese","Chinese",ynrm,1);
+			public var qRaceFilipino:QuestionList = new QuestionList("RaceFilipino","Filipino",ynrm,1);
+			public var qRaceJapanese:QuestionList = new QuestionList("RaceJapanese","Japanese",ynrm,1);
+			public var qRaceKorean:QuestionList = new QuestionList("RaceKorean","Korean",ynrm,1);
+			public var qRaceVietnamese:QuestionList = new QuestionList("RaceVietnamese","Vietnamese",ynrm,1);
+			public var qRaceOtherAsian:QuestionList = new QuestionList("RaceOtherAsian","Other Asian",ynrm,1);
+			public var qRaceAmericanIndian:QuestionList = new QuestionList("RaceAmericanIndian","American Indian",ynrm,1);
+			public var qRaceAlaskaNative:QuestionList = new QuestionList("RaceAlaskaNative","Alaska Native",ynrm,1);
+			public var qRaceNativeHawaiian:QuestionList = new QuestionList("RaceNativeHawaiian","Native Hawaiian",ynrm,1);
+			public var qRaceGuamanian:QuestionList = new QuestionList("RaceGuamanian","Guamanian or Chamorro",ynrm,1);
+			public var qRaceSamoan:QuestionList = new QuestionList("RaceSamoan","Samoan",ynrm,1);
+			public var qRacePacificIslander:QuestionList = new QuestionList("RacePacificIslander","Other Pacific Islander",ynrm,1);
+			
+			private var ethnicityQuestions:Array = new Array(qEthnicCentralAmerican, qEthnicCuban, qEthnicDominican, qEthnicMexican, qEthnicPuertoRican, qEthnicSouthAmerican, qEthnicOther);
+			private var numEthnicSelected:int = 0;
+			
+			//Demographics Form Area
+			public override function createForm():void
+			{
+				//Questions
+				addQuestion(qDateOfBirth);
+				
+				addQuestion(qHispanicLatino);
+				createText("What ethnic group do you consider yourself?","h1");
+				var g:TileGroup = new TileGroup();
+				g.requestedColumnCount = 2;
+				g.requestedRowCount = 4;
+				addElement(g);
+				addGroupedQuestion(qEthnicCentralAmerican,g);
+				addGroupedQuestion(qEthnicCuban,g);
+				addGroupedQuestion(qEthnicDominican,g);
+				addGroupedQuestion(qEthnicMexican,g);
+				addGroupedQuestion(qEthnicPuertoRican,g);
+				addGroupedQuestion(qEthnicSouthAmerican,g);
+				addGroupedQuestion(qEthnicOther,g);
+				addGroupedQuestion(qEthnicOtherSpecify,g);
+				
+				createText("What is your race?","h1");
+				g = new TileGroup();
+				g.requestedColumnCount = 2;
+				g.requestedRowCount = 8;
+				addElement(g);
+				addGroupedQuestion(qRaceWhite,g);
+				addGroupedQuestion(qRaceBlack,g);
+				addGroupedQuestion(qRaceAsianIndian,g);
+				addGroupedQuestion(qRaceChinese,g);
+				addGroupedQuestion(qRaceFilipino,g);
+				addGroupedQuestion(qRaceJapanese,g);
+				addGroupedQuestion(qRaceKorean,g);
+				addGroupedQuestion(qRaceVietnamese,g);
+				addGroupedQuestion(qRaceOtherAsian,g);
+				addGroupedQuestion(qRaceAmericanIndian,g);
+				addGroupedQuestion(qRaceAlaskaNative,g);
+				addGroupedQuestion(qRaceNativeHawaiian,g);
+				addGroupedQuestion(qRaceGuamanian,g);
+				addGroupedQuestion(qRaceSamoan,g);
+				addGroupedQuestion(qRacePacificIslander,g);				
+				
+				//Validators
+				var dv1:DateAgeValidator = new DateAgeValidator();
+				dv1.required = true;
+				dv1.source = qDateOfBirth.inputControl;
+				dv1.property = "text";
+				dv1.minType = DateAgeValidator.YEAR;
+				dv1.min = 3;
+				dv1.maxType = DateAgeValidator.YEAR;
+				dv1.max = 100;
+				qDateOfBirth.validator = dv1;
+				
+				addDropDownValidator(qHispanicLatino,["No","Refused","Missing Data"]);
+				addRequiredValidator(qEthnicOtherSpecify);
+				
+				createEthnicBindings();
+				
+				//Control Logic
+				addSkipDropDown(qHispanicLatino,["No","Refused","Missing Data"], ethnicityQuestions);
+				(qHispanicLatino.skipPatterns[0] as SkipPattern).skipWhenInvalid = true;
+				addSkipDropDown(qEthnicOther,["No","Refused","Missing Data"],[qEthnicOtherSpecify]);
+			}
+			
+			private function addGroupedQuestion(q:QuestionClass, g:TileGroup):void
+			{
+				questions.push(q);
+				g.addElement(q);
+			}
+			
+			protected function hispanicHandler(val:String):void
+			{
+				var dv:DropDownValidator = qHispanicLatino.validator as DropDownValidator;
+				for each (var q:QuestionClass in ethnicityQuestions)
+					if(q.answer == "Yes")
+					{
+						dv.validAnswers = ["Yes"];
+						dv.validate();
+						return;
+					}
+
+				dv.validAnswers = ["No","Refused","Missing Data"];
+				dv.validate();
+			}
+			
+			private function createEthnicBindings():void
+			{
+				for each(var q:QuestionClass in ethnicityQuestions)
+					BindingUtils.bindSetter(hispanicHandler, q.inputControl, "selectedIndex");
+			}
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+</dci:DCIForm>

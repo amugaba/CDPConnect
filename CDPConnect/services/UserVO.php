@@ -32,6 +32,7 @@ class UserVO
 	public $email;
 	
 	public $admin;
+	public $grantid;
 
 	public function __construct()
 	{
@@ -42,6 +43,7 @@ class UserVO
 		$this->facility = "Unknown";
 		$this->email = "";
 		$this->admin = 0;
+		$this->grantid = 0;
 	}
 }
 ?>

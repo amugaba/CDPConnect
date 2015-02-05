@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Form xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%"
+		 labelWidth="260">
+	<fx:Script>
+		<![CDATA[
+			import components.DropDownValidator;
+			import components.GpraPage;
+			import components.QuestionClass;
+			import components.QuestionList;
+			import components.QuestionText;
+			import components.QuestionTextRefusable;
+			import components.SkipMultipleHandler;
+			import components.SkipPattern;
+			import components.SkipPatternMultiple;
+			import components.SkipPatternRange;
+			
+			import mx.collections.ArrayList;
+			import mx.controls.HRule;
+			import mx.controls.Text;
+			import mx.core.FlexGlobals;
+			import mx.events.FlexEvent;
+			import mx.validators.NumberValidator;
+			import mx.validators.Validator;
+			
+			import spark.events.IndexChangeEvent;
+			
+			protected var global:CDPConnectFlex = FlexGlobals.topLevelApplication as CDPConnectFlex;
+			public var questions:Vector.<QuestionClass> = new Vector.<QuestionClass>();
+			protected static var ynrdm:ArrayList = new ArrayList(["Yes","No","Refused","Don't Know","Missing Data"]);
+			protected static var ynrm:ArrayList = new ArrayList(["Yes","No","Refused","Missing Data"]);
+			protected static var rdm:ArrayList = new ArrayList(["Refused","Don't Know","Missing Data"]);
+			
+			public function addQuestion(q:QuestionClass, width:int = -1):void
+			{
+				questions.push(q);
+				addElement(q);
+				if(width != -1)
+					q.inputControl.width = width;
+			}
+			
+			public function createForm():void
+			{
+			}
+			
+			public function reset():void
+			{
+				for each(var q:QuestionClass in questions)
+					q.restoreDefault();
+			}
+			
+			protected function addDivider():void
+			{
+				var h:HRule = new HRule();
+				h.height = 5;
+				h.percentWidth = 100;
+				addElement(h);
+			}
+			
+			protected function addNumberValidator(q:QuestionClass, min:Number = Number.NaN, max:Number = Number.NaN, isInt:Boolean = false, required:Boolean = true):void
+			{
+				var nv:NumberValidator = new NumberValidator();
+				nv.required = required;
+				nv.source = q.inputControl;
+				if(q is QuestionText || q is QuestionTextRefusable)
+					nv.property = "text";
+				else if(q is QuestionList)
+					nv.property = "selectedIndex";
+				if(!isNaN(min))
+					nv.minValue = min;
+				if(!isNaN(max))
+					nv.maxValue = max;
+				if(isInt)
+					nv.domain = "int";
+				q.validator = nv;
+			}
+			
+			protected function addDropDownValidator(q:QuestionClass, validAnswers:Array):void
+			{
+				var dv:DropDownValidator = new DropDownValidator();
+				dv.required = true;
+				dv.source = q.inputControl;
+				dv.property = "selectedItem";
+				dv.validAnswers = validAnswers;
+				q.validator = dv;
+			}
+			
+			protected function addRequiredValidator(q:QuestionClass):void
+			{
+				var v:Validator = new Validator();
+				v.required = true;
+				v.source = q.inputControl;
+				if(q is QuestionText || q is QuestionTextRefusable)
+					v.property = "text";
+				else if(q is QuestionList)
+					v.property = "selectedIndex";
+				q.validator = v;
+			}
+			
+			protected function addSkipDropDown(sourceQuestion:QuestionClass, skipAnswers:Array, skipQuestions:Array):void
+			{
+				var skip:SkipPattern = new SkipPattern(sourceQuestion,skipQuestions,skipAnswers,[IndexChangeEvent.CHANGE]);
+				sourceQuestion.skipPatterns.push(skip);
+			}
+			
+			protected function addSkipDropDownMultiple(handler:SkipMultipleHandler, sourceQuestion:QuestionClass, skipAnswers:Array):void
+			{
+				var skip:SkipPatternMultiple = new SkipPatternMultiple(handler,sourceQuestion,skipAnswers,[IndexChangeEvent.CHANGE]);
+				sourceQuestion.skipPatterns.push(skip);
+			}
+			protected function addSkipTextNumberMultiple(handler:SkipMultipleHandler, sourceQuestion:QuestionClass, skipAnswers:Array):void
+			{
+				var skip:SkipPatternMultiple = new SkipPatternMultiple(handler,sourceQuestion,skipAnswers,[FlexEvent.VALUE_COMMIT,FocusEvent.MOUSE_FOCUS_CHANGE]);
+				sourceQuestion.skipPatterns.push(skip);
+			}
+			protected function createSkipMultipleHandler(skipQuestions:Array):SkipMultipleHandler
+			{
+				return new SkipMultipleHandler(skipQuestions);
+			}
+			protected function addSkipTextNumber(sourceQuestion:QuestionClass, skipQuestions:Array, skipAnswers:Array):void
+			{
+				//(getQuestion(sourceQuestion) as QuestionTextNumber).addSkip(qArray,min,max,invert);
+				var skip:SkipPattern = new SkipPattern(sourceQuestion,skipQuestions,skipAnswers,[FlexEvent.VALUE_COMMIT,FocusEvent.MOUSE_FOCUS_CHANGE]);
+				sourceQuestion.skipPatterns.push(skip);
+			}
+			protected function addSkipTextRange(sourceQuestion:QuestionClass, skipQuestions:Array, min:int=0,max:int=0,invert:Boolean=false):void
+			{
+				//(getQuestion(sourceQuestion) as QuestionTextNumber).addSkip(qArray,min,max,invert);
+				var skip:SkipPattern = new SkipPatternRange(sourceQuestion,skipQuestions,min,max,invert,[FlexEvent.VALUE_COMMIT,FocusEvent.MOUSE_FOCUS_CHANGE]);
+				sourceQuestion.skipPatterns.push(skip);
+			}
+			
+			protected function createText(text:String,style:String):void
+			{
+				var t:Text = new Text();
+				t.text = text;
+				t.width = 500-10;//This needs to be changed to access the GPRAPage viewstack.width value - 10
+				t.styleName = style;
+				addElement(t);
+			}
+		]]>
+	</fx:Script>
+	<fx:Style>
+		@namespace s "library://ns.adobe.com/flex/spark";
+		@namespace mx "library://ns.adobe.com/flex/mx";
+		.h1{
+			fontWeight: bold;
+		}
+	</fx:Style>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+</mx:Form>

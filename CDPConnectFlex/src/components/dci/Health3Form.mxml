@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dci:DCIForm xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			 xmlns:s="library://ns.adobe.com/flex/spark" 
+			 xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:dci="components.dci.*" width="100%" height="100%">
+	<fx:Script>
+		<![CDATA[
+			import components.QuestionList;
+			import components.QuestionText;
+			import components.QuestionTextRefusable;
+			
+			import mx.binding.utils.BindingUtils;
+			import mx.collections.ArrayList;
+			import mx.validators.NumberValidator;
+			
+			public var qDepression:QuestionTextRefusable = new QuestionTextRefusable("Depression","Experienced serious depression","0");
+			public var qAnxiety:QuestionTextRefusable = new QuestionTextRefusable("Anxiety","Experienced serious anxiety or tension","0");
+			public var qHallucinations:QuestionTextRefusable = new QuestionTextRefusable("Hallucinations","Experienced hallucinations","0");
+			public var qBrainFunction:QuestionTextRefusable = new QuestionTextRefusable("BrainFunction","Experienced trouble understanding, concentrating, or remembering","0");
+			public var qViolentBehavior:QuestionTextRefusable = new QuestionTextRefusable("ViolentBehavior","Experienced trouble controlling violent behavior","0");
+			public var qSuicide:QuestionTextRefusable = new QuestionTextRefusable("Suicide","Attempted suicide","0");
+			public var qPsycholEmotMedication:QuestionTextRefusable = new QuestionTextRefusable("PsycholEmotMedication","Been prescribed medication for psychological/emotional problem","0");
+			public var qPsycholEmotImpact:QuestionList = new QuestionList("PsycholEmotImpact","How much have you been bothered by these psychological or emotional problems in the past 30 days?",new ArrayList(["Not at " +
+				"all","Slightly","Moderately","Considerably","Extremely","Refused","Don't Know","Missing Data"]),0);
+			
+			//Health3 Form Area
+			public override function createForm():void
+			{
+				//Questions
+				createText("In the past 30 days, not due to your use of alcohol or drugs, how many days have you:","h1");
+				addQuestion(qDepression);
+				addQuestion(qAnxiety);
+				addQuestion(qHallucinations);
+				addQuestion(qBrainFunction);
+				addQuestion(qViolentBehavior);
+				addQuestion(qSuicide);
+				addQuestion(qPsycholEmotMedication);
+				addQuestion(qPsycholEmotImpact);
+				
+				//Validators
+				addNumberValidator(qDepression,0,30,true);
+				addNumberValidator(qAnxiety,0,30,true);
+				addNumberValidator(qHallucinations,0,30,true);
+				addNumberValidator(qBrainFunction,0,30,true);
+				addNumberValidator(qViolentBehavior,0,30,true);
+				addNumberValidator(qSuicide,0,30,true);
+				addNumberValidator(qPsycholEmotMedication,0,30,true);
+				
+			}
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+</dci:DCIForm>

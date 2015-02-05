@@ -6,7 +6,7 @@
 		 xmlns:gpraservice="services.gpraservice.*"
 		 xmlns:styles="com.adobe.fiber.styles.*"
 		 xmlns:clientservice="services.clientservice.*"
-		 width="400" height="300">
+		 width="400" height="300" xmlns:dci="components.dci.*">
 	<fx:Script>
 		<![CDATA[
 			import com.adobe.serializers.utility.TypeUtility;
@@ -20,6 +20,7 @@
 			import components.SkipPattern;
 			import components.SkipPatternMultiple;
 			import components.SkipPatternRange;
+			import components.dci.DCIForm;
 			
 			import flash.globalization.DateTimeFormatter;
 			import flash.globalization.LocaleID;
@@ -59,288 +60,54 @@
 			
 			protected var questionDict:Dictionary = new Dictionary();
 			protected var dateFormatter:DateTimeFormatter = new DateTimeFormatter(LocaleID.DEFAULT);
-			[Bindable] protected var familyVeterans:ArrayList = new ArrayList();
-			protected var drugQuestions:Array = new Array();
+			
+			
 			protected var ynrdm:ArrayList = new ArrayList(["Yes","No","Refused","Don't Know","Missing Data"]);
 			protected var ynrm:ArrayList = new ArrayList(["Yes","No","Refused","Missing Data"]);
 			protected var rdm:ArrayList = new ArrayList(["Refused","Don't Know","Missing Data"]);
 			protected var gpraConstructed:Boolean = false;
 			protected var global:CDPConnectFlex = FlexGlobals.topLevelApplication as CDPConnectFlex;
 			protected var ethnicCount:int = 0;
+			protected var dciForms:Array;
 			
 			public function creationCompleteHandler():void
 			{
 			}
 			
-			protected function addQuestion(q:QuestionClass):void
-			{
-				questionDict[q.codeName] = q;
-			}
-			
-			protected function getQuestion(name:String):QuestionClass
-			{
-				return questionDict[name] as QuestionClass;
-			}
-			
 			protected function resetGPRA():void
 			{
-				for each(var q:QuestionClass in questionDict)
+				for each(var form:DCIForm in dciForms)
 				{
-					q.restoreDefault();
+					form.reset();
 				}
-				familyVeterans = new ArrayList();
-				updateFamilyValidator();
-				hispanicHandler("");
-				followupValidatorHandler("");
 			}
 			
 			public function initializeGPRA():void
 			{
 				if(!gpraConstructed)
 				{
-				gpraConstructed = true;
-				dateFormatter.setDateTimePattern("MM/dd/yyyy");
-				addQuestion(new QuestionText("ClientID","Client ID","",false));
-				addQuestion(new QuestionText("DarmhaID","DARMHA ID",""));
-				addQuestion(new QuestionList("ClientType","Client Type",new ArrayList(["Treatment Client","Client in Recovery"]),0,false));
-				addQuestion(new QuestionList("InterviewTypeCode","Interview Type",new ArrayList(["Intake","6 Month Followup","12 Month Followup","3 Month Followup","Discharge"]),0,false));
-				addQuestion(new QuestionList("ConductedInterview","Did you conduct a followup/discharge interview?",new ArrayList(["Yes","No"]),0));
-				addQuestion(new QuestionText("InterviewDate","Interview Date",""));
-				addQuestion(new QuestionList("CooccurringScreen","Was the client screened by your program for co-occurring mental health and substance use disorders?",new ArrayList(["Yes","No","Missing Data"]),0));
-				addQuestion(new QuestionList("CooccurringScreenStatus","Did the client screen positive for co-occurring mental health and substance use disorders?",new ArrayList(["Yes","No","Missing Data"]),1));
-				
-				addQuestion(new QuestionList("GenderCode","What is your gender?",new ArrayList(["Male","Female","Transgender","Other","Refused","Missing Data"]),0));
-				addQuestion(new QuestionText("GenderOtherSpecify","Other, specify",""));
-				addQuestion(new QuestionList("HispanicLatino","Are you Hispanic or Latino?",ynrm,1));
-				addQuestion(new QuestionList("EthnicCentralAmerican","Central American",ynrm,1));
-				addQuestion(new QuestionList("EthnicCuban","Cuban",ynrm,1));
-				addQuestion(new QuestionList("EthnicDominican","Dominican",ynrm,1));
-				addQuestion(new QuestionList("EthnicMexican","Mexican",ynrm,1));
-				addQuestion(new QuestionList("EthnicPuertoRican","Puerto Rican",ynrm,1));
-				addQuestion(new QuestionList("EthnicSouthAmerican","South American",ynrm,1));
-				addQuestion(new QuestionList("EthnicOther","Other",ynrm,1));
-				addQuestion(new QuestionText("EthnicOtherSpec","Other, specify",""));
-				addQuestion(new QuestionList("RaceBlack","Black or African American",ynrm,1));
-				addQuestion(new QuestionList("RaceAsian","Asian",ynrm,1));
-				addQuestion(new QuestionList("RaceAmericanIndian","American Indian",ynrm,1));
-				addQuestion(new QuestionList("RaceNativeHawaiian","Native Hawaiian or other Pacific Islander",ynrm,1));
-				addQuestion(new QuestionList("RaceAlaskaNative","Alaska Native",ynrm,1));
-				addQuestion(new QuestionList("RaceWhite","White",ynrm,1));
-				addQuestion(new QuestionText("DateOfBirth","Date of Birth",""));
-				
-				addQuestion(new QuestionList("MilitaryServed","Have you ever served in the Armed Forces, in the Reserves, or in the National Guard? " +
-					"[IF SERVED] What area, the Armed Forces, Reserves, or National Guard did you most recently serve?",new ArrayList(["No","Yes, in the Armed Forces",
-						"Yes, in the Reserves","Yes, in the National Guard","Refused","Don't Know","Missing Data"]),0));
-				addQuestion(new QuestionList("ActiveDuty","Are you currently on active duty in the Armed Forces, in the Reserves, or in the National Guard? [IF ACTIVE] " +
-					"What area, the Armed Forces, Reserves, or National Guard?",new ArrayList(["No, separated or retired from the Armed Forces, Reserves, or National Guard",
-						"Yes, in the Armed Forces","Yes, in the Reserves","Yes, in the National Guard","Refused","Don't Know","Missing Data"]),0));
-				addQuestion(new QuestionList("NeverDeployed","Never Deployed",ynrdm,1));
-				addQuestion(new QuestionList("IraqAfghanistan","Iraq or Afghanistan",new ArrayList(["Yes","No"]),1));
-				addQuestion(new QuestionList("PersianGulf","Persian Gulf",new ArrayList(["Yes","No"]),1));
-				addQuestion(new QuestionList("VietnamSoutheastAsia","Vietnam/Southeast Asia",new ArrayList(["Yes","No"]),1));
-				addQuestion(new QuestionList("Korea","Korea",new ArrayList(["Yes","No"]),1));
-				addQuestion(new QuestionList("WWII","WWII",new ArrayList(["Yes","No"]),1));
-				addQuestion(new QuestionList("DeployedCombatZone","Combat zone not listed above",new ArrayList(["Yes","No"]),1));
-				
-				addQuestion(new QuestionList("FamilyActiveDuty","Is anyone in your family or someone close to you on active duty in the Armed Forces, in the Reserves, or in the National Guard, or " +
-					"separated or retired from the Armed Forces, Reserves, or the National Guard?",new ArrayList(["No","Yes, only one","Yes, more than one","Refused","Don't Know","Missing Data"]),0));
-				addQuestion(new QuestionList("ServiceMemRelationship","What is the relationship of that person (Service Member) to you?",new ArrayList(["Mother","Father","Brother","Sister",
-					"Spouse","Partner","Child","Other","Missing Data"]),0));
-				addQuestion(new QuestionText("ServiceMemExpOther","Other, specify",""));
-				addQuestion(new QuestionList("ServiceMemExpDeployed","Deployed in support of combat operations (e.g., Iraq or Afghanistan)?",ynrdm,1));
-				addQuestion(new QuestionList("ServiceMemExpInjured","Was physically injured during combat operations?",ynrdm,1));
-				addQuestion(new QuestionList("ServiceMemExpCombatStress","Developed combat stress symptoms/ difficulties adjusting following deployment, including PTSD, depression, or " +
-					"suicidal thoughts?",ynrdm,1));
-				addQuestion(new QuestionList("ServiceMemExpDeceased","Died or was killed?",ynrdm,1));
-				
-				addQuestion(new QuestionTextRefusable("DAUseAlcoholDays","Any alcohol","0"));
-				addQuestion(new QuestionTextRefusable("DAUseAlcoholIntox5Days","Alcohol to intoxication (5+ drinks in one sitting)","0"));
-				addQuestion(new QuestionTextRefusable("DAUseAlcoholIntox4Days","Alcohol to intoxication (4 or fewer drinks in one sitting and felt high)","0"));
-				addQuestion(new QuestionTextRefusable("DAUseIllegDrugsDays","Illegal Drugs","0"));
-				addQuestion(new QuestionTextRefusable("DAUseBothDays","Both alcohol and drugs (on the same day)","0"));
-				
-				var route:ArrayList = new ArrayList(["Oral","Nasal","Smoking","Non-IV Injection","IV","Refused","Don't Know","Missing Data"]);
-				addQuestion(new QuestionTextRefusable("CocaineCrackDays","Cocaine/crack","0"));
-				addQuestion(new QuestionList("CocaineCrackRoute","",route,0));
-				addQuestion(new QuestionTextRefusable("MarijuanaHashDays","Marijuana/Hashish","0"));
-				addQuestion(new QuestionList("MarijuanaHashRoute","",route,0));
-				addQuestion(new QuestionTextRefusable("OpiatesHeroinDays","Heroin","0"));
-				addQuestion(new QuestionList("OpiatesHeroinRoute","",route,0));
-				addQuestion(new QuestionTextRefusable("OpiatesMorphineDays","Morphine","0"));
-				addQuestion(new QuestionList("OpiatesMorphineRoute","",route,0));
-				addQuestion(new QuestionTextRefusable("OpiatesDiluadidDays","Diluadid","0"));
-				addQuestion(new QuestionList("OpiatesDiluadidRoute","",route,0));
-				addQuestion(new QuestionTextRefusable("OpiatesDemerolDays","Demerol","0"));
-				addQuestion(new QuestionList("OpiatesDemerolRoute","",route,0));
-				addQuestion(new QuestionTextRefusable("OpiatesPercocetDays","Percocet","0"));
-				addQuestion(new QuestionList("OpiatesPercocetRoute","",route,0));
-				addQuestion(new QuestionTextRefusable("OpiatesDarvonDays","Darvon","0"));
-				addQuestion(new QuestionList("OpiatesDarvonRoute","",route,0));
-				addQuestion(new QuestionTextRefusable("OpiatesCodeineDays","Codeine","0"));
-				addQuestion(new QuestionList("OpiatesCodeineRoute","",route,0));
-				addQuestion(new QuestionTextRefusable("OpiatesTylenolDays","Tylenol 2,3,4","0"));
-				addQuestion(new QuestionList("OpiatesTylenolRoute","",route,0));
-				addQuestion(new QuestionTextRefusable("OpiatesOxycoDays","Oxycontin/Oxycodone","0"));
-				addQuestion(new QuestionList("OpiatesOxycoRoute","",route,0));
-				
-				addQuestion(new QuestionTextRefusable("NonPresMethadoneDays","Non-prescription methadone","0"));
-				addQuestion(new QuestionList("NonPresMethadoneRoute","",route,0));
-				addQuestion(new QuestionTextRefusable("HallucPsychDays","Hallucinogens/psychedelics, PCP, MDMA, LSD, Mushrooms, or Mescaline","0"));
-				addQuestion(new QuestionList("HallucPsychRoute","",route,0));
-				addQuestion(new QuestionTextRefusable("MethamDays","Methamphetamine or other amphetamines","0"));
-				addQuestion(new QuestionList("MethamRoute","",route,0));
-				addQuestion(new QuestionTextRefusable("BenzodiazepinesDays","Benzodiazepines: Diazepam, Alprazolam, Triazolam, and Estasolam","0"));
-				addQuestion(new QuestionList("BenzodiazepinesRoute","",route,0));
-				addQuestion(new QuestionTextRefusable("BarbituatesDays","Barbiturates: Mephobarbital and pentobarbital sodium","0"));
-				addQuestion(new QuestionList("BarbituatesRoute","",route,0));
-				addQuestion(new QuestionTextRefusable("NonPrescGhbDays","Non-prescription GHB","0"));
-				addQuestion(new QuestionList("NonPrescGhbRoute","",route,0));
-				addQuestion(new QuestionTextRefusable("KetamineDays","Ketamine","0"));
-				addQuestion(new QuestionList("KetamineRoute","",route,0));
-				addQuestion(new QuestionTextRefusable("OtherTranquilizersDays","Other tranquilizers, downers, sedatives, or hypnotics","0"));
-				addQuestion(new QuestionList("OtherTranquilizersRoute","",route,0));
-				addQuestion(new QuestionTextRefusable("InhalantsDays","Inhalants","0"));
-				addQuestion(new QuestionList("InhalantsRoute","",route,0));
-				addQuestion(new QuestionTextRefusable("OtherIllegalDrugsDays","Other illegal drugs","0"));
-				addQuestion(new QuestionList("OtherIllegalDrugsRoute","",route,0));
-				addQuestion(new QuestionText("OtherIllegalDrugsSpec","Other, specify",""));
-				addQuestion(new QuestionList("InjectedDrugs","In the past 30 days have you injected drugs?",ynrdm,1));
-				addQuestion(new QuestionList("ParaphenaliaUsedOthers","In the past 30 days, how often did you use a syringe/needle, cooker, cotton or water that someone else used?",
-					new ArrayList(["Always","More than half the time","Less than half the time","Never","Refused","Don't Know","Missing Data"]),3));
-				
-				addQuestion(new QuestionList("LivingWhere","Where have you been living most of the time?",new ArrayList(["Shelter","Street/Outdoors","Institution","Housed","Refused","Don't Know","Missing Data"]),0));
-				addQuestion(new QuestionList("LivingHoused","If housed, specify:",new ArrayList(["Own/Rent apartment, room, or house","Someone else's apartment, room, or house","Halfway house",
-					"Residential Treatment","Other housed","Dormitory/College Residence","Refused","Don't Know","Missing Data"]),0));
-				addQuestion(new QuestionText("LivingHousedSpec","Other housed, specify:",""));
-				addQuestion(new QuestionList("ImpactStress","How stressful have things been for you because of your use of alcohol or other drugs?",new ArrayList(["Not at all",
-					"Somewhat","Considerably","Extremely","Refused","Don't Know","Missing Data"]),0));
-				addQuestion(new QuestionList("ImpactActivity","Has your use of alcohol or other drugs caused you to reduce or give up important activities?",new ArrayList(["Not at all",
-					"Somewhat","Considerably","Extremely","Refused","Don't Know","Missing Data"]),0));
-				addQuestion(new QuestionList("ImpactEmotional","Has your use of alcohol and other drugs caused you to have emotional problems?",new ArrayList(["Not at all","Somewhat",
-					"Considerably","Extremely","Refused","Don't Know","Missing Data"]),0));
-				addQuestion(new QuestionList("Pregnant","Are you currently pregnant?",ynrdm,1));
-				addQuestion(new QuestionList("Children","Do you have children?",ynrdm,1));
-				addQuestion(new QuestionTextRefusable("ChildrenNr","How many children do you have?","1"));
-				addQuestion(new QuestionList("ChildrenCustody","Are any of your children living with someone else due to a child protection order?",ynrdm,1));
-				addQuestion(new QuestionTextRefusable("ChildrenCustodyNr","How many of your children are living with someone else due to a child protection court order?","1"));
-				addQuestion(new QuestionTextRefusable("ChildrenCustodyLost","For how many of your children have you parental lost rights?","0"));
-				
-				addQuestion(new QuestionList("TrainingProgram","Are you currently enrolled in school or a job training program? [IF ENROLLED], Is that full time or part time?",
-					new ArrayList(["Not Enrolled","Enrolled, Full Time","Enrolled, Part Time","Other","Refused","Don't Know","Missing Data"]),0));
-				addQuestion(new QuestionText("TrainingProgramSpec","Other, specify:",""));
-				addQuestion(new QuestionList("EducationYears","What is the highest level of education you have finished, whether or not you received a degree?",new ArrayList(["Never attended",
-					"1st Grade","2nd Grade","3rd Grade","4th Grade","5th Grade","6th Grade","7th Grade","8th Grade","9th Grade","10th Grade","11th Grade","12th Grade/High School Diploma/Equivalent",
-					"College or University/ 1st year completed","College or University/ 2nd year completed /Associates Degree (AA/AS)","College or University/ 3rd year completed","Bachelor's degree " +
-					"(BA, BS) or higher","Voc/Tech program after high school but no Voc/Tech diploma","Voc/Tech diploma after high school","Refused","Don't Know","Missing Data"]),0));
-				addQuestion(new QuestionList("EmployStatus","Are you currently employed?",new ArrayList(["Employed Full Time (35+ hours per week, or would have been)","Employed Part Time","Unemployed," +
-					" looking for work","Unemployed, disabled","Unemployed, volunteer work","Unemployed, retired","Unemployed, not looking for work","Other","Refused","Don't Know","Missing Data"]),0));
-				addQuestion(new QuestionText("EmployStatusSpec","Other, specify:",""));
-				addQuestion(new QuestionTextRefusable("IncomeWages","Wages","0"));
-				addQuestion(new QuestionTextRefusable("IncomePubAssist","Public assistance","0"));
-				addQuestion(new QuestionTextRefusable("IncomeRetirement","Retirement","0"));
-				addQuestion(new QuestionTextRefusable("IncomeDisability","Disability","0"));
-				addQuestion(new QuestionTextRefusable("IncomeNonLegal","Non-legal income","0"));
-				addQuestion(new QuestionTextRefusable("IncomeFamFriends","Family and/or friends","0"));
-				addQuestion(new QuestionTextRefusable("IncomeOther","Other","0"));
-				addQuestion(new QuestionText("IncomeOtherSpec","Other, specify",""));
-				
-				addQuestion(new QuestionTextRefusable("ArrestedDays","In the past 30 days, how many times have you been arrested?","0"));
-				addQuestion(new QuestionTextRefusable("ArrestedDrugDays","In the past 30 days, how many times have you been arrested for drug-related offenses?","0"));
-				addQuestion(new QuestionTextRefusable("ArrestedConfineDays","In the past 30 days, how many nights have you spent in jail/prison?","0"));
-				addQuestion(new QuestionTextRefusable("NrCrimes","In the past 30 days, how many times have you committed a crime?","0"));
-				addQuestion(new QuestionList("AwaitTrial","Are you currently awaiting charges, trial, or sentencing?",ynrdm,1));
-				addQuestion(new QuestionList("ParoleProbation","Are you currently on parole or probation?",ynrdm,1));
-				
-				addQuestion(new QuestionList("HealthStatus","How would you rate your overall health right now?",new ArrayList(["Excellent","Very Good","Fair","Poor","Refused","Don't Know","Missing Data"]),0));
-				addQuestion(new QuestionList("InpatientPhysical","Physical complaint",ynrdm,1));
-				addQuestion(new QuestionTextRefusable("InpatientPhysicalNights","","0"));
-				addQuestion(new QuestionList("InpatientMental","Mental or emotional difficulties",ynrdm,1));
-				addQuestion(new QuestionTextRefusable("InpatientMentalNights","","0"));
-				addQuestion(new QuestionList("InpatientAlcoholSA","Alcohol or substance abuse",ynrdm,1));
-				addQuestion(new QuestionTextRefusable("InpatientAlcoholSANights","","0"));
-				addQuestion(new QuestionList("OutpatientPhysical","Physical complaint",ynrdm,1));
-				addQuestion(new QuestionTextRefusable("OutpatientPhysicalTimes","","0"));
-				addQuestion(new QuestionList("OutpatientMental","Mental or emotional difficulties",ynrdm,1));
-				addQuestion(new QuestionTextRefusable("OutpatientMentalTimes","","0"));
-				addQuestion(new QuestionList("OutpatientAlcoholSA","Alcohol or substance abuse",ynrdm,1));
-				addQuestion(new QuestionTextRefusable("OutpatientAlcoholSATimes","","0"));
-				addQuestion(new QuestionList("ERPhysical","Physical complaint",ynrdm,1));
-				addQuestion(new QuestionTextRefusable("ERPhysicalTimes","","0"));
-				addQuestion(new QuestionList("ERMental","Mental or emotional difficulties",ynrdm,1));
-				addQuestion(new QuestionTextRefusable("ERMentalTimes","","0"));
-				addQuestion(new QuestionList("ERAlcoholSA","Alcohol or substance abuse",ynrdm,1));
-				addQuestion(new QuestionTextRefusable("ERAlcoholSATimes","","0"));
-				
-				addQuestion(new QuestionList("SexActivity","During the past 30 days, did you engage in sexual activity?",new ArrayList(["Yes","No","Not permitted to ask","Refused","Don't Know","Missing Data"]),1));
-				addQuestion(new QuestionTextRefusable("SexContacts","Sexual contacts (vaginal, oral, or anal) did you have?","0"));
-				addQuestion(new QuestionTextRefusable("SexUnprot","Unprotected sexual contacts did you have?","0"));
-				addQuestion(new QuestionTextRefusable("SexUnprotHIVAids","HIV positive or has AIDS","0"));
-				addQuestion(new QuestionTextRefusable("SexUnprotInjDrugUser","An injection drug user","0"));
-				addQuestion(new QuestionTextRefusable("SexUnprotHigh","High on some substance","0"));
-				addQuestion(new QuestionList("fHIVTest","Have you ever been tested for HIV?",ynrdm,1));
-				addQuestion(new QuestionList("fHIVTestResult","Do you know the results of your HIV testing?",ynrm,1));
-				
-				addQuestion(new QuestionTextRefusable("Depression","Experienced serious depression","0"));
-				addQuestion(new QuestionTextRefusable("Anxiety","Experienced serious anxiety or tension","0"));
-				addQuestion(new QuestionTextRefusable("Hallucinations","Experienced hallucinations","0"));
-				addQuestion(new QuestionTextRefusable("BrainFunction","Experienced trouble understanding, concentrating, or remembering","0"));
-				addQuestion(new QuestionTextRefusable("ViolentBehavior","Experienced trouble controlling violent behavior","0"));
-				addQuestion(new QuestionTextRefusable("Suicide","Attempted suicide","0"));
-				addQuestion(new QuestionTextRefusable("PsycholEmotMedication","Been prescribed medication for psychological/emotional problem","0"));
-				addQuestion(new QuestionList("PsycholEmotImpact","How much have you been bothered by these psychological or emotional problems in the past 30 days?",new ArrayList(["Not at " +
-					"all","Slightly","Moderately","Considerably","Extremely","Refused","Don't Know","Missing Data"]),0));
-				addQuestion(new QuestionList("AnyViolence","Have you ever experienced violence or trauma in any setting (including community or school violence; domestic violence; physical, psychological, " +
-					"or sexual maltreatment/assault within or outside of the family; natural disaster; terrorism; neglect; or traumatic grief?)",ynrdm,1));
-				addQuestion(new QuestionList("Nightmares","Have had nightmares about it or thought about it when you did not want to?",ynrdm,1));
-				addQuestion(new QuestionList("TriedHard","Tried hard not to think about it or went out of your way to avoid situations that remind you of it?",ynrdm,1));
-				addQuestion(new QuestionList("ConstantGuard","Were constantly on guard, watchful, or easily startled?",ynrdm,1));
-				addQuestion(new QuestionList("NumbAndDetach","Felt numb and detached from others, activities, or your surroundings?",ynrdm,1));
-				addQuestion(new QuestionList("PhysicallyHurt","In the past 30 days, how often have you been hit, kicked, slapped, or otherwise physically hurt?",new ArrayList(["Never","A few times",
-					"More than a few times","Refused","Don't Know","Missing Data"]),0));
-				
-				addQuestion(new QuestionList("AttendVoluntary","Voluntary self-help groups for recovery that were not affiliated with a religious or faith-based organization",ynrdm,1));
-				addQuestion(new QuestionTextRefusable("AttendVoluntaryTimes","","0"));
-				addQuestion(new QuestionList("AttendReligious","Religious/faith affiliated recovery self-help groups",ynrdm,1));
-				addQuestion(new QuestionTextRefusable("AttendReligiousTimes","","0"));
-				addQuestion(new QuestionList("AttendOtherOrg","Meetings of organizations that support recovery other than the organizations described above",ynrdm,1));
-				addQuestion(new QuestionTextRefusable("AttendOtherOrgTimes","","0"));
-				addQuestion(new QuestionList("InteractFamilyFriends","In the past 30 days, did you have interaction with family and/or friends that are supportive of your recovery?",ynrdm,1));
-				addQuestion(new QuestionList("WhomInTrouble","To whom do you turn to when you are having trouble?",new ArrayList(["No One","Clergy Member","Family Member","Friends","Other","Refused","Don't Know","Missing Data"]),0));
-				addQuestion(new QuestionText("WhomInTroubleSpec","Other, specify:",""));
-				
-				addQuestion(new QuestionList("FLWPStatus","What is the follow-up status of the client?",new ArrayList(["Deceased at time of due date","Completed interview within specified window","Completed interview outside specified window","Located, but refused, unspecified",
-					"Located, but unable to gain institutional access","Located, but otherwise unable to gain access","Located, but withdrawn from project","Unable to locate, moved","Unable to locate, other"]),1));
-				addQuestion(new QuestionText("FLWPStatusSpec","Other, specify:",""));
-				addQuestion(new QuestionList("ReceivingServices","Is the client still receiving services from your program?",new ArrayList(["Yes","No"]),1));
-				
-				addQuestion(new QuestionText("DischargeDate","What is the date of discharge?",""));
-				addQuestion(new QuestionList("DischargeStatusCompl","What is the client’s discharge status?",new ArrayList(["Completion/Graduate","Termination"]),0));
-				addQuestion(new QuestionList("DischargeStatusTermReason","If the client was terminated, what was the reason for termination?",new ArrayList(["Left on own against staff advice with satisfactory progress","Left on own against staff advice without satisfactory progress",
-					"Involuntarily discharged due to nonparticipation","Involuntarily discharged due to violation of rules","Referred to another program or other services with satisfactory progress","Referred to another program or other services with unsatisfactory progress",
-					"Incarcerated due to offense committed while in treatment/recovery with satisfactory progress","Incarcerated due to offense committed while in treatment/recovery with unsatisfactory progress","Incarcerated due to old warrant or charged from before entering treatment/recovery with satisfactory progress",
-					"Incarcerated due to old warrant or charged from before entering treatment/recovery with unsatisfactory progress","Transferred to another facility for health reasons","Death","Other"]),0));
-				addQuestion(new QuestionText("OtherDischargeStatTermRsnSpec","Other, specify:",""));
-				addQuestion(new QuestionList("jHIVTest","Did the program test this client for HIV?",new ArrayList(["Yes","No"]),1));
-				addQuestion(new QuestionList("jHIVTestResult","Did the program refer this client for testing?",new ArrayList(["Yes","No","Missing Data"]),1));
-				//addQuestion(new QuestionList("","",new ArrayList(["Yes","No","Refused","Don't Know"]),1));
-				//addQuestion(new QuestionText("","",""));
-				
-				createRecordForm();
-				createDemographicsForm();
-				createMilitary1Form();
-				createMilitary2Form();
-				createDrug1Form();
-				createDrug2Form();
-				createLivingForm();
-				createEmploymentForm();
-				createCrimeForm();
-				createHealth1Form();
-				createHealth2Form();
-				createHealth3Form();
-				createHealth4Form();
-				createSocialForm();
-				createFollowupForm();
-				createDischargeForm();
+					gpraConstructed = true;
+					dateFormatter.setDateTimePattern("MM/dd/yyyy");
+					
+					recordForm.createForm();
+					sbirtForm.createForm();
+					demoForm.createForm();
+					demo2Form.createForm();
+					military1Form.createForm();
+					military2Form.createForm();
+					drugForm.createForm();
+					livingForm.createForm();
+					employmentForm.createForm();
+					crimeForm.createForm();
+					health1Form.createForm();
+					health2Form.createForm();
+					health3Form.createForm();
+					health4Form.createForm();
+					socialForm.createForm();
+					followupForm.createForm();
+					dischargeForm.createForm();
+					
+					dciForms = new Array([recordForm,demoForm,military1Form,military2Form,drugForm,livingForm,employmentForm,crimeForm,health1Form,health2Form,health3Form,health4Form,socialForm,followupForm,dischargeForm]);
 				}
 				else
 				{
@@ -378,9 +145,9 @@
 						viewStack.addChildAt(saveTab,viewStack.numChildren);
 				}*/
 				
-				getQuestion("ClientID").answer = String(global.activeClient.autoid);
-				(getQuestion("InterviewTypeCode") as QuestionList).input.selectedIndex = global.activeGPRA.type-1;
-				getQuestion("InterviewDate").answer = dateFormatter.format(new Date());
+				recordForm.qClientID.answer = String(global.activeClient.autoid);
+				recordForm.qInterviewTypeCode.input.selectedIndex = global.activeGPRA.type-1;
+				recordForm.qInterviewDate.answer = dateFormatter.format(new Date());
 				//validateGPRA();
 				viewStack.selectedChild = recordTab;
 			}
@@ -395,7 +162,7 @@
 						viewStack.addChildAt(military1Tab,viewStack.getChildIndex(demoTab)+1);
 					if(!viewStack.contains(military2Tab))
 						viewStack.addChildAt(military2Tab,viewStack.getChildIndex(military1Tab)+1);
-					var dv:DateAgeValidator = getQuestion("InterviewDate").validator as DateAgeValidator;
+					var dv:DateAgeValidator = recordForm.qInterviewDate.validator as DateAgeValidator;
 					dv.max = 365;
 				}
 				else
@@ -407,10 +174,10 @@
 					if(viewStack.contains(military2Tab))
 						viewStack.removeChild(military2Tab);
 				}
-				getQuestion("CooccurringScreen").visible = enabled;
-				getQuestion("CooccurringScreenStatus").visible = enabled;
-				getQuestion("ConductedInterview").enabled = !enabled;
-				getQuestion("DateOfBirth").validator.enabled = enabled;
+				recordForm.qCooccurringScreen.visible = enabled;
+				recordForm.qCooccurringScreenStatus.visible = enabled;
+				recordForm.qConductedInterview.enabled = !enabled;
+				demoForm.qDateOfBirth.validator.enabled = enabled;
 			}
 			
 			protected function enableFollowup(enabled:Boolean):void
@@ -420,8 +187,8 @@
 					if(!viewStack.contains(followupTab))
 						viewStack.addChildAt(followupTab,viewStack.getChildIndex(socialTab)+1);
 					if(global.activeClient.intake.data.source["GenderCode"] != 1)
-						getQuestion("Pregnant").enable();
-					var dv:DateAgeValidator = getQuestion("InterviewDate").validator as DateAgeValidator;
+						livingForm.qPregnant.enable();
+					var dv:DateAgeValidator = recordForm.qInterviewDate.validator as DateAgeValidator;
 					dv.max = (new Date().time - DateField.stringToDate(global.activeClient.intake.date,"MM/DD/YYYY").time) / 1000 / 60 / 60 / 24;
 				}
 				else
@@ -438,8 +205,8 @@
 					if(!viewStack.contains(dischargeTab))
 						viewStack.addChildAt(dischargeTab,viewStack.getChildIndex(socialTab)+1);
 					if(global.activeClient.intake.data.source["GenderCode"] != 1)
-						getQuestion("Pregnant").enable();
-					var dv:DateAgeValidator = getQuestion("InterviewDate").validator as DateAgeValidator;
+						livingForm.qPregnant.enable();
+					var dv:DateAgeValidator = recordForm.qInterviewDate.validator as DateAgeValidator;
 					dv.max = 1 + (new Date().time - DateField.stringToDate(global.activeClient.intake.date,"MM/DD/YYYY").time) / 1000 / 60 / 60 / 24;
 				}
 				else
@@ -447,747 +214,9 @@
 					if(viewStack.contains(dischargeTab))
 						viewStack.removeChild(dischargeTab);
 				}
-				getQuestion("DischargeDate").validator.enabled = enabled;
+				dischargeForm.qDischargeDate.validator.enabled = enabled;
 			}
 			
-			//Record Form Area
-			protected function createRecordForm():void
-			{
-				//Questions
-				recordForm.addElement(getQuestion("ClientID"));
-				recordForm.addElement(getQuestion("DarmhaID"));
-				recordForm.addElement(getQuestion("ClientType"));
-				getQuestion("ClientType").inputControl.width = 150;
-				recordForm.addElement(getQuestion("InterviewTypeCode"));
-				getQuestion("InterviewTypeCode").inputControl.width = 150;
-				recordForm.addElement(getQuestion("ConductedInterview"));				
-				recordForm.addElement(getQuestion("InterviewDate"));
-				recordForm.addElement(getQuestion("CooccurringScreen"));
-				recordForm.addElement(getQuestion("CooccurringScreenStatus"));
-				
-				//Validators				
-				var dv1:DateAgeValidator = new DateAgeValidator();
-				dv1.required = true;
-				dv1.source = getQuestion("InterviewDate").inputControl;
-				dv1.property = "text";
-				dv1.minType = DateAgeValidator.DAY;
-				dv1.min = 0;
-				dv1.maxType = DateAgeValidator.DAY;
-				dv1.max = 365;
-				getQuestion("InterviewDate").validator = dv1;
-				
-				//Control Logic
-				//addSkipDropDown("InterviewTypeCode",["Intake"],["ConductedInterview"]);
-				addSkipDropDown("CooccurringScreen",["No","Missing Data"],["CooccurringScreenStatus"]);
-			}
-			
-			//Demographics Form Area
-			protected function createDemographicsForm():void
-			{
-				//Questions
-				demoForm.addElement(getQuestion("GenderCode"));
-				demoForm.addElement(getQuestion("GenderOtherSpecify"));
-				demoForm.addElement(getQuestion("HispanicLatino"));
-				demoForm.addElement(createText("What ethnic group do you consider yourself?","h1"));
-				demoForm.addElement(getQuestion("EthnicCentralAmerican"));
-				demoForm.addElement(getQuestion("EthnicCuban"));
-				demoForm.addElement(getQuestion("EthnicDominican"));
-				demoForm.addElement(getQuestion("EthnicMexican"));
-				demoForm.addElement(getQuestion("EthnicPuertoRican"));
-				demoForm.addElement(getQuestion("EthnicSouthAmerican"));
-				demoForm.addElement(getQuestion("EthnicOther"));
-				demoForm.addElement(getQuestion("EthnicOtherSpec"));
-				demoForm.addElement(createText("What is your race?","h1"));
-				demoForm.addElement(getQuestion("RaceBlack"));
-				demoForm.addElement(getQuestion("RaceAsian"));
-				demoForm.addElement(getQuestion("RaceAmericanIndian"));
-				demoForm.addElement(getQuestion("RaceNativeHawaiian"));
-				demoForm.addElement(getQuestion("RaceAlaskaNative"));
-				demoForm.addElement(getQuestion("RaceWhite"));
-				demoForm.addElement(getQuestion("DateOfBirth"));
-				
-				//Validators
-				var dv1:DateAgeValidator = new DateAgeValidator();
-				dv1.required = true;
-				dv1.source = getQuestion("DateOfBirth").inputControl;
-				dv1.property = "text";
-				dv1.minType = DateAgeValidator.YEAR;
-				dv1.min = 3;
-				dv1.maxType = DateAgeValidator.YEAR;
-				dv1.max = 100;
-				getQuestion("DateOfBirth").validator = dv1;
-				
-				addDropDownValidator("HispanicLatino",["No","Refused","Missing Data"]);
-				addRequiredValidator("EthnicOtherSpec");
-				addRequiredValidator("GenderOtherSpecify");
-
-				BindingUtils.bindSetter(hispanicHandler, getQuestion("EthnicCentralAmerican").inputControl, "selectedIndex");
-				BindingUtils.bindSetter(hispanicHandler, getQuestion("EthnicCuban").inputControl, "selectedIndex");
-				BindingUtils.bindSetter(hispanicHandler, getQuestion("EthnicDominican").inputControl, "selectedIndex");
-				BindingUtils.bindSetter(hispanicHandler, getQuestion("EthnicMexican").inputControl, "selectedIndex");
-				BindingUtils.bindSetter(hispanicHandler, getQuestion("EthnicPuertoRican").inputControl, "selectedIndex");
-				BindingUtils.bindSetter(hispanicHandler, getQuestion("EthnicSouthAmerican").inputControl, "selectedIndex");
-				BindingUtils.bindSetter(hispanicHandler, getQuestion("EthnicOther").inputControl, "selectedIndex");
-				
-				//Control Logic
-				addSkipDropDown("GenderCode",["Male","Female","Transgender","Refused","Missing Data"],["GenderOtherSpecify"]);
-				addSkipDropDown("HispanicLatino",["No","Refused","Missing Data"],["EthnicCentralAmerican","EthnicCuban","EthnicDominican","EthnicMexican","EthnicPuertoRican","EthnicSouthAmerican","EthnicOther"]);
-				(getQuestion("HispanicLatino").skipPatterns[0] as SkipPattern).skipWhenInvalid = true;
-				addSkipDropDown("EthnicOther",["No","Refused","Missing Data"],["EthnicOtherSpec"]);
-				addSkipDropDown("GenderCode",["Male"],["Pregnant"]);
-			}
-			protected function hispanicHandler(val:String):void
-			{
-				var dv:DropDownValidator = getQuestion("HispanicLatino").validator as DropDownValidator;
-				if(getQuestion("EthnicCentralAmerican").answer == "Yes" || getQuestion("EthnicCuban").answer == "Yes" || getQuestion("EthnicDominican").answer == "Yes" || getQuestion("EthnicMexican").answer == "Yes" || 
-					getQuestion("EthnicPuertoRican").answer == "Yes" || getQuestion("EthnicSouthAmerican").answer == "Yes" || getQuestion("EthnicOther").answer == "Yes")
-				{
-					dv.validAnswers = ["Yes"];
-				}
-				else
-				{
-					dv.validAnswers = ["No","Refused","Missing Data"]
-				}
-				dv.validate();
-			}
-			
-			//Military1 Form Area
-			protected function createMilitary1Form():void
-			{
-				//Questions
-				military1Form.addElement(getQuestion("MilitaryServed"));
-				getQuestion("MilitaryServed").inputControl.width = 175;
-				military1Form.addElement(getQuestion("ActiveDuty"));
-				getQuestion("ActiveDuty").inputControl.width = 175;
-				var i:FormItem = new FormItem();
-				i.label = "Have you ever been deployed to a combat zone? Check all that apply.";
-				military1Form.addElement(i);
-				military1Form.addElement(getQuestion("NeverDeployed"));
-				military1Form.addElement(getQuestion("IraqAfghanistan"));
-				military1Form.addElement(getQuestion("PersianGulf"));
-				military1Form.addElement(getQuestion("VietnamSoutheastAsia"));
-				military1Form.addElement(getQuestion("Korea"));
-				military1Form.addElement(getQuestion("WWII"));
-				
-				//Validators
-				
-				//Control Logic
-				addSkipDropDown("MilitaryServed",["No","Refused","Don't Know","Missing Data"],["ActiveDuty","NeverDeployed"]);
-				//addSkipDropDown("NeverDeployed",["Yes","Refused","Don't Know","Missing Data"],["IraqAfghanistan","PersianGulf","VietnamSoutheastAsia","Korea","WWII"]);
-				var handler:SkipMultipleHandler = createSkipMultipleHandler(["IraqAfghanistan","PersianGulf","VietnamSoutheastAsia","Korea","WWII"]);
-				addSkipTextNumberMultiple(handler,"NeverDeployed",["Yes","Refused","Don't Know","Missing Data"]);
-				addSkipTextNumberMultiple(handler,"MilitaryServed",["No","Refused","Don't Know","Missing Data"]);
-			}
-			
-			//Military2 Form Area
-			protected function createMilitary2Form():void
-			{
-				//Questions
-				military2Form.addElement(getQuestion("FamilyActiveDuty"));
-				getQuestion("FamilyActiveDuty").inputControl.width = 150;
-				var i:FormItem = new FormItem();
-				i.label = "[IF YES, ANSWER FOR UP TO 6 PEOPLE]";
-				military2Form.addElement(i);
-				military2Form.addElement(getQuestion("ServiceMemRelationship"));
-				military2Form.addElement(getQuestion("ServiceMemExpOther"));
-				i = new FormItem();
-				i.label = "Has the Service Member experienced any of the following?";
-				military2Form.addElement(i);
-				military2Form.addElement(getQuestion("ServiceMemExpDeployed"));
-				military2Form.addElement(getQuestion("ServiceMemExpInjured"));
-				military2Form.addElement(getQuestion("ServiceMemExpCombatStress"));
-				military2Form.addElement(getQuestion("ServiceMemExpDeceased"));
-				military2Form.setElementIndex(military2Group,military2Form.numElements-1);
-				
-				//Validators
-				addDropDownValidator("FamilyActiveDuty",["No","Refused","Don't Know","Missing Data"]);
-				
-				//Control Logic
-				addSkipDropDown("ServiceMemRelationship",["Mother","Father","Brother","Sister","Spouse","Partner","Child"],["ServiceMemExpOther"]);
-				addSkipDropDown("FamilyActiveDuty",["No","Refused","Don't Know","Missing Data"],["ServiceMemRelationship","ServiceMemExpDeployed","ServiceMemExpInjured","ServiceMemExpCombatStress","ServiceMemExpDeceased"]);
-				(getQuestion("FamilyActiveDuty").skipPatterns[0] as SkipPattern).skipWhenInvalid = true;
-			}
-			protected function military2AddButtonHandler(event:MouseEvent):void
-			{
-				if((getQuestion("FamilyActiveDuty").answer == "Yes, only one" && familyVeterans.length > 0) || 
-					(getQuestion("FamilyActiveDuty").answer == "Yes, more than one" && familyVeterans.length > 5))
-					Alert.show("More relations cannot be added with current answer to Question 1");
-				else if(getQuestion("ServiceMemRelationship").answer == "Other" && getQuestion("ServiceMemExpOther").answer == "")
-					Alert.show("Relationship Other, Specify cannot be blank.");
-				else
-					familyVeterans.addItem([getQuestion("ServiceMemRelationship").answer,getQuestion("ServiceMemExpOther").answer,getQuestion("ServiceMemExpDeployed").answer,getQuestion("ServiceMemExpInjured").answer,
-						getQuestion("ServiceMemExpCombatStress").answer,getQuestion("ServiceMemExpDeceased").answer]);
-				updateFamilyValidator();
-			}
-			protected function military2RemoveButtonHandler(event:MouseEvent):void
-			{
-				if(military2List.selectedItem != null)
-					familyVeterans.removeItemAt(familyVeterans.getItemIndex(military2List.selectedItem));
-				updateFamilyValidator();
-			}
-			protected function updateFamilyValidator():void
-			{
-				var dv:DropDownValidator = getQuestion("FamilyActiveDuty").validator as DropDownValidator;
-				if(familyVeterans.length == 0)
-				{
-					dv.validAnswers = ["No","Refused","Don't Know","Missing Data"];
-				}
-				else if(familyVeterans.length == 1)
-				{
-					dv.validAnswers = ["Yes, only one"];
-				}
-				else
-				{
-					dv.validAnswers = ["Yes, more than one"];
-				}
-				dv.validate();
-			}
-			
-			//Drug1 Form Area
-			protected function createDrug1Form():void
-			{
-				//Questions
-				drug1Form.addElement(createText("During the past 30 days, how many days have you used the following:","h1"));
-				drug1Form.addElement(getQuestion("DAUseAlcoholDays"));
-				drug1Form.addElement(getQuestion("DAUseAlcoholIntox5Days"));
-				drug1Form.addElement(getQuestion("DAUseAlcoholIntox4Days"));
-				drug1Form.addElement(getQuestion("DAUseIllegDrugsDays"));
-				drug1Form.addElement(getQuestion("DAUseBothDays"));
-				drug1Form.addElement(createText("During the past 30 days, how many days have you used any of the following:","h1"));
-				
-				addDrugQuestion1("CocaineCrackDays","CocaineCrackRoute");
-				addDrugQuestion1("MarijuanaHashDays","MarijuanaHashRoute");
-				addDrugQuestion1("OpiatesHeroinDays","OpiatesHeroinRoute");
-				addDrugQuestion1("OpiatesMorphineDays","OpiatesMorphineRoute");
-				addDrugQuestion1("OpiatesDiluadidDays","OpiatesDiluadidRoute");
-				addDrugQuestion1("OpiatesDemerolDays","OpiatesDemerolRoute");
-				addDrugQuestion1("OpiatesPercocetDays","OpiatesPercocetRoute");
-				addDrugQuestion1("OpiatesDarvonDays","OpiatesDarvonRoute");
-				addDrugQuestion1("OpiatesCodeineDays","OpiatesCodeineRoute");
-				addDrugQuestion1("OpiatesTylenolDays","OpiatesTylenolRoute");
-				addDrugQuestion1("OpiatesOxycoDays","OpiatesOxycoRoute");				
-				
-				//Validators				
-				addNumberValidator("DAUseAlcoholDays",0,30,true);
-				addNumberValidator("DAUseAlcoholIntox5Days",0,0,true);
-				addNumberValidator("DAUseAlcoholIntox4Days",0,0,true);
-				addNumberValidator("DAUseIllegDrugsDays",0,30,true);
-				addNumberValidator("DAUseBothDays",0,0,true);
-				
-				BindingUtils.bindSetter(function():void{
-					(getQuestion("DAUseAlcoholIntox5Days").validator as NumberValidator).maxValue = Number(getQuestion("DAUseAlcoholDays").answer);
-					(getQuestion("DAUseAlcoholIntox4Days").validator as NumberValidator).maxValue = Number(getQuestion("DAUseAlcoholDays").answer);
-					(getQuestion("DAUseBothDays").validator as NumberValidator).maxValue = Math.min(Number(getQuestion("DAUseAlcoholDays").answer),Number(getQuestion("DAUseIllegDrugsDays").answer));
-				}, getQuestion("DAUseAlcoholDays").inputControl, "text");
-				BindingUtils.bindSetter(drugDaysHandler, getQuestion("DAUseIllegDrugsDays").inputControl, "text");
-				
-				//Control Logic
-				addSkipTextNumber("DAUseAlcoholDays",["DAUseAlcoholIntox5Days","DAUseAlcoholIntox4Days"],["0"]);
-				//addSkipTextNumber("DAUseIllegDrugsDays",["DAUseBothDays"],["0"]);
-				var handler:SkipMultipleHandler = createSkipMultipleHandler(["DAUseBothDays"]);
-				addSkipTextNumberMultiple(handler,"DAUseAlcoholDays",["0"]);
-				addSkipTextNumberMultiple(handler,"DAUseIllegDrugsDays",["0"]);
-				handler = createSkipMultipleHandler(["ImpactStress","ImpactActivity","ImpactEmotional"]);
-				addSkipTextNumberMultiple(handler,"DAUseAlcoholDays",["0"]);
-				addSkipTextNumberMultiple(handler,"DAUseIllegDrugsDays",["0"]);
-				handler.allMustSkip = true;
-			}
-			protected function addDrugQuestion1(daysName:String, routeName:String, height:int=22):void
-			{				
-				var q1:QuestionClass = getQuestion(daysName);
-				drug1Form.addElement(q1);
-				q1.direction = "horizontal";
-				
-				var q2:QuestionList = getQuestion(routeName) as QuestionList;
-				q1.addElement(q2.input);
-				q2.inline = true;
-				
-				addNumberValidator(daysName,0,0,true);
-				addSkipTextNumber(daysName,[routeName],["0"]);
-				drugQuestions.push(getQuestion(daysName));
-			}
-			protected function addDrugQuestion2(daysName:String, routeName:String):void
-			{
-				var q1:QuestionClass = getQuestion(daysName);
-				drug2Form.addElement(q1);
-				q1.direction = "horizontal";
-				
-				var q2:QuestionList = getQuestion(routeName) as QuestionList;
-				q1.addElement(q2.input);
-				q2.inline = true;
-				
-				addNumberValidator(daysName,0,0,true);
-				addSkipTextNumber(daysName,[routeName],["0"]);
-				drugQuestions.push(getQuestion(daysName));
-			}
-			protected function drugDaysHandler(val:String):void
-			{
-				(getQuestion("DAUseBothDays").validator as NumberValidator).maxValue = Math.min(Number(getQuestion("DAUseAlcoholDays").answer),Number(val));
-				for each(var q:QuestionClass in drugQuestions)
-				{
-					(q.validator as NumberValidator).maxValue = Number(val);
-					for each(var skip:SkipPattern in q.skipPatterns)
-						skip.skipHandler(null);
-				}
-			}
-			
-			//Drug2 Form Area
-			protected function createDrug2Form():void
-			{
-				//Questions
-				drug2Form.addElement(createText("During the past 30 days, how many days have you used any of the following:","h1"));
-				addDrugQuestion2("NonPresMethadoneDays","NonPresMethadoneRoute");
-				addDrugQuestion2("HallucPsychDays","HallucPsychRoute");
-				addDrugQuestion2("MethamDays","MethamRoute");
-				addDrugQuestion2("BenzodiazepinesDays","BenzodiazepinesRoute");
-				addDrugQuestion2("BarbituatesDays","BarbituatesRoute");
-				addDrugQuestion2("NonPrescGhbDays","NonPrescGhbRoute");
-				addDrugQuestion2("KetamineDays","KetamineRoute");
-				addDrugQuestion2("OtherTranquilizersDays","OtherTranquilizersRoute");
-				addDrugQuestion2("InhalantsDays","InhalantsRoute");
-				addDrugQuestion2("OtherIllegalDrugsDays","OtherIllegalDrugsRoute");
-				drug2Form.addElement(getQuestion("OtherIllegalDrugsSpec"));
-				drug2Form.addElement(getQuestion("InjectedDrugs"));
-				drug2Form.addElement(getQuestion("ParaphenaliaUsedOthers"));
-				getQuestion("ParaphenaliaUsedOthers").inputControl.width = 150;
-				
-				//Validators
-				addRequiredValidator("OtherIllegalDrugsSpec");
-				
-				//Control Logic
-				addSkipTextNumber("OtherIllegalDrugsDays",["OtherIllegalDrugsSpec"],["0"]);
-				addSkipDropDown("InjectedDrugs",["No","Refused","Don't Know","Missing Data"],["ParaphenaliaUsedOthers"]);
-			}
-			
-			//Living Form Area
-			protected function createLivingForm():void
-			{
-				//Questions
-				livingForm.addElement(createText("During the past 30 days:","h1"));
-				livingForm.addElement(getQuestion("LivingWhere"));
-				livingForm.addElement(getQuestion("LivingHoused"));
-				getQuestion("LivingHoused").inputControl.width = 200;
-				livingForm.addElement(getQuestion("LivingHousedSpec"));
-				livingForm.addElement(getQuestion("ImpactStress"));
-				livingForm.addElement(getQuestion("ImpactActivity"));
-				livingForm.addElement(getQuestion("ImpactEmotional"));
-				livingForm.addElement(getQuestion("Pregnant"));
-				livingForm.addElement(getQuestion("Children"));
-				livingForm.addElement(getQuestion("ChildrenNr"));
-				livingForm.addElement(getQuestion("ChildrenCustody"));
-				livingForm.addElement(getQuestion("ChildrenCustodyNr"));
-				livingForm.addElement(getQuestion("ChildrenCustodyLost"));
-				
-				//Validators
-				addRequiredValidator("LivingHousedSpec");
-				addNumberValidator("ChildrenNr",1,99,true);
-				addNumberValidator("ChildrenCustodyNr",1,1,true);
-				addNumberValidator("ChildrenCustodyLost",0,1,true);
-				BindingUtils.bindSetter(function():void{(getQuestion("ChildrenCustodyNr").validator as NumberValidator).maxValue = Number(getQuestion("ChildrenNr").answer)}, getQuestion("ChildrenNr").inputControl, "text");
-				BindingUtils.bindSetter(function():void{(getQuestion("ChildrenCustodyLost").validator as NumberValidator).maxValue = Number(getQuestion("ChildrenNr").answer)}, getQuestion("ChildrenNr").inputControl, "text");
-				
-				//Control Logic
-				addSkipDropDown("LivingWhere",["Shelter","Street/Outdoors","Institution","Refused","Don't Know","Missing Data"],["LivingHoused"]);
-				addSkipDropDown("LivingHoused",["Own/Rent apartment, room, or house","Someone else's apartment, room, or house","Halfway house","Residential Treatment","Dormitory/College Residence","Refused","Don't Know","Missing Data"],["LivingHousedSpec"]);
-				addSkipDropDown("Children",["No","Refused","Don't Know","Missing Data"],["ChildrenNr","ChildrenCustody","ChildrenCustodyLost"]);
-				addSkipDropDown("ChildrenCustody",["No","Refused","Don't Know","Missing Data"],["ChildrenCustodyNr"]);
-			}
-			
-			//Employment Form Area
-			protected function createEmploymentForm():void
-			{
-				//Questions
-				employmentForm.addElement(getQuestion("TrainingProgram"));
-				getQuestion("TrainingProgram").inputControl.width = 125;
-				employmentForm.addElement(getQuestion("TrainingProgramSpec"));
-				employmentForm.addElement(getQuestion("EducationYears"));
-				getQuestion("EducationYears").inputControl.width = 260;
-				employmentForm.addElement(getQuestion("EmployStatus"));
-				getQuestion("EmployStatus").inputControl.width = 260;
-				employmentForm.addElement(getQuestion("EmployStatusSpec"));
-				employmentForm.addElement(createText("Approximately, how much money did YOU receive (pre-tax individual income) in the past 30 days from...","h1"));
-				employmentForm.addElement(getQuestion("IncomeWages"));
-				getQuestion("IncomeWages").inputControl.width = 75;
-				employmentForm.addElement(getQuestion("IncomePubAssist"));
-				getQuestion("IncomePubAssist").inputControl.width = 75;
-				employmentForm.addElement(getQuestion("IncomeRetirement"));
-				getQuestion("IncomeRetirement").inputControl.width = 75;
-				employmentForm.addElement(getQuestion("IncomeDisability"));
-				getQuestion("IncomeDisability").inputControl.width = 75;
-				employmentForm.addElement(getQuestion("IncomeNonLegal"));
-				getQuestion("IncomeNonLegal").inputControl.width = 75;
-				employmentForm.addElement(getQuestion("IncomeFamFriends"));
-				getQuestion("IncomeFamFriends").inputControl.width = 75;
-				employmentForm.addElement(getQuestion("IncomeOther"));
-				getQuestion("IncomeOther").inputControl.width = 75;
-				employmentForm.addElement(getQuestion("IncomeOtherSpec"));
-				
-				//Validators
-				addRequiredValidator("TrainingProgramSpec");
-				addRequiredValidator("EmployStatusSpec");
-				addNumberValidator("IncomeWages",0,9999999);
-				addNumberValidator("IncomePubAssist",0,9999999);
-				addNumberValidator("IncomeRetirement",0,9999999);
-				addNumberValidator("IncomeDisability",0,9999999);
-				addNumberValidator("IncomeNonLegal",0,9999999);
-				addNumberValidator("IncomeFamFriends",0,9999999);
-				addNumberValidator("IncomeOther",0,9999999);
-				addRequiredValidator("IncomeOtherSpec");
-				
-				//Control Logic
-				addSkipDropDown("TrainingProgram",["Not Enrolled","Enrolled, Full Time","Enrolled, Part Time","Refused","Dont' Know"],["TrainingProgramSpec"]);
-				addSkipDropDown("EmployStatus",["Employed Full Time (35+ hours per week, or would have been)","Employed Part Time","Unemployed, looking for work","Unemployed, disabled","Unemployed, volunteer work","Unemployed, retired","Unemployed, not looking for work","Refused","Don't Know","Missing Data"],["EmployStatusSpec"]);
-				addSkipTextNumber("IncomeOther",["IncomeOtherSpec"],["0"]);
-			}
-			
-			//Crime Form Area
-			protected function createCrimeForm():void
-			{
-				//Questions
-				crimeForm.addElement(getQuestion("ArrestedDays"));
-				getQuestion("ArrestedDays").inputControl.width = 50;
-				crimeForm.addElement(getQuestion("ArrestedDrugDays"));
-				getQuestion("ArrestedDrugDays").inputControl.width = 50;
-				crimeForm.addElement(getQuestion("ArrestedConfineDays"));
-				getQuestion("ArrestedConfineDays").inputControl.width = 50;
-				crimeForm.addElement(getQuestion("NrCrimes"));
-				getQuestion("NrCrimes").inputControl.width = 50;
-				crimeForm.addElement(getQuestion("AwaitTrial"));
-				crimeForm.addElement(getQuestion("ParoleProbation"));
-				
-				//Validators
-				//getQuestion("IncomeOther").inputControl.addEventListener(FocusEvent.FOCUS_OUT,incomeOtherHandler);
-				
-				addNumberValidator("ArrestedDays",0,99);
-				addNumberValidator("ArrestedDrugDays",0,0);
-				addNumberValidator("ArrestedConfineDays",0,15);
-				addNumberValidator("NrCrimes",0,999);
-				BindingUtils.bindSetter(function():void{(getQuestion("ArrestedDrugDays").validator as NumberValidator).maxValue = Number(getQuestion("ArrestedDays").answer)}, getQuestion("ArrestedDays").inputControl, "text");
-				BindingUtils.bindSetter(function():void{(getQuestion("ArrestedConfineDays").validator as NumberValidator).minValue = (getQuestion("LivingWhere") as QuestionList).answerIndex == 3 ? 16 : 0;
-					(getQuestion("ArrestedConfineDays").validator as NumberValidator).maxValue = (getQuestion("LivingWhere") as QuestionList).answerIndex == 3 ? 30 : 15}, getQuestion("LivingWhere").inputControl, "selectedIndex");
-				BindingUtils.bindSetter(function():void{(getQuestion("NrCrimes").validator as NumberValidator).minValue = Number(getQuestion("DAUseIllegDrugsDays").answer)}, getQuestion("DAUseIllegDrugsDays").inputControl, "text");
-				
-				//Control Logic
-				addSkipTextNumber("ArrestedDays",["ArrestedDrugDays"],["0"]);
-			}
-			
-			//Health1 Form Area
-			protected function createHealth1Form():void
-			{
-				//Questions
-				health1Form.addElement(getQuestion("HealthStatus"));
-				health1Form.addElement(createText("During the past 30 days, did you receive:","h1"));
-				health1Form.addElement(createText("Inpatient Treatment for _____. [IF YES] For how many nights?","h1"));
-				addTreatmentQuestion("InpatientPhysical","InpatientPhysicalNights",30);
-				addTreatmentQuestion("InpatientMental","InpatientMentalNights",30);
-				addTreatmentQuestion("InpatientAlcoholSA","InpatientAlcoholSANights",30);
-				health1Form.addElement(createText("Outpatient Treatment for _____. [IF YES] For how many times?","h1"));
-				addTreatmentQuestion("OutpatientPhysical","OutpatientPhysicalTimes",99);
-				addTreatmentQuestion("OutpatientMental","OutpatientMentalTimes",99);
-				addTreatmentQuestion("OutpatientAlcoholSA","OutpatientAlcoholSATimes",99);
-				health1Form.addElement(createText("Emergency Room Treatment for _____. [IF YES] For how many times?","h1"));
-				addTreatmentQuestion("ERPhysical","ERPhysicalTimes",99);
-				addTreatmentQuestion("ERMental","ERMentalTimes",99);
-				addTreatmentQuestion("ERAlcoholSA","ERAlcoholSATimes",99);
-				
-				//Validators
-				
-				//Control Logic
-				
-			}
-			protected function addTreatmentQuestion(treatmentName:String, daysName:String, maxValue:int):void
-			{
-				var q1:QuestionClass = getQuestion(treatmentName);
-				health1Form.addElement(q1);
-				q1.inputControl.width = 90;
-				q1.direction = "horizontal";
-				
-				var q2:QuestionTextRefusable = getQuestion(daysName) as QuestionTextRefusable;
-				q1.addElement(q2.input);
-				q1.addElement(q2.refuseInput);
-				q2.inline = true;
-				
-				addNumberValidator(daysName,1,maxValue,true);
-				addSkipDropDown(treatmentName,["No","Refused","Don't Know","Missing Data"],[daysName]);
-			}
-			
-			//Health2 Form Area
-			protected function createHealth2Form():void
-			{
-				//Questions
-				health2Form.addElement(getQuestion("SexActivity"));
-				getQuestion("SexActivity").inputControl.width = 125;
-				health2Form.addElement(createText("[IF YES] Altogether, how many:","h1"));
-				health2Form.addElement(getQuestion("SexContacts"));
-				health2Form.addElement(getQuestion("SexUnprot"));
-				health2Form.addElement(createText("How many unprotected sexual contacts were with an individual who is or was:","h1"));
-				health2Form.addElement(getQuestion("SexUnprotHIVAids"));
-				health2Form.addElement(getQuestion("SexUnprotInjDrugUser"));
-				health2Form.addElement(getQuestion("SexUnprotHigh"));
-				health2Form.addElement(getQuestion("fHIVTest"));
-				health2Form.addElement(getQuestion("fHIVTestResult"));
-				
-				//Validators
-				addNumberValidator("SexContacts",1,999,true);
-				addNumberValidator("SexUnprot",0,999,true);
-				addNumberValidator("SexUnprotHIVAids",0,999,true);
-				addNumberValidator("SexUnprotInjDrugUser",0,999,true);
-				addNumberValidator("SexUnprotHigh",0,999,true);
-				BindingUtils.bindSetter(function():void{(getQuestion("SexUnprotHIVAids").validator as NumberValidator).maxValue = Number(getQuestion("SexUnprot").answer)}, getQuestion("SexUnprot").inputControl, "text");
-				BindingUtils.bindSetter(function():void{(getQuestion("SexUnprotInjDrugUser").validator as NumberValidator).maxValue = Number(getQuestion("SexUnprot").answer)}, getQuestion("SexUnprot").inputControl, "text");
-				BindingUtils.bindSetter(function():void{(getQuestion("SexUnprotHigh").validator as NumberValidator).maxValue = Number(getQuestion("SexUnprot").answer)}, getQuestion("SexUnprot").inputControl, "text");
-				
-				//Control Logic
-				addSkipDropDown("SexActivity",["No","Not permitted to ask","Refused","Don't Know","Missing Data"],["SexContacts","SexUnprot"]);
-				addSkipTextNumber("SexUnprot",["SexUnprotHIVAids","SexUnprotInjDrugUser","SexUnprotHigh"],["0"]);
-				addSkipDropDown("fHIVTest",["No","Refused","Don't Know","Missing Data"],["fHIVTestResult"]);
-				
-			}
-			
-			//Health3 Form Area
-			protected function createHealth3Form():void
-			{
-				//Questions
-				health3Form.addElement(createText("In the past 30 days, not due to your use of alcohol or drugs, how many days have you:","h1"));
-				health3Form.addElement(getQuestion("Depression"));
-				health3Form.addElement(getQuestion("Anxiety"));
-				health3Form.addElement(getQuestion("Hallucinations"));
-				health3Form.addElement(getQuestion("BrainFunction"));
-				health3Form.addElement(getQuestion("ViolentBehavior"));
-				health3Form.addElement(getQuestion("Suicide"));
-				health3Form.addElement(getQuestion("PsycholEmotMedication"));
-				health3Form.addElement(getQuestion("PsycholEmotImpact"));
-				
-				//Validators
-				addNumberValidator("Depression",0,30,true);
-				addNumberValidator("Anxiety",0,30,true);
-				addNumberValidator("Hallucinations",0,30,true);
-				addNumberValidator("BrainFunction",0,30,true);
-				addNumberValidator("ViolentBehavior",0,30,true);
-				addNumberValidator("Suicide",0,30,true);
-				addNumberValidator("PsycholEmotMedication",0,30,true);
-				
-				//Control Logic
-				addSkipDropDown("AnyViolence",["No","Refused","Don't Know","Missing Data"],["Nightmares","TriedHard","ConstantGuard","NumbAndDetach"]);
-				
-			}
-			
-			//Health4 Form Area
-			protected function createHealth4Form():void
-			{
-				//Questions
-				health4Form.addElement(getQuestion("AnyViolence"));
-				health4Form.addElement(createText("Did any of these experiences feel so frightening, horrible, or upsetting that, in the past and/or the present, you:","h1"));
-				health4Form.addElement(getQuestion("Nightmares"));
-				health4Form.addElement(getQuestion("TriedHard"));
-				health4Form.addElement(getQuestion("ConstantGuard"));
-				health4Form.addElement(getQuestion("NumbAndDetach"));
-				health4Form.addElement(getQuestion("PhysicallyHurt"));
-				getQuestion("PhysicallyHurt").inputControl.width = 130;
-				
-				//Validators
-				
-				//Control Logic
-				addSkipDropDown("AnyViolence",["No","Refused","Don't Know","Missing Data"],["Nightmares","TriedHard","ConstantGuard","NumbAndDetach"]);
-				
-			}
-			
-			//Social Form Area
-			protected function createSocialForm():void
-			{
-				//Questions
-				socialForm.addElement(createText("In the past 30 days, did you attend any _____? If yes, specify how many times.","h1"));
-				addSocialQuestion("AttendVoluntary","AttendVoluntaryTimes",64);
-				addSocialQuestion("AttendReligious","AttendReligiousTimes",36);
-				addSocialQuestion("AttendOtherOrg","AttendOtherOrgTimes",50);				
-				socialForm.addElement(getQuestion("InteractFamilyFriends"));				
-				socialForm.addElement(getQuestion("WhomInTrouble"));
-				socialForm.addElement(getQuestion("WhomInTroubleSpec"));
-				
-				//Validators
-				addRequiredValidator("WhomInTroubleSpec");
-				
-				//Control Logic
-				addSkipDropDown("WhomInTrouble",["No One","Clergy Member","Family Member","Friends","Refused","Don't Know","Missing Data"],["WhomInTroubleSpec"]);				
-			}
-			protected function addSocialQuestion(socialName:String, daysName:String, height:int=22):void
-			{
-				var q1:QuestionClass = getQuestion(socialName);
-				socialForm.addElement(q1);
-				q1.inputControl.width = 90;
-				q1.direction = "horizontal";
-				
-				var q2:QuestionTextRefusable = getQuestion(daysName) as QuestionTextRefusable;
-				q1.addElement(q2.input);
-				q1.addElement(q2.refuseInput);
-				q2.inline = true;
-				
-				addNumberValidator(daysName,1,30,true);
-				addSkipDropDown(socialName,["No","Refused","Don't Know","Missing Data"],[daysName]);
-			}
-			
-			//Followup Form Area
-			protected function createFollowupForm():void
-			{
-				//Questions
-				followupForm.addElement(getQuestion("FLWPStatus"));
-				getQuestion("FLWPStatus").inputControl.width = 260;
-				followupForm.addElement(getQuestion("FLWPStatusSpec"));
-				followupForm.addElement(getQuestion("ReceivingServices"));
-				
-				//Validators
-				addRequiredValidator("FLWPStatusSpec");
-				addDropDownValidator("FLWPStatus",["Completed interview within specified window","Completed interview outside specified window"]);				
-				BindingUtils.bindSetter(followupValidatorHandler, getQuestion("ConductedInterview").inputControl, "selectedIndex");
-				//Control Logic
-				addSkipDropDown("FLWPStatus",["Deceased at time of due date","Completed interview within specified window","Completed interview outside specified window","Located, but refused, unspecified",
-					"Located, but unable to gain institutional access","Located, but otherwise unable to gain access","Located, but withdrawn from project","Unable to locate, moved"],["FLWPStatusSpec"]);
-				(getQuestion("FLWPStatus").skipPatterns[0] as SkipPattern).skipWhenInvalid = true;
-			}
-			protected function followupValidatorHandler(val:String):void
-			{
-				var dv:DropDownValidator = getQuestion("FLWPStatus").validator as DropDownValidator;
-				if(getQuestion("ConductedInterview").answer == "Yes")
-				{
-					dv.validAnswers = ["Completed interview within specified window","Completed interview outside specified window"];
-				}
-				else
-				{
-					dv.validAnswers = ["Deceased at time of due date","Located, but refused, unspecified","Located, but unable to gain institutional access",
-						"Located, but otherwise unable to gain access","Located, but withdrawn from project","Unable to locate, moved","Unable to locate, other"];
-				}
-				dv.validate();
-			}
-			
-			//Discharge Form Area
-			protected function createDischargeForm():void
-			{				
-				//Questions
-				dischargeForm.addElement(getQuestion("DischargeDate"));
-				dischargeForm.addElement(getQuestion("DischargeStatusCompl"));
-				getQuestion("DischargeStatusCompl").inputControl.width = 130;
-				dischargeForm.addElement(getQuestion("DischargeStatusTermReason"));
-				getQuestion("DischargeStatusTermReason").inputControl.width = 260;
-				dischargeForm.addElement(getQuestion("OtherDischargeStatTermRsnSpec"));
-				dischargeForm.addElement(getQuestion("jHIVTest"));
-				dischargeForm.addElement(getQuestion("jHIVTestResult"));
-				
-				//Validators
-				var dv1:DateAgeValidator = new DateAgeValidator();
-				dv1.required = true;
-				dv1.source = getQuestion("DischargeDate").inputControl;
-				dv1.property = "text";
-				dv1.minType = DateAgeValidator.DAY;
-				dv1.min = 0;
-				dv1.maxType = DateAgeValidator.YEAR;
-				dv1.max = 1;
-				getQuestion("DischargeDate").validator = dv1;
-				addRequiredValidator("OtherDischargeStatTermRsnSpec");
-				
-				//Control Logic
-				addSkipDropDown("DischargeStatusCompl",["Completion/Graduate"],["DischargeStatusTermReason"]);
-				addSkipDropDown("DischargeStatusTermReason",["Left on own against staff advice with satisfactory progress","Left on own against staff advice without satisfactory progress",
-					"Involuntarily discharged due to nonparticipation","Involuntarily discharged due to violation of rules","Referred to another program or other services with satisfactory progress","Referred to another program or other services with unsatisfactory progress",
-					"Incarcerated due to offense committed while in treatment/recovery with satisfactory progress","Incarcerated due to offense committed while in treatment/recovery with unsatisfactory progress","Incarcerated due to old warrant or charged from before entering treatment/recovery with satisfactory progress",
-					"Incarcerated due to old warrant or charged from before entering treatment/recovery with unsatisfactory progress","Transferred to another facility for health reasons","Death"],["OtherDischargeStatTermRsnSpec"]);
-				addSkipDropDown("jHIVTest",["No","Missing Data"],["jHIVTestResult"]);
-			}
-			
-			protected function createText(text:String,style:String):Text
-			{
-				var t:Text = new Text();
-				t.text = text;
-				t.width = viewStack.width-10;
-				t.styleName = style;
-				return t;
-			}
-			
-			protected function addNumberValidator(question:String, min:Number = Number.NaN, max:Number = Number.NaN, isInt:Boolean = false):void
-			{
-				var q:QuestionClass = getQuestion(question);
-				var nv:NumberValidator = new NumberValidator();
-				nv.required = true;
-				nv.source = q.inputControl;
-				if(q is QuestionText || q is QuestionTextRefusable)
-					nv.property = "text";
-				else if(q is QuestionList)
-					nv.property = "selectedIndex";
-				if(!isNaN(min))
-					nv.minValue = min;
-				if(!isNaN(max))
-					nv.maxValue = max;
-				if(isInt)
-					nv.domain = "int";
-				getQuestion(question).validator = nv;
-			}
-			
-			protected function addDropDownValidator(question:String, validAnswers:Array):void
-			{
-				var q:QuestionClass = getQuestion(question);
-				var dv:DropDownValidator = new DropDownValidator();
-				dv.required = true;
-				dv.source = q.inputControl;
-				dv.property = "selectedItem";
-				dv.validAnswers = validAnswers;
-				getQuestion(question).validator = dv;
-			}
-			
-			protected function addRequiredValidator(question:String):void
-			{
-				var q:QuestionClass = getQuestion(question);
-				var v:Validator = new Validator();
-				v.required = true;
-				v.source = q.inputControl;
-				if(q is QuestionText || q is QuestionTextRefusable)
-					v.property = "text";
-				else if(q is QuestionList)
-					v.property = "selectedIndex";
-				getQuestion(question).validator = v;
-			}
-			
-			protected function addSkipDropDown(sourceQuestion:String, skipAnswers:Array, skipQuestions:Array):void
-			{
-				var qArray:Array = [];
-				for each(var s:String in skipQuestions)
-				qArray.push(getQuestion(s));
-				var skip:SkipPattern = new SkipPattern(getQuestion(sourceQuestion),qArray,skipAnswers,[IndexChangeEvent.CHANGE]);
-				getQuestion(sourceQuestion).skipPatterns.push(skip);
-			}
-			protected function addSkipDropDownMultiple(handler:SkipMultipleHandler, sourceQuestion:String, skipAnswers:Array):void
-			{
-				var skip:SkipPatternMultiple = new SkipPatternMultiple(handler,getQuestion(sourceQuestion),skipAnswers,[IndexChangeEvent.CHANGE]);
-				getQuestion(sourceQuestion).skipPatterns.push(skip);
-			}
-			protected function addSkipTextNumberMultiple(handler:SkipMultipleHandler, sourceQuestion:String, skipAnswers:Array):void
-			{
-				var skip:SkipPatternMultiple = new SkipPatternMultiple(handler,getQuestion(sourceQuestion),skipAnswers,[FlexEvent.VALUE_COMMIT,FocusEvent.MOUSE_FOCUS_CHANGE]);
-				getQuestion(sourceQuestion).skipPatterns.push(skip);
-			}
-			protected function createSkipMultipleHandler(skipQuestions:Array):SkipMultipleHandler
-			{
-				var qArray:Array = [];
-				for each(var s:String in skipQuestions)
-				qArray.push(getQuestion(s));
-				return new SkipMultipleHandler(qArray);
-			}
-			protected function addSkipTextNumber(sourceQuestion:String, skipQuestions:Array, skipAnswers:Array):void
-			{
-				var qArray:Array = [];
-				for each(var s:String in skipQuestions)
-				qArray.push(getQuestion(s));
-				//(getQuestion(sourceQuestion) as QuestionTextNumber).addSkip(qArray,min,max,invert);
-				var skip:SkipPattern = new SkipPattern(getQuestion(sourceQuestion),qArray,skipAnswers,[FlexEvent.VALUE_COMMIT,FocusEvent.MOUSE_FOCUS_CHANGE]);
-				getQuestion(sourceQuestion).skipPatterns.push(skip);
-			}
-			protected function addSkipTextRange(sourceQuestion:String, skipQuestions:Array, min:int=0,max:int=0,invert:Boolean=false):void
-			{
-				var qArray:Array = [];
-				for each(var s:String in skipQuestions)
-				qArray.push(getQuestion(s));
-				//(getQuestion(sourceQuestion) as QuestionTextNumber).addSkip(qArray,min,max,invert);
-				var skip:SkipPattern = new SkipPatternRange(getQuestion(sourceQuestion),qArray,min,max,invert,[FlexEvent.VALUE_COMMIT,FocusEvent.MOUSE_FOCUS_CHANGE]);
-				getQuestion(sourceQuestion).skipPatterns.push(skip);
-			}
 			
 			//Read GPRAVO, populate forms
 			public function populateForm(gpra:ArrayCollection):void
@@ -1261,7 +290,7 @@
 					if(!q2.isSkipped && q2.inputControl.enabled)
 						q2.validator.validate();
 				
-				familyVeterans = new ArrayList();
+				military2Form.familyVeterans = new ArrayList();
 				for(var i:Number = 1; i<=6; i++)
 				{
 					var num:Number = Number(gpraVO["ServiceMemRelationship"+String(i)]);
@@ -1271,7 +300,7 @@
 						if(num == -9)
 							arr.push("Missing Data");
 						else
-							arr.push((getQuestion("ServiceMemRelationship") as QuestionList).input.dataProvider.getItemAt(num -1));
+							arr.push(military2Form.qServiceMemRelationship.input.dataProvider.getItemAt(num -1));
 						arr.push(gpraVO["ServiceMemExpOther"+String(i)]);
 						
 						num = gpraVO["ServiceMemExpDeployed"+String(i)];
@@ -1280,7 +309,7 @@
 						else if(num == 0)
 							arr.push("No");
 						else
-							arr.push((getQuestion("ServiceMemExpDeployed") as QuestionList).input.dataProvider.getItemAt(-5 - num));
+							arr.push(military2Form.qServiceMemExpDeployed.input.dataProvider.getItemAt(-5 - num));
 						
 						num = gpraVO["ServiceMemExpInjured"+String(i)];
 						if(num == 1)
@@ -1288,7 +317,7 @@
 						else if(num == 0)
 							arr.push("No");
 						else
-							arr.push((getQuestion("ServiceMemExpInjured") as QuestionList).input.dataProvider.getItemAt(-5 - num));
+							arr.push(military2Form.qServiceMemExpInjured.input.dataProvider.getItemAt(-5 - num));
 						
 						num = gpraVO["ServiceMemExpCombatStress"+String(i)];
 						if(num == 1)
@@ -1296,7 +325,7 @@
 						else if(num == 0)
 							arr.push("No");
 						else
-							arr.push((getQuestion("ServiceMemExpCombatStress") as QuestionList).input.dataProvider.getItemAt(-5 - num));
+							arr.push(military2Form.qServiceMemExpCombatStress.input.dataProvider.getItemAt(-5 - num));
 						
 						num = gpraVO["ServiceMemExpDeceased"+String(i)];
 						if(num == 1)
@@ -1304,12 +333,12 @@
 						else if(num == 0)
 							arr.push("No");
 						else
-							arr.push((getQuestion("ServiceMemExpDeceased") as QuestionList).input.dataProvider.getItemAt(-5 - num));
+							arr.push(military2Form.qServiceMemExpDeceased.input.dataProvider.getItemAt(-5 - num));
 						
-						familyVeterans.addItem(arr);
+						military2Form.familyVeterans.addItem(arr);
 					}
 				}
-				updateFamilyValidator();
+				military2Form.updateFamilyValidator();
 			}
 			
 			//Parse Form Data, construct GPRAVO
@@ -1317,12 +346,12 @@
 			{
 				var gpraData:Array = new Array();
 				var answer:Object;
-				var date:Date = DateField.stringToDate(getQuestion("InterviewDate").answer,"MM/DD/YYYY");
+				var date:Date = DateField.stringToDate(recordForm.qInterviewDate.answer,"MM/DD/YYYY");
 				for each(var q:QuestionClass in questionDict)
 				{
-					if(q.parent == followupForm && getQuestion("InterviewTypeCode").answer != "6 Month Followup")
+					if(q.parent == followupForm && recordForm.qInterviewTypeCode.answer != "6 Month Followup")
 						continue;
-					if(q.parent == dischargeForm && getQuestion("InterviewTypeCode").answer != "Discharge")
+					if(q.parent == dischargeForm && recordForm.qInterviewTypeCode.answer != "Discharge")
 						continue;
 					if(["ServiceMemRelationship","ServiceMemExpOther","ServiceMemExpDeployed","ServiceMemExpInjured","ServiceMemExpCombatStress","ServiceMemExpDeceased"].indexOf(q.codeName) != -1)
 						continue;
@@ -1500,12 +529,12 @@
 					gpraData["Employment"] = -9;
 				*/
 				var i:Number = 1;
-				for each(var arr:Array in familyVeterans.source)
+				for each(var arr:Array in military2Form.familyVeterans.source)
 				{
 					if(arr[0] == "Missing Data")
 						gpraData["ServiceMemRelationship"+String(i)] = -9;
 					else
-						gpraData["ServiceMemRelationship"+String(i)] = (getQuestion("ServiceMemRelationship") as QuestionList).input.dataProvider.getItemIndex(arr[0])+1;
+						gpraData["ServiceMemRelationship"+String(i)] = military2Form.qServiceMemRelationship.input.dataProvider.getItemIndex(arr[0])+1;
 					if(gpraData["ServiceMemRelationship"+String(i)] == 8)
 					//if(arr[1] == "")
 					//	gpraData["ServiceMemExpOther"+String(i)] = null;
@@ -1516,25 +545,25 @@
 					else if(arr[2] == "No")
 						gpraData["ServiceMemExpDeployed"+String(i)] = 0;
 					else
-						gpraData["ServiceMemExpDeployed"+String(i)] = -5 - (getQuestion("ServiceMemExpDeployed") as QuestionList).input.dataProvider.getItemIndex(arr[2]);
+						gpraData["ServiceMemExpDeployed"+String(i)] = -5 - military2Form.qServiceMemExpDeployed.input.dataProvider.getItemIndex(arr[2]);
 					if(arr[3] == "Yes")
 						gpraData["ServiceMemExpInjured"+String(i)] = 1;
 					else if(arr[3] == "No")
 						gpraData["ServiceMemExpInjured"+String(i)] = 0;
 					else
-						gpraData["ServiceMemExpInjured"+String(i)] = -5 - (getQuestion("ServiceMemExpDeployed") as QuestionList).input.dataProvider.getItemIndex(arr[3]);
+						gpraData["ServiceMemExpInjured"+String(i)] = -5 - military2Form.qServiceMemExpDeployed.input.dataProvider.getItemIndex(arr[3]);
 					if(arr[4] == "Yes")
 						gpraData["ServiceMemExpCombatStress"+String(i)] = 1;
 					else if(arr[4] == "No")
 						gpraData["ServiceMemExpCombatStress"+String(i)] = 0;
 					else
-						gpraData["ServiceMemExpCombatStress"+String(i)] = -5 - (getQuestion("ServiceMemExpDeployed") as QuestionList).input.dataProvider.getItemIndex(arr[4]);
+						gpraData["ServiceMemExpCombatStress"+String(i)] = -5 - military2Form.qServiceMemExpDeployed.input.dataProvider.getItemIndex(arr[4]);
 					if(arr[5] == "Yes")
 						gpraData["ServiceMemExpDeceased"+String(i)] = 1;
 					else if(arr[5] == "No")
 						gpraData["ServiceMemExpDeceased"+String(i)] = 0;
 					else
-						gpraData["ServiceMemExpDeceased"+String(i)] = -5 - (getQuestion("ServiceMemExpDeployed") as QuestionList).input.dataProvider.getItemIndex(arr[5]);
+						gpraData["ServiceMemExpDeceased"+String(i)] = -5 - military2Form.qServiceMemExpDeployed.input.dataProvider.getItemIndex(arr[5]);
 					i += 1;
 				}
 				for(i; i<=6; i++)
@@ -1727,79 +756,60 @@
 		
 	</fx:Declarations>
 	
-	<mx:TabBar id="tabBar" x="5" y="30" dataProvider="viewStack"
+	<mx:TabBar id="tabBar" x="0" y="10" dataProvider="viewStack"
 			   direction="vertical"/>
-	<mx:ViewStack id="viewStack" x="110" y="30" width="500" height="650"
+	<mx:ViewStack id="viewStack" x="105" y="10" width="603" height="650"
 				  backgroundColor="#EAEAEA" creationPolicy="all" dropShadowVisible="true">
 		<s:NavigatorContent id="recordTab" width="100%" height="100%" label="Record">
-			<mx:Form id="recordForm" width="100%" height="100%" labelWidth="260">
-			</mx:Form>
+			<dci:RecordForm id="recordForm"/>
 		</s:NavigatorContent>
-		<s:NavigatorContent id="demoTab" width="100%" height="100%" label="Demographics">
-			<mx:Form id="demoForm" width="100%" height="100%" labelWidth="260">
-			</mx:Form>
+		<s:NavigatorContent id="sbirtTab" width="100%" height="100%" label="SBIRT">
+			<dci:SBIRTForm id="sbirtForm"/>
+		</s:NavigatorContent>
+		<s:NavigatorContent id="demoTab" width="100%" height="100%" label="Demographic">
+			<dci:DemographicsForm id="demoForm"/>
+		</s:NavigatorContent>
+		<s:NavigatorContent id="demo2Tab" width="100%" height="100%" label="Demographic2">
+			<dci:Demographics2Form id="demo2Form"/>
 		</s:NavigatorContent>
 		<s:NavigatorContent id="military1Tab" width="100%" height="100%" label="Military1">
-			<mx:Form id="military1Form" width="100%" height="100%" labelWidth="260">
-			</mx:Form>
+			<dci:Military1Form id="military1Form" />
 		</s:NavigatorContent>
 		<s:NavigatorContent id="military2Tab" width="100%" height="100%" label="Military2">
-			<mx:Form id="military2Form" width="100%" height="100%" labelWidth="260">
-				<s:Group width="400" height="100" id="military2Group">
-					<s:List id="military2List" width="300" height="75" x="0" y="0"
-							dataProvider="{familyVeterans}" allowMultipleSelection="false"></s:List>
-					<s:Button label="Add" click="military2AddButtonHandler(event)" x="310" y="10"/>
-					<s:Button label="Remove" click="military2RemoveButtonHandler(event)" x="310" y="40"/>
-				</s:Group>
-			</mx:Form>
+			<dci:Military2Form id="military2Form"/>
 		</s:NavigatorContent>
-		<s:NavigatorContent id="drug1Tab" width="100%" height="100%" label="Drug1">
-			<mx:Form id="drug1Form" width="100%" height="100%" labelWidth="190">
-			</mx:Form>
-		</s:NavigatorContent>
-		<s:NavigatorContent id="drug2Tab" width="100%" height="100%" label="Drug2">
-			<mx:Form id="drug2Form" width="100%" height="100%" labelWidth="190">
-			</mx:Form>
+		<s:NavigatorContent id="drugTab" width="100%" height="100%" label="Drug">
+			<dci:DrugForm id="drugForm" />
 		</s:NavigatorContent>
 		<s:NavigatorContent id="livingTab" width="100%" height="100%" label="Living">
-			<mx:Form id="livingForm" width="100%" height="100%" labelWidth="260">
-			</mx:Form>
+			<dci:LivingForm id="livingForm" />
 		</s:NavigatorContent>
 		<s:NavigatorContent id="employmentTab" width="100%" height="100%" label="Employment">
-			<mx:Form id="employmentForm" width="100%" height="100%" labelWidth="190">
-			</mx:Form>
+			<dci:EmploymentForm id="employmentForm" />
 		</s:NavigatorContent>
 		<s:NavigatorContent id="crimeTab" width="100%" height="100%" label="Crime">
-			<mx:Form id="crimeForm" width="100%" height="100%" labelWidth="260">
-			</mx:Form>
+			<dci:CrimeForm id="crimeForm" />
 		</s:NavigatorContent>
 		<s:NavigatorContent id="health1Tab" width="100%" height="100%" label="Health1">
-			<mx:Form id="health1Form" width="100%" height="100%" labelWidth="190">
-			</mx:Form>
+			<dci:Health1Form id="health1Form" />
 		</s:NavigatorContent>
 		<s:NavigatorContent id="health2Tab" width="100%" height="100%" label="Health2">
-			<mx:Form id="health2Form" width="100%" height="100%" labelWidth="190">
-			</mx:Form>
+			<dci:Health2Form id="health2Form" />
 		</s:NavigatorContent>
 		<s:NavigatorContent id="health3Tab" width="100%" height="100%" label="Health3">
-			<mx:Form id="health3Form" width="100%" height="100%" labelWidth="260">
-			</mx:Form>
+			<dci:Health3Form id="health3Form" />
 		</s:NavigatorContent>
 		<s:NavigatorContent id="health4Tab" width="100%" height="100%" label="Health4">
-			<mx:Form id="health4Form" width="100%" height="100%" labelWidth="260">
-			</mx:Form>
+			<dci:Health4Form id="health4Form" />
 		</s:NavigatorContent>
 		<s:NavigatorContent id="socialTab" width="100%" height="100%" label="Social">
-			<mx:Form id="socialForm" width="100%" height="100%" labelWidth="190">
-			</mx:Form>
+			<dci:SocialForm id="socialForm" />
 		</s:NavigatorContent>
 		<s:NavigatorContent id="followupTab" width="100%" height="100%" label="Followup">
-			<mx:Form id="followupForm" width="100%" height="100%" labelWidth="190">
-			</mx:Form>
+			<dci:FollowupForm id="followupForm" />
 		</s:NavigatorContent>
 		<s:NavigatorContent id="dischargeTab" width="100%" height="100%" label="Discharge">
-			<mx:Form id="dischargeForm" width="100%" height="100%" labelWidth="190">
-			</mx:Form>
+			<dci:DischargeForm id="dischargeForm" />
 		</s:NavigatorContent>
 		<s:NavigatorContent id="saveTab" width="100%" height="100%" label="Save">
 			<s:Button id="saveButton" x="200" y="200" label="Validate and Save GPRA"

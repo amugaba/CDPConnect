@@ -30,7 +30,7 @@ class UserService
     public function loginUser($username, $password)
     {
     	$stmt = $this->connection->prepare("SELECT
-        	username, name, password, initials, facility, admin
+        	username, name, password, initials, facility, admin, grantid
            FROM $this->tablename WHERE username=? AND password=?");
         $this->throwExceptionOnError();
         
@@ -42,7 +42,7 @@ class UserService
 
         $obj = new UserVO();
         
-        $stmt->bind_result($obj->username, $obj->name, $obj->password, $obj->initials, $obj->facility, $obj->admin);
+        $stmt->bind_result($obj->username, $obj->name, $obj->password, $obj->initials, $obj->facility, $obj->admin, $obj->grantid);
         
         $auth = $stmt->fetch();
         

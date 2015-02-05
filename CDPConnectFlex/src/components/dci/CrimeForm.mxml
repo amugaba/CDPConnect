@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dci:DCIForm xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			 xmlns:s="library://ns.adobe.com/flex/spark" 
+			 xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:dci="components.dci.*" width="100%" height="100%">
+	<fx:Script>
+		<![CDATA[
+			import components.QuestionList;
+			import components.QuestionText;
+			import components.QuestionTextRefusable;
+			
+			import mx.binding.utils.BindingUtils;
+			import mx.collections.ArrayList;
+			import mx.validators.NumberValidator;
+			
+			public var qArrestedDays:QuestionTextRefusable = new QuestionTextRefusable("ArrestedDays","In the past 30 days, how many times have you been arrested?","0");
+			public var qArrestedDrugDays:QuestionTextRefusable = new QuestionTextRefusable("ArrestedDrugDays","In the past 30 days, how many times have you been arrested for drug-related offenses?","0");
+			public var qArrestedConfineDays:QuestionTextRefusable = new QuestionTextRefusable("ArrestedConfineDays","In the past 30 days, how many nights have you spent in jail/prison?","0");
+			public var qNrCrimes:QuestionTextRefusable = new QuestionTextRefusable("NrCrimes","In the past 30 days, how many times have you committed a crime?","0");
+			public var qAwaitTrial:QuestionList = new QuestionList("AwaitTrial","Are you currently awaiting charges, trial, or sentencing?",ynrdm,1);
+			public var qParoleProbation:QuestionList = new QuestionList("ParoleProbation","Are you currently on parole or probation?",ynrdm,1);
+			
+			//Crime Form Area
+			public override function createForm():void
+			{
+				//Questions
+				addQuestion(qArrestedDays,50);
+				addQuestion(qArrestedDrugDays,50);
+				addQuestion(qArrestedConfineDays,50);
+				addQuestion(qNrCrimes,50);
+				addQuestion(qAwaitTrial);
+				addQuestion(qParoleProbation);
+				
+				//Validators
+				//qIncomeOther").inputControl.addEventListener(FocusEvent.FOCUS_OUT,incomeOtherHandler);
+				
+				addNumberValidator(qArrestedDays,0,99);
+				addNumberValidator(qArrestedDrugDays,0,0);
+				addNumberValidator(qArrestedConfineDays,0,15);
+				addNumberValidator(qNrCrimes,0,999);
+				BindingUtils.bindSetter(function():void{(qArrestedDrugDays.validator as NumberValidator).maxValue = Number(qArrestedDays.answer)}, qArrestedDays.inputControl, "text");
+				BindingUtils.bindSetter(function():void{(qArrestedConfineDays.validator as NumberValidator).minValue = (global.pageGPRA.livingForm.qLivingWhere as QuestionList).answerIndex == 3 ? 16 : 0;
+					(qArrestedConfineDays.validator as NumberValidator).maxValue = global.pageGPRA.livingForm.qLivingWhere.answerIndex == 3 ? 30 : 15}, global.pageGPRA.livingForm.qLivingWhere.inputControl, "selectedIndex");
+				BindingUtils.bindSetter(function():void{(qNrCrimes.validator as NumberValidator).minValue = Number(global.pageGPRA.drugForm.qDAUseIllegDrugsDays.answer)}, global.pageGPRA.drugForm.qDAUseIllegDrugsDays.inputControl, "text");
+				
+				//Control Logic
+				addSkipTextNumber(qArrestedDays,[qArrestedDrugDays],["0"]);
+			}
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+</dci:DCIForm>

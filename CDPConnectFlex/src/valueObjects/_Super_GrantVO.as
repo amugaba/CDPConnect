@@ -1,6 +1,6 @@
 /**
  * This is a generated class and is not intended for modification.  To customize behavior
- * of this value object you may modify the generated sub-class of this class - UserVO.as.
+ * of this value object you may modify the generated sub-class of this class - GrantVO.as.
  */
 
 package valueObjects
@@ -20,20 +20,20 @@ import com.adobe.fiber.valueobjects.AvailablePropertyIterator;
 use namespace model_internal;
 
 [ExcludeClass]
-public class _Super_UserVO extends flash.events.EventDispatcher implements com.adobe.fiber.valueobjects.IValueObject
+public class _Super_GrantVO extends flash.events.EventDispatcher implements com.adobe.fiber.valueobjects.IValueObject
 {
     model_internal static function initRemoteClassAliasSingle(cz:Class) : void
     {
         try
         {
-            if (flash.net.getClassByAlias("UserVO") == null)
+            if (flash.net.getClassByAlias("GrantVO") == null)
             {
-                flash.net.registerClassAlias("UserVO", cz);
+                flash.net.registerClassAlias("GrantVO", cz);
             }
         }
         catch (e:Error)
         {
-            flash.net.registerClassAlias("UserVO", cz);
+            flash.net.registerClassAlias("GrantVO", cz);
         }
     }
 
@@ -41,7 +41,7 @@ public class _Super_UserVO extends flash.events.EventDispatcher implements com.a
     {
     }
 
-    model_internal var _dminternal_model : _UserVOEntityMetadata;
+    model_internal var _dminternal_model : _GrantVOEntityMetadata;
     model_internal var _changedObjects:mx.collections.ArrayCollection = new ArrayCollection();
 
     public function getChangedObjects() : Array
@@ -58,14 +58,11 @@ public class _Super_UserVO extends flash.events.EventDispatcher implements com.a
     /**
      * properties
      */
-    private var _internal_username : String;
+    private var _internal_autoid : int;
     private var _internal_name : String;
-    private var _internal_password : String;
-    private var _internal_initials : String;
-    private var _internal_facility : String;
-    private var _internal_email : String;
-    private var _internal_admin : int;
-    private var _internal_grantid : int;
+    private var _internal_samhsaCenter : int;
+    private var _internal_programType : int;
+    private var _internal_grantCode : String;
 
     private static var emptyArray:Array = new Array();
 
@@ -77,9 +74,9 @@ public class _Super_UserVO extends flash.events.EventDispatcher implements com.a
 
     model_internal var _changeWatcherArray:Array = new Array();
 
-    public function _Super_UserVO()
+    public function _Super_GrantVO()
     {
-        _model = new _UserVOEntityMetadata(this);
+        _model = new _GrantVOEntityMetadata(this);
 
         // Bind to own data or source properties for cache invalidation triggering
 
@@ -90,9 +87,9 @@ public class _Super_UserVO extends flash.events.EventDispatcher implements com.a
      */
 
     [Bindable(event="propertyChange")]
-    public function get username() : String
+    public function get autoid() : int
     {
-        return _internal_username;
+        return _internal_autoid;
     }
 
     [Bindable(event="propertyChange")]
@@ -102,39 +99,21 @@ public class _Super_UserVO extends flash.events.EventDispatcher implements com.a
     }
 
     [Bindable(event="propertyChange")]
-    public function get password() : String
+    public function get samhsaCenter() : int
     {
-        return _internal_password;
+        return _internal_samhsaCenter;
     }
 
     [Bindable(event="propertyChange")]
-    public function get initials() : String
+    public function get programType() : int
     {
-        return _internal_initials;
+        return _internal_programType;
     }
 
     [Bindable(event="propertyChange")]
-    public function get facility() : String
+    public function get grantCode() : String
     {
-        return _internal_facility;
-    }
-
-    [Bindable(event="propertyChange")]
-    public function get email() : String
-    {
-        return _internal_email;
-    }
-
-    [Bindable(event="propertyChange")]
-    public function get admin() : int
-    {
-        return _internal_admin;
-    }
-
-    [Bindable(event="propertyChange")]
-    public function get grantid() : int
-    {
-        return _internal_grantid;
+        return _internal_grantCode;
     }
 
     public function clearAssociations() : void
@@ -145,13 +124,13 @@ public class _Super_UserVO extends flash.events.EventDispatcher implements com.a
      * data/source property setters
      */
 
-    public function set username(value:String) : void
+    public function set autoid(value:int) : void
     {
-        var oldValue:String = _internal_username;
+        var oldValue:int = _internal_autoid;
         if (oldValue !== value)
         {
-            _internal_username = value;
-            this.dispatchEvent(mx.events.PropertyChangeEvent.createUpdateEvent(this, "username", oldValue, _internal_username));
+            _internal_autoid = value;
+            this.dispatchEvent(mx.events.PropertyChangeEvent.createUpdateEvent(this, "autoid", oldValue, _internal_autoid));
         }
     }
 
@@ -165,63 +144,33 @@ public class _Super_UserVO extends flash.events.EventDispatcher implements com.a
         }
     }
 
-    public function set password(value:String) : void
+    public function set samhsaCenter(value:int) : void
     {
-        var oldValue:String = _internal_password;
+        var oldValue:int = _internal_samhsaCenter;
         if (oldValue !== value)
         {
-            _internal_password = value;
-            this.dispatchEvent(mx.events.PropertyChangeEvent.createUpdateEvent(this, "password", oldValue, _internal_password));
+            _internal_samhsaCenter = value;
+            this.dispatchEvent(mx.events.PropertyChangeEvent.createUpdateEvent(this, "samhsaCenter", oldValue, _internal_samhsaCenter));
         }
     }
 
-    public function set initials(value:String) : void
+    public function set programType(value:int) : void
     {
-        var oldValue:String = _internal_initials;
+        var oldValue:int = _internal_programType;
         if (oldValue !== value)
         {
-            _internal_initials = value;
-            this.dispatchEvent(mx.events.PropertyChangeEvent.createUpdateEvent(this, "initials", oldValue, _internal_initials));
+            _internal_programType = value;
+            this.dispatchEvent(mx.events.PropertyChangeEvent.createUpdateEvent(this, "programType", oldValue, _internal_programType));
         }
     }
 
-    public function set facility(value:String) : void
+    public function set grantCode(value:String) : void
     {
-        var oldValue:String = _internal_facility;
+        var oldValue:String = _internal_grantCode;
         if (oldValue !== value)
         {
-            _internal_facility = value;
-            this.dispatchEvent(mx.events.PropertyChangeEvent.createUpdateEvent(this, "facility", oldValue, _internal_facility));
-        }
-    }
-
-    public function set email(value:String) : void
-    {
-        var oldValue:String = _internal_email;
-        if (oldValue !== value)
-        {
-            _internal_email = value;
-            this.dispatchEvent(mx.events.PropertyChangeEvent.createUpdateEvent(this, "email", oldValue, _internal_email));
-        }
-    }
-
-    public function set admin(value:int) : void
-    {
-        var oldValue:int = _internal_admin;
-        if (oldValue !== value)
-        {
-            _internal_admin = value;
-            this.dispatchEvent(mx.events.PropertyChangeEvent.createUpdateEvent(this, "admin", oldValue, _internal_admin));
-        }
-    }
-
-    public function set grantid(value:int) : void
-    {
-        var oldValue:int = _internal_grantid;
-        if (oldValue !== value)
-        {
-            _internal_grantid = value;
-            this.dispatchEvent(mx.events.PropertyChangeEvent.createUpdateEvent(this, "grantid", oldValue, _internal_grantid));
+            _internal_grantCode = value;
+            this.dispatchEvent(mx.events.PropertyChangeEvent.createUpdateEvent(this, "grantCode", oldValue, _internal_grantCode));
         }
     }
 
@@ -285,14 +234,14 @@ public class _Super_UserVO extends flash.events.EventDispatcher implements com.a
 
     [Transient]
     [Bindable(event="propertyChange")]
-    public function get _model() : _UserVOEntityMetadata
+    public function get _model() : _GrantVOEntityMetadata
     {
         return model_internal::_dminternal_model;
     }
 
-    public function set _model(value : _UserVOEntityMetadata) : void
+    public function set _model(value : _GrantVOEntityMetadata) : void
     {
-        var oldValue : _UserVOEntityMetadata = model_internal::_dminternal_model;
+        var oldValue : _GrantVOEntityMetadata = model_internal::_dminternal_model;
         if (oldValue !== value)
         {
             model_internal::_dminternal_model = value;

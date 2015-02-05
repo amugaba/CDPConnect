@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dci:DCIForm xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			 xmlns:s="library://ns.adobe.com/flex/spark" 
+			 xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:dci="components.dci.*" width="100%" height="100%">
+	<fx:Script>
+		<![CDATA[
+			import components.QuestionClass;
+			import components.QuestionList;
+			import components.QuestionText;
+			
+			import mx.collections.ArrayList;
+			
+			public var qSBIRTScreen:QuestionList = new QuestionList("SBIRTScreen","How did the client screen for your SBIRT?",new ArrayList(["Negative","Positive"]),0);
+			public var qAUDIT:QuestionText = new QuestionText("AUDIT","AUDIT","");
+			public var qCAGE:QuestionText = new QuestionText("CAGE","CAGE","");
+			public var qDAST:QuestionText = new QuestionText("DAST","DAST","");
+			public var qDAST10:QuestionText = new QuestionText("DAST10","DAST-10","");
+			public var qNIAAA:QuestionText = new QuestionText("NIAAA","NIAAA Guide","");
+			public var qASSIST:QuestionText = new QuestionText("ASSIST","ASSIST/Alcohol Subscore","");
+			public var qOtherScreen:QuestionText = new QuestionText("OtherScreen","Other","");
+			public var qOtherScreenSpec:QuestionText = new QuestionText("OtherScreenSpec","Other (Specify)","");
+			public var qSBIRTContinue:QuestionList = new QuestionList("SBIRTContinue","Was he/she willing to continue his/her participation in the SBIRT program",new ArrayList(["Yes","No"]),0);
+		
+			private var scoreWidth:int = 50;
+		
+			public override function createForm():void
+			{
+				addQuestion(qSBIRTScreen);
+				createText("What was his/her screening score?","h1");
+				addQuestion(qAUDIT,scoreWidth);
+				addQuestion(qCAGE,scoreWidth);
+				addQuestion(qDAST,scoreWidth);
+				addQuestion(qDAST,scoreWidth);
+				addQuestion(qDAST10,scoreWidth);
+				addQuestion(qNIAAA,scoreWidth);
+				addQuestion(qASSIST,scoreWidth);
+				addQuestion(qOtherScreen,scoreWidth);
+				addQuestion(qOtherScreenSpec);
+				addQuestion(qSBIRTContinue);
+				
+				//Validators
+				addNumberValidator(qAUDIT,0,40,true,false);
+				addNumberValidator(qCAGE,0,4,true,false);
+				addNumberValidator(qDAST,0,28,true,false);
+				addNumberValidator(qDAST,0,10,true,false);
+				addNumberValidator(qNIAAA,0,10,true,false);//what even is this score?
+				addNumberValidator(qASSIST,0,33,true,false);
+				addNumberValidator(qOtherScreen,0,1000,true,false);
+				addSkipTextRange(qOtherScreen,[qOtherScreenSpec]);
+			}
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+</dci:DCIForm>

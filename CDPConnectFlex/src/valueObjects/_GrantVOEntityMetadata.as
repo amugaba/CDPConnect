@@ -16,45 +16,42 @@ import mx.events.PropertyChangeEvent;
 use namespace model_internal;
 
 [ExcludeClass]
-internal class _UserVOEntityMetadata extends com.adobe.fiber.valueobjects.AbstractEntityMetadata
+internal class _GrantVOEntityMetadata extends com.adobe.fiber.valueobjects.AbstractEntityMetadata
 {
     private static var emptyArray:Array = new Array();
 
-    model_internal static var allProperties:Array = new Array("username", "name", "password", "initials", "facility", "email", "admin", "grantid");
+    model_internal static var allProperties:Array = new Array("autoid", "name", "samhsaCenter", "programType", "grantCode");
     model_internal static var allAssociationProperties:Array = new Array();
-    model_internal static var allRequiredProperties:Array = new Array("grantid");
-    model_internal static var allAlwaysAvailableProperties:Array = new Array("username", "name", "password", "initials", "facility", "email", "admin", "grantid");
+    model_internal static var allRequiredProperties:Array = new Array();
+    model_internal static var allAlwaysAvailableProperties:Array = new Array("autoid", "name", "samhsaCenter", "programType", "grantCode");
     model_internal static var guardedProperties:Array = new Array();
-    model_internal static var dataProperties:Array = new Array("username", "name", "password", "initials", "facility", "email", "admin", "grantid");
+    model_internal static var dataProperties:Array = new Array("autoid", "name", "samhsaCenter", "programType", "grantCode");
     model_internal static var sourceProperties:Array = emptyArray
-    model_internal static var nonDerivedProperties:Array = new Array("username", "name", "password", "initials", "facility", "email", "admin", "grantid");
+    model_internal static var nonDerivedProperties:Array = new Array("autoid", "name", "samhsaCenter", "programType", "grantCode");
     model_internal static var derivedProperties:Array = new Array();
     model_internal static var collectionProperties:Array = new Array();
     model_internal static var collectionBaseMap:Object;
-    model_internal static var entityName:String = "UserVO";
+    model_internal static var entityName:String = "GrantVO";
     model_internal static var dependentsOnMap:Object;
     model_internal static var dependedOnServices:Array = new Array();
     model_internal static var propertyTypeMap:Object;
 
 
-    model_internal var _instance:_Super_UserVO;
+    model_internal var _instance:_Super_GrantVO;
     model_internal static var _nullStyle:com.adobe.fiber.styles.Style = new com.adobe.fiber.styles.Style();
 
-    public function _UserVOEntityMetadata(value : _Super_UserVO)
+    public function _GrantVOEntityMetadata(value : _Super_GrantVO)
     {
         // initialize property maps
         if (model_internal::dependentsOnMap == null)
         {
             // dependents map
             model_internal::dependentsOnMap = new Object();
-            model_internal::dependentsOnMap["username"] = new Array();
+            model_internal::dependentsOnMap["autoid"] = new Array();
             model_internal::dependentsOnMap["name"] = new Array();
-            model_internal::dependentsOnMap["password"] = new Array();
-            model_internal::dependentsOnMap["initials"] = new Array();
-            model_internal::dependentsOnMap["facility"] = new Array();
-            model_internal::dependentsOnMap["email"] = new Array();
-            model_internal::dependentsOnMap["admin"] = new Array();
-            model_internal::dependentsOnMap["grantid"] = new Array();
+            model_internal::dependentsOnMap["samhsaCenter"] = new Array();
+            model_internal::dependentsOnMap["programType"] = new Array();
+            model_internal::dependentsOnMap["grantCode"] = new Array();
 
             // collection base map
             model_internal::collectionBaseMap = new Object();
@@ -62,14 +59,11 @@ internal class _UserVOEntityMetadata extends com.adobe.fiber.valueobjects.Abstra
 
         // Property type Map
         model_internal::propertyTypeMap = new Object();
-        model_internal::propertyTypeMap["username"] = "String";
+        model_internal::propertyTypeMap["autoid"] = "int";
         model_internal::propertyTypeMap["name"] = "String";
-        model_internal::propertyTypeMap["password"] = "String";
-        model_internal::propertyTypeMap["initials"] = "String";
-        model_internal::propertyTypeMap["facility"] = "String";
-        model_internal::propertyTypeMap["email"] = "String";
-        model_internal::propertyTypeMap["admin"] = "int";
-        model_internal::propertyTypeMap["grantid"] = "int";
+        model_internal::propertyTypeMap["samhsaCenter"] = "int";
+        model_internal::propertyTypeMap["programType"] = "int";
+        model_internal::propertyTypeMap["grantCode"] = "String";
 
         model_internal::_instance = value;
     }
@@ -122,7 +116,7 @@ internal class _UserVOEntityMetadata extends com.adobe.fiber.valueobjects.Abstra
     override public function getDependants(propertyName:String):Array
     {
        if (model_internal::nonDerivedProperties.indexOf(propertyName) == -1)
-            throw new Error(propertyName + " is not a data property of entity UserVO");
+            throw new Error(propertyName + " is not a data property of entity GrantVO");
             
        return model_internal::dependentsOnMap[propertyName] as Array;  
     }
@@ -140,7 +134,7 @@ internal class _UserVOEntityMetadata extends com.adobe.fiber.valueobjects.Abstra
     override public function getCollectionBase(propertyName:String):String
     {
         if (model_internal::collectionProperties.indexOf(propertyName) == -1)
-            throw new Error(propertyName + " is not a collection property of entity UserVO");
+            throw new Error(propertyName + " is not a collection property of entity GrantVO");
 
         return model_internal::collectionBaseMap[propertyName];
     }
@@ -148,7 +142,7 @@ internal class _UserVOEntityMetadata extends com.adobe.fiber.valueobjects.Abstra
     override public function getPropertyType(propertyName:String):String
     {
         if (model_internal::allProperties.indexOf(propertyName) == -1)
-            throw new Error(propertyName + " is not a property of UserVO");
+            throw new Error(propertyName + " is not a property of GrantVO");
 
         return model_internal::propertyTypeMap[propertyName];
     }
@@ -162,7 +156,7 @@ internal class _UserVOEntityMetadata extends com.adobe.fiber.valueobjects.Abstra
     {
         if (model_internal::allProperties.indexOf(propertyName) == -1)
         {
-            throw new Error(propertyName + " does not exist for entity UserVO");
+            throw new Error(propertyName + " does not exist for entity GrantVO");
         }
 
         return model_internal::_instance[propertyName];
@@ -172,7 +166,7 @@ internal class _UserVOEntityMetadata extends com.adobe.fiber.valueobjects.Abstra
     {
         if (model_internal::nonDerivedProperties.indexOf(propertyName) == -1)
         {
-            throw new Error(propertyName + " is not a modifiable property of entity UserVO");
+            throw new Error(propertyName + " is not a modifiable property of entity GrantVO");
         }
 
         model_internal::_instance[propertyName] = value;
@@ -204,7 +198,7 @@ internal class _UserVOEntityMetadata extends com.adobe.fiber.valueobjects.Abstra
     {
         if (model_internal::allProperties.indexOf(propertyName) == -1)
         {
-            throw new Error(propertyName + " does not exist for entity UserVO");
+            throw new Error(propertyName + " does not exist for entity GrantVO");
         }
 
         if (model_internal::allAlwaysAvailableProperties.indexOf(propertyName) != -1)
@@ -299,7 +293,7 @@ internal class _UserVOEntityMetadata extends com.adobe.fiber.valueobjects.Abstra
     }
 
     [Bindable(event="propertyChange")]
-    public function get isUsernameAvailable():Boolean
+    public function get isAutoidAvailable():Boolean
     {
         return true;
     }
@@ -311,37 +305,19 @@ internal class _UserVOEntityMetadata extends com.adobe.fiber.valueobjects.Abstra
     }
 
     [Bindable(event="propertyChange")]
-    public function get isPasswordAvailable():Boolean
+    public function get isSamhsaCenterAvailable():Boolean
     {
         return true;
     }
 
     [Bindable(event="propertyChange")]
-    public function get isInitialsAvailable():Boolean
+    public function get isProgramTypeAvailable():Boolean
     {
         return true;
     }
 
     [Bindable(event="propertyChange")]
-    public function get isFacilityAvailable():Boolean
-    {
-        return true;
-    }
-
-    [Bindable(event="propertyChange")]
-    public function get isEmailAvailable():Boolean
-    {
-        return true;
-    }
-
-    [Bindable(event="propertyChange")]
-    public function get isAdminAvailable():Boolean
-    {
-        return true;
-    }
-
-    [Bindable(event="propertyChange")]
-    public function get isGrantidAvailable():Boolean
+    public function get isGrantCodeAvailable():Boolean
     {
         return true;
     }
@@ -357,7 +333,7 @@ internal class _UserVOEntityMetadata extends com.adobe.fiber.valueobjects.Abstra
     }
 
     [Bindable(event="propertyChange")]   
-    public function get usernameStyle():com.adobe.fiber.styles.Style
+    public function get autoidStyle():com.adobe.fiber.styles.Style
     {
         return model_internal::_nullStyle;
     }
@@ -369,37 +345,19 @@ internal class _UserVOEntityMetadata extends com.adobe.fiber.valueobjects.Abstra
     }
 
     [Bindable(event="propertyChange")]   
-    public function get passwordStyle():com.adobe.fiber.styles.Style
+    public function get samhsaCenterStyle():com.adobe.fiber.styles.Style
     {
         return model_internal::_nullStyle;
     }
 
     [Bindable(event="propertyChange")]   
-    public function get initialsStyle():com.adobe.fiber.styles.Style
+    public function get programTypeStyle():com.adobe.fiber.styles.Style
     {
         return model_internal::_nullStyle;
     }
 
     [Bindable(event="propertyChange")]   
-    public function get facilityStyle():com.adobe.fiber.styles.Style
-    {
-        return model_internal::_nullStyle;
-    }
-
-    [Bindable(event="propertyChange")]   
-    public function get emailStyle():com.adobe.fiber.styles.Style
-    {
-        return model_internal::_nullStyle;
-    }
-
-    [Bindable(event="propertyChange")]   
-    public function get adminStyle():com.adobe.fiber.styles.Style
-    {
-        return model_internal::_nullStyle;
-    }
-
-    [Bindable(event="propertyChange")]   
-    public function get grantidStyle():com.adobe.fiber.styles.Style
+    public function get grantCodeStyle():com.adobe.fiber.styles.Style
     {
         return model_internal::_nullStyle;
     }

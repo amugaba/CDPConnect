@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dci:DCIForm xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			 xmlns:s="library://ns.adobe.com/flex/spark" 
+			 xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:dci="components.dci.*" width="100%" height="100%"
+			 labelWidth="190">
+	<fx:Script>
+		<![CDATA[
+			import components.DropDownValidator;
+			import components.QuestionList;
+			import components.QuestionText;
+			import components.QuestionTextRefusable;
+			import components.SkipPattern;
+			
+			import mx.binding.utils.BindingUtils;
+			import mx.collections.ArrayList;
+			import mx.validators.NumberValidator;
+			
+			public var qFLWPStatus:QuestionList = new QuestionList("FLWPStatus","What is the follow-up status of the client?",new ArrayList(["Deceased at time of due date","Completed interview within specified window","Completed interview outside specified window","Located, but refused, unspecified",
+				"Located, but unable to gain institutional access","Located, but otherwise unable to gain access","Located, but withdrawn from project","Unable to locate, moved","Unable to locate, other"]),1);
+			public var qFLWPStatusSpec:QuestionText = new QuestionText("FLWPStatusSpec","Other, specify:","");
+			public var qReceivingServices:QuestionList = new QuestionList("ReceivingServices","Is the client still receiving services from your program?",new ArrayList(["Yes","No"]),1);
+			
+			//Followup Form Area
+			public override function createForm():void
+			{
+				//Questions
+				addQuestion(qFLWPStatus,260);
+				addQuestion(qFLWPStatusSpec);
+				addQuestion(qReceivingServices);
+				
+				//Validators
+				addRequiredValidator(qFLWPStatusSpec);
+				addDropDownValidator(qFLWPStatus,["Completed interview within specified window","Completed interview outside specified window"]);				
+				BindingUtils.bindSetter(followupValidatorHandler, global.pageGPRA.recordForm.qConductedInterview.inputControl, "selectedIndex");
+				//Control Logic
+				addSkipDropDown(qFLWPStatus,["Deceased at time of due date","Completed interview within specified window","Completed interview outside specified window","Located, but refused, unspecified",
+					"Located, but unable to gain institutional access","Located, but otherwise unable to gain access","Located, but withdrawn from project","Unable to locate, moved"],[qFLWPStatusSpec]);
+				(qFLWPStatus.skipPatterns[0] as SkipPattern).skipWhenInvalid = true;
+			}
+			
+			protected function followupValidatorHandler(val:String):void
+			{
+				var dv:DropDownValidator = qFLWPStatus.validator as DropDownValidator;
+				if(global.pageGPRA.recordForm.qConductedInterview.answer == "Yes")
+				{
+					dv.validAnswers = ["Completed interview within specified window","Completed interview outside specified window"];
+				}
+				else
+				{
+					dv.validAnswers = ["Deceased at time of due date","Located, but refused, unspecified","Located, but unable to gain institutional access",
+						"Located, but otherwise unable to gain access","Located, but withdrawn from project","Unable to locate, moved","Unable to locate, other"];
+				}
+				dv.validate();
+			}
+			
+			public override function reset():void
+			{
+				super.reset();
+				followupValidatorHandler("");
+			}
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+</dci:DCIForm>

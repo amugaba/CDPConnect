@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dci:DCIForm xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			 xmlns:s="library://ns.adobe.com/flex/spark" 
+			 xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:dci="components.dci.*" width="100%" height="100%">
+	<fx:Script>
+		<![CDATA[
+			import components.DropDownValidator;
+			import components.QuestionClass;
+			import components.QuestionList;
+			import components.QuestionText;
+			import components.SkipMultipleHandler;
+			import components.SkipPattern;
+			
+			import mx.collections.ArrayList;
+			import mx.containers.FormItem;
+			import mx.controls.Alert;
+			import mx.states.OverrideBase;
+			
+			public var qFamilyActiveDuty:QuestionList = new QuestionList("FamilyActiveDuty","Is anyone in your immediate family currently serving as a member of one of the branches of the United States Uniformed Services on active duty, reserve components or National Guard?",new ArrayList(["No","Yes, only one","Yes, more than one","Refused","Don't Know","Missing Data"]),0);
+			public var qServiceMemRelationship:QuestionList = new QuestionList("ServiceMemRelationship","What is the relationship of that person (Service Member) to you?",new ArrayList(["Mother","Father","Brother","Sister",
+				"Spouse","Partner","Child","Other","Missing Data"]),0);
+			public var qServiceMemExpOther:QuestionText = new QuestionText("ServiceMemExpOther","Other, specify","");
+			public var qServiceMemExpDeployed:QuestionList = new QuestionList("ServiceMemExpDeployed","Deployed in support of combat operations (e.g., Iraq or Afghanistan)?",ynrdm,1);
+			public var qServiceMemExpInjured:QuestionList = new QuestionList("ServiceMemExpInjured","Was physically injured during combat operations?",ynrdm,1);
+			public var qServiceMemExpCombatStress:QuestionList = new QuestionList("ServiceMemExpCombatStress","Developed combat stress symptoms/ difficulties adjusting following deployment, including PTSD, depression, or " +
+				"suicidal thoughts?",ynrdm,1);
+			public var qServiceMemExpDeceased:QuestionList = new QuestionList("ServiceMemExpDeceased","Died or was killed?",ynrdm,1);
+			
+			[Bindable] public var familyVeterans:ArrayList = new ArrayList();
+			
+			//Military2 Form Area
+			public override function createForm():void
+			{
+				//Questions
+				addQuestion(qFamilyActiveDuty, 150);
+				createText("The following four questions relate to experiences you or a member of your immediate family may have had while serving.","h1");
+				addQuestion(qServiceMemRelationship);
+				addQuestion(qServiceMemExpOther);
+				createText("Has the Service Member experienced any of the following?","h1");
+				addQuestion(qServiceMemExpDeployed);
+				addQuestion(qServiceMemExpInjured);
+				addQuestion(qServiceMemExpCombatStress);
+				addQuestion(qServiceMemExpDeceased);
+				setElementIndex(military2Group,numElements-1);
+				
+				//Validators
+				addDropDownValidator(qFamilyActiveDuty,["No","Refused","Don't Know","Missing Data"]);
+				
+				//Control Logic
+				addSkipDropDown(qServiceMemRelationship,["Mother","Father","Brother","Sister","Spouse","Partner","Child"],[qServiceMemExpOther]);
+				addSkipDropDown(qFamilyActiveDuty,["No","Refused","Don't Know","Missing Data"],[qServiceMemRelationship,qServiceMemExpDeployed,qServiceMemExpInjured,qServiceMemExpCombatStress,qServiceMemExpDeceased]);
+				(qFamilyActiveDuty.skipPatterns[0] as SkipPattern).skipWhenInvalid = true;
+			}
+			
+			protected function military2AddButtonHandler(event:MouseEvent):void
+			{
+				if((qFamilyActiveDuty.answer == "Yes, only one" && familyVeterans.length > 0) || 
+					(qFamilyActiveDuty.answer == "Yes, more than one" && familyVeterans.length > 5))
+					Alert.show("More relations cannot be added with current answer to Question 1");
+				else if(qServiceMemRelationship.answer == "Other" && qServiceMemExpOther.answer == "")
+					Alert.show("Relationship Other, Specify cannot be blank.");
+				else
+					familyVeterans.addItem([qServiceMemRelationship.answer,qServiceMemExpOther.answer,qServiceMemExpDeployed.answer,qServiceMemExpInjured.answer,
+						qServiceMemExpCombatStress.answer,qServiceMemExpDeceased.answer]);
+				updateFamilyValidator();
+			}
+			
+			protected function military2RemoveButtonHandler(event:MouseEvent):void
+			{
+				if(military2List.selectedItem != null)
+					familyVeterans.removeItemAt(familyVeterans.getItemIndex(military2List.selectedItem));
+				updateFamilyValidator();
+			}
+			
+			public function updateFamilyValidator():void
+			{
+				var dv:DropDownValidator = qFamilyActiveDuty.validator as DropDownValidator;
+				if(familyVeterans.length == 0)
+				{
+					dv.validAnswers = ["No","Refused","Don't Know","Missing Data"];
+				}
+				else if(familyVeterans.length == 1)
+				{
+					dv.validAnswers = ["Yes, only one"];
+				}
+				else
+				{
+					dv.validAnswers = ["Yes, more than one"];
+				}
+				dv.validate();
+			}
+			
+			public override function reset():void
+			{
+				super.reset();
+				familyVeterans = new ArrayList();
+				updateFamilyValidator();
+			}
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<s:Group width="400" height="100" id="military2Group">
+		<s:List id="military2List" width="300" height="75" x="0" y="0"
+				dataProvider="{familyVeterans}" allowMultipleSelection="false"></s:List>
+		<s:Button label="Add" click="military2AddButtonHandler(event)" x="310" y="10"/>
+		<s:Button label="Remove" click="military2RemoveButtonHandler(event)" x="310" y="40"/>
+	</s:Group>
+</dci:DCIForm>

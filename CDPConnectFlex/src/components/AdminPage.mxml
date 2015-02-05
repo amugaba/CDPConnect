@@ -6,6 +6,7 @@
 					xmlns:gpraservice="services.gpraservice.*"
 					xmlns:styles="com.adobe.fiber.styles.*"
 					xmlns:clientservice="services.clientservice.*"
+					xmlns:miscservice="services.miscservice.*"
 					width="400" height="300">
 	<fx:Script>
 		<![CDATA[
@@ -23,6 +24,7 @@
 			
 			import valueObjects.ClientVO;
 			import valueObjects.GpraVO;
+			import valueObjects.GrantVO;
 			
 			protected var global:CDPConnectFlex = FlexGlobals.topLevelApplication as CDPConnectFlex;
 			protected var gpraHeaders:String = "autoid,ClientID,ClientType,InterviewTypeCode,InterviewDate,CooccurringScreen,CooccurringScreenStatus,GrantNo,ConductedInterview,DateOfBirth," +
@@ -127,6 +129,22 @@
 				}
 			}
 			
+			protected function saveSettingsButton_clickHandler(event:MouseEvent):void
+			{
+				global.activeGrant.samhsaCenter = samhsaCenter.selectedIndex;
+				global.activeGrant.programType = programType.selectedIndex;
+				global.activeGrant.grantCode = grantCode.text;
+				updateGrantResult.token = miscService.updateGrant(global.activeGrant);
+				Alert.show("Grant settings updated.");				
+			}
+			
+			public function populateSettings():void
+			{
+				samhsaCenter.selectedIndex = global.activeGrant.samhsaCenter;
+				programType.selectedIndex = global.activeGrant.programType;
+				grantCode.text = global.activeGrant.grantCode;
+			}
+			
 		]]>
 	</fx:Script>
 	<fx:Style> 
@@ -144,21 +162,41 @@
 		<clientservice:ClientService id="clientService"
 									 fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
 									 showBusyCursor="true"/>
+		<s:CallResponder id="updateGrantResult"/>
+		<miscservice:MiscService id="miscService"
+								 fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
+								 showBusyCursor="true"/>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
 	<s:Group x="0" y="0" width="1024" height="768">
-		<s:Panel x="162" y="0" width="372" height="291" title="Reports">
+		<s:Panel x="162" y="0" width="372" height="183" title="Reports">
 			<s:layout>
 				<s:TileLayout horizontalGap="20" paddingLeft="10" paddingRight="10" paddingTop="15"
 							  requestedColumnCount="2" verticalGap="30"/>
 			</s:layout>
-			<s:Label text="Export New GPRAs to CSV"/>
+			<s:Label text="Export New DCIs to CSV"/>
 			<s:Button id="exportNewGPRAsButton" label="Run" click="exportNewGPRAsButton_clickHandler(event)"/>
-			<s:Label text="Export All GPRAs to CSV"/>
+			<s:Label text="Export All DCIs to CSV"/>
 			<s:Button id="exportAllGPRAsButton" label="Run" click="exportAllGPRAsButton_clickHandler(event)"/>
 			<s:Label text="Export All Clients to CSV"/>
 			<s:Button id="exportClientsButton" label="Run" click="exportClientsButton_clickHandler(event)"/>
 		</s:Panel>
 		<mx:ProgressBar id="uploadProgress" x="392" y="417" indeterminate="true" visible="false"/>
+		<s:Panel x="162" y="206" width="372" height="183" title="DCI Settings">
+			<s:Form x="0" y="0">
+				<s:FormItem label="SAMHSA Center">
+					<s:DropDownList id="samhsaCenter" dataProvider="{new ArrayList(['CSAT','CMHS','CSAP'])}"></s:DropDownList>
+				</s:FormItem>
+				<s:FormItem label="Program Type">
+					<s:DropDownList id="programType" dataProvider="{new ArrayList(['Treatment Grant Program','Recovery Grant Program'])}"></s:DropDownList>
+				</s:FormItem>
+				<s:FormItem label="Grant ID">
+					<s:TextInput id="grantCode"/>
+				</s:FormItem>
+				<s:FormItem>
+					<s:Button id="saveSettingsButton" label="Save Settings" click="saveSettingsButton_clickHandler(event)"/>
+				</s:FormItem>
+			</s:Form>
+		</s:Panel>
 	</s:Group>
 </s:NavigatorContent>
