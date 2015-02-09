@@ -12,45 +12,32 @@
 			import mx.collections.ArrayList;
 			import mx.validators.NumberValidator;
 			
-			public var qSexActivity:QuestionList = new QuestionList("SexActivity","During the past 30 days, did you engage in sexual activity?",new ArrayList(["Yes","No","Not permitted to ask","Refused","Don't Know","Missing Data"]),1);
-			public var qSexContacts:QuestionTextRefusable = new QuestionTextRefusable("SexContacts","Sexual contacts (vaginal, oral, or anal) did you have?","0");
-			public var qSexUnprot:QuestionTextRefusable = new QuestionTextRefusable("SexUnprot","Unprotected sexual contacts did you have?","0");
-			public var qSexUnprotHIVAids:QuestionTextRefusable = new QuestionTextRefusable("SexUnprotHIVAids","HIV positive or has AIDS","0");
-			public var qSexUnprotInjDrugUser:QuestionTextRefusable = new QuestionTextRefusable("SexUnprotInjDrugUser","An injection drug user","0");
-			public var qSexUnprotHigh:QuestionTextRefusable = new QuestionTextRefusable("SexUnprotHigh","High on some substance","0");
-			public var qfHIVTest:QuestionList = new QuestionList("fHIVTest","Have you ever been tested for HIV?",ynrdm,1);
-			public var qfHIVTestResult:QuestionList = new QuestionList("fHIVTestResult","Do you know the results of your HIV testing?",ynrm,1);
+			public var qSuicideAttempted:QuestionList = new QuestionList("SuicideAttempted","Have you ever tried to kill yourself?",ynrdm,1);
+			public var qSuicideConsidered:QuestionList = new QuestionList("SuicideConsidered","At any time in the past 6 months (including today), did you seriously think about trying to kill yourself?",ynrdm,1);
+			public var qSuicideAttemptRecent:QuestionList = new QuestionList("SuicideAttemptRecent","During the past 6 months (including today), did you try to kill yourself?",ynrdm,1);
+			private var responses:ArrayList = new ArrayList(["All of the time","Most of the time","Some of the time","A little of the time","None of the time","Refused","Don't Know","Missing Data"]);
+			public var qNervous:QuestionList = new QuestionList("Nervous","Nervous",responses,0);
+			public var qHopeless:QuestionList = new QuestionList("Hopeless","Hopeless",responses,0);
+			public var qRestless:QuestionList = new QuestionList("Restless","Restless of fidgety",responses,0);
+			public var qDepressed:QuestionList = new QuestionList("Depressed","So depressed that nothing could cheer you up",responses,0);
+			public var qEverythingEffort:QuestionList = new QuestionList("EverythingEffort","That everything was an effort",responses,0);
+			public var qWorthless:QuestionList = new QuestionList("Worthless","Worthless",responses,0);
+			public var qBothered:QuestionList = new QuestionList("Bothered","Bothered by the above psychological or emotional problems",responses,0);
 			
-			//Health2 Form Area
 			public override function createForm():void
 			{
-				//Questions
-				addQuestion(qSexActivity,125);
-				createText("[IF YES] Altogether, how many:","h1");
-				addQuestion(qSexContacts);
-				addQuestion(qSexUnprot);
-				createText("How many unprotected sexual contacts were with an individual who is or was:","h1");
-				addQuestion(qSexUnprotHIVAids);
-				addQuestion(qSexUnprotInjDrugUser);
-				addQuestion(qSexUnprotHigh);
-				addQuestion(qfHIVTest);
-				addQuestion(qfHIVTestResult);
-				
-				//Validators
-				addNumberValidator(qSexContacts,1,999,true);
-				addNumberValidator(qSexUnprot,0,999,true);
-				addNumberValidator(qSexUnprotHIVAids,0,999,true);
-				addNumberValidator(qSexUnprotInjDrugUser,0,999,true);
-				addNumberValidator(qSexUnprotHigh,0,999,true);
-				BindingUtils.bindSetter(function():void{(qSexUnprotHIVAids.validator as NumberValidator).maxValue = Number(qSexUnprot.answer)}, qSexUnprot.inputControl, "text");
-				BindingUtils.bindSetter(function():void{(qSexUnprotInjDrugUser.validator as NumberValidator).maxValue = Number(qSexUnprot.answer)}, qSexUnprot.inputControl, "text");
-				BindingUtils.bindSetter(function():void{(qSexUnprotHigh.validator as NumberValidator).maxValue = Number(qSexUnprot.answer)}, qSexUnprot.inputControl, "text");
-				
-				//Control Logic
-				addSkipDropDown(qSexActivity,["No","Not permitted to ask","Refused","Don't Know","Missing Data"],[qSexContacts,qSexUnprot]);
-				addSkipTextNumber(qSexUnprot,[qSexUnprotHIVAids,qSexUnprotInjDrugUser,qSexUnprotHigh],["0"]);
-				addSkipDropDown(qfHIVTest,["No","Refused","Don't Know","Missing Data"],[qfHIVTestResult]);
-				
+				addQuestion(qSuicideAttempted);
+				addQuestion(qSuicideConsidered);
+				addQuestion(qSuicideAttemptRecent);
+				createText("During the past 30 days, about how howten did you feel...","h1");
+				var width:int = 130;
+				addQuestion(qNervous,width);
+				addQuestion(qHopeless,width);
+				addQuestion(qRestless,width);
+				addQuestion(qDepressed,width);
+				addQuestion(qEverythingEffort,width);
+				addQuestion(qWorthless,width);
+				addQuestion(qBothered,width);
 			}
 		]]>
 	</fx:Script>

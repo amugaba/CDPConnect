@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dci:DCIForm xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			 xmlns:s="library://ns.adobe.com/flex/spark" 
+			 xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:dci="components.dci.*" width="100%" height="100%"
+			 labelWidth="315">
+	<fx:Script>
+		<![CDATA[
+			import components.QuestionList;
+			import components.QuestionText;
+			import components.QuestionTextRefusable;
+			
+			import mx.binding.utils.BindingUtils;
+			import mx.collections.ArrayList;
+			import mx.validators.NumberValidator;
+			
+			public var qAnyViolence:QuestionList = new QuestionList("AnyViolence","In your life have you ever experienced an event, series of events, or set of circumstances that resulted in you feeling physically or emotionally harmed or threatened?",ynrdm,1);
+			public var qViolenceDisaster:QuestionList = new QuestionList("ViolenceDisaster","Natural or man-made disaster",ynrm,1);
+			public var qViolenceSchool:QuestionList = new QuestionList("ViolenceSchool","Community or school violence",ynrm,1);
+			public var qViolenceInterpersonal:QuestionList = new QuestionList("ViolenceInterpersonal","Interpersonal violence (including physical, sexual, or psychological)",ynrm,1);
+			public var qViolenceMilitary:QuestionList = new QuestionList("ViolenceMilitary","Military trauma",ynrm,1);
+			public var qViolenceOther:QuestionList = new QuestionList("ViolenceOther","Other",ynrm,1);
+			public var qViolenceOtherSpec:QuestionText = new QuestionText("ViolenceOtherSpec","Other (specify)","");
+			
+			public var qNightmares:QuestionList = new QuestionList("Nightmares","Have had nightmares about it or thought about it when you did not want to?",ynrdm,1);
+			public var qTriedHard:QuestionList = new QuestionList("TriedHard","Tried hard not to think about it or went out of your way to avoid situations that remind you of them?",ynrdm,1);
+			public var qConstantGuard:QuestionList = new QuestionList("ConstantGuard","Were constantly on guard, watchful, or easily startled?",ynrdm,1);
+			public var qNumbAndDetach:QuestionList = new QuestionList("NumbAndDetach","Felt numb and detached from others, activities, or your surroundings?",ynrdm,1);
+			public var qPhysicallyHurt:QuestionList = new QuestionList("PhysicallyHurt","In the past 30 days, how often have you experienced an event, series of events of set of circumstances that resulted in you feeling physically or emotionally harmed or threatened?",new ArrayList(["Never","A few times",
+				"More than a few times","Refused","Don't Know","Missing Data"]),0);
+			
+			//Health4 Form Area
+			public override function createForm():void
+			{
+				//Questions
+				addQuestion(qAnyViolence);
+				createText("What kind of event was this? (Select all that apply)","h1");
+				addQuestion(qViolenceDisaster);
+				addQuestion(qViolenceSchool);
+				addQuestion(qViolenceInterpersonal);
+				addQuestion(qViolenceMilitary);
+				addQuestion(qViolenceOther);
+				addQuestion(qViolenceOtherSpec);
+				createText("Did any of these experiences feel so frightening, horrible, or upsetting that in the past and/or the present you:","h1");
+				addQuestion(qNightmares);
+				addQuestion(qTriedHard);
+				addQuestion(qConstantGuard);
+				addQuestion(qNumbAndDetach);
+				addDivider();
+				addQuestion(qPhysicallyHurt,130);
+				
+				//Validators
+				addRequiredValidator(qViolenceOtherSpec);
+				
+				//Control Logic
+				addSkipDropDown(qAnyViolence,["Yes"],[qViolenceDisaster,qViolenceSchool,qViolenceInterpersonal,qViolenceMilitary,qViolenceOther,qNightmares,qTriedHard,qConstantGuard,qNumbAndDetach],true);
+				addSkipDropDown(qViolenceOther,["Yes"],[qViolenceOtherSpec],true);
+				
+			}
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+</dci:DCIForm>

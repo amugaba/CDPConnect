@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dci:DCIForm xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			 xmlns:s="library://ns.adobe.com/flex/spark" 
+			 xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:dci="components.dci.*" width="100%" height="100%">
+	<fx:Script>
+		<![CDATA[
+			import components.QuestionClass;
+			import components.QuestionList;
+			import components.QuestionText;
+			import components.QuestionTextRefusable;
+			import components.SkipMultipleHandler;
+			import components.SkipPattern;
+			
+			import mx.binding.utils.BindingUtils;
+			import mx.collections.ArrayList;
+			import mx.validators.NumberValidator;
+			
+			public var qCigarettesDays:QuestionTextRefusable = new QuestionTextRefusable("CigarettesDays","Cigarettes","0");
+			public var qChewingTobaccoDays:QuestionTextRefusable = new QuestionTextRefusable("ChewingTobaccoDays","Chewing tobacco","0");
+			public var qCigarsDays:QuestionTextRefusable = new QuestionTextRefusable("CigarsDays","Cigars","0");
+			public var qECigarettesDays:QuestionTextRefusable = new QuestionTextRefusable("ECigarettesDays","Electronic cigarettes (e-cigarettes)","0");
+			public var qOtherTobaccoDays:QuestionTextRefusable = new QuestionTextRefusable("OtherTobaccoDays","Other tobacco related products","0");
+			public var qOtherTobaccoSpec:QuestionText = new QuestionText("OtherTobaccoSpec","Other (specify)","");
+			
+			public override function createForm():void
+			{
+				viewstackIndex = 9;
+				
+				createText("In the past 30 days, how many days have you used...","h1");
+				addQuestion(qCigarettesDays);
+				addQuestion(qChewingTobaccoDays);
+				addQuestion(qCigarsDays);
+				addQuestion(qECigarettesDays);
+				addQuestion(qOtherTobaccoDays);
+				addQuestion(qOtherTobaccoSpec);
+				
+				//Validators
+				addNumberValidator(qCigarettesDays,0,30,true);
+				addNumberValidator(qChewingTobaccoDays,0,30,true);
+				addNumberValidator(qCigarsDays,0,30,true);
+				addNumberValidator(qECigarettesDays,0,30,true);
+				addNumberValidator(qOtherTobaccoDays,0,30,true);
+				addRequiredValidator(qOtherTobaccoSpec);
+				
+				//Control Logic
+				addSkipTextNumber(qOtherTobaccoDays,[qOtherTobaccoSpec],["0"]);
+			}
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+</dci:DCIForm>

@@ -25,6 +25,7 @@
 		
 			public override function createForm():void
 			{
+				viewstackIndex = 1;
 				addQuestion(qSBIRTScreen);
 				createText("What was his/her screening score?","h1");
 				addQuestion(qAUDIT,scoreWidth);

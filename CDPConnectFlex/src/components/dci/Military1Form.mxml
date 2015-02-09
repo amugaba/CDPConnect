@@ -28,6 +28,8 @@
 			//Military1 Form Area
 			public override function createForm():void
 			{
+				viewstackIndex = 6;
+				
 				//Questions
 				addQuestion(qMilitaryServed, 175);
 				addQuestion(qMilitaryBranch, 175);

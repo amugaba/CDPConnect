@@ -9,6 +9,8 @@
 					width="400" height="300">
 	<fx:Script>
 		<![CDATA[
+			import components.dci.InterviewType;
+			
 			import flash.globalization.DateTimeFormatter;
 			import flash.globalization.LocaleID;
 			
@@ -206,7 +208,7 @@
 					Alert.show("GPRA not found with this ID.");
 			}
 			
-			protected function createIntakeButton_clickHandler(event:MouseEvent):void
+			protected function createNegativeIntakeButton_clickHandler(event:MouseEvent):void
 			{
 				if(global.activeClient == null)
 					Alert.show("Add or load a client first.");
@@ -216,7 +218,26 @@
 				{
 					var g:GpraVO = new GpraVO();
 					g.autoid = -1;
-					g.type = 1;
+					g.type = InterviewType.INTAKE_SBIRT_NEG;
+					g.status = 0;
+					global.activeGPRA = g;
+					global.pageViewstack.selectedChild = global.pageGPRA;
+					global.pageGpraButton.enabled = true;
+					global.pageGPRA.initializeGPRA();
+				}	
+			}
+			
+			protected function createBIIntakeButton_clickHandler(event:MouseEvent):void
+			{
+				if(global.activeClient == null)
+					Alert.show("Add or load a client first.");
+				//else if(global.activeClient.intake != null)
+				//	Alert.show("A GPRA intake already exists.");
+				else
+				{
+					var g:GpraVO = new GpraVO();
+					g.autoid = -1;
+					g.type = InterviewType.INTAKE_SBIRT_BI;
 					g.status = 0;
 					global.activeGPRA = g;
 					global.pageViewstack.selectedChild = global.pageGPRA;
@@ -357,8 +378,10 @@
 			<fx:Object type="Intake" date="5/22/2013"></fx:Object>
 		</s:typicalItem>
 	</s:DataGrid>
-	<s:Button id="createIntakeButton" x="290" y="296"
-			  label="Create GPRA Intake" click="createIntakeButton_clickHandler(event)"/>
+	<s:Button id="createIntakeNegativeButton" x="290" y="296"
+			  label="Create Negative Intake" click="createNegativeIntakeButton_clickHandler(event)"/>
+	<s:Button id="createIntakeBIButton" x="290" y="296"
+			  label="Create BI Intake" click="createBIIntakeButton_clickHandler(event)"/>
 	<s:Button id="createDischargeButton" x="290" y="325"
 			  label="Create GPRA Discharge" click="createDischargeButton_clickHandler(event)"/>
 	<s:Button id="createFollowupButton" x="290" y="354"

@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dci:DCIForm xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			 xmlns:s="library://ns.adobe.com/flex/spark" 
+			 xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:dci="components.dci.*" width="100%" height="100%"
+			 labelWidth="200">
+	<fx:Script>
+		<![CDATA[
+			import components.QuestionClass;
+			import components.QuestionText;
+			
+			import mx.collections.ArrayList;
+			import mx.containers.FormItem;
+			
+			import spark.components.TileGroup;
+			
+			public var qSvcMedCare:QuestionText = new QuestionText("DisMedCare","Medical care","0");
+			public var qSvcAlcDrugTesting:QuestionText = new QuestionText("DisAlcDrugTesting","Alcohol/drug testing","0");
+			public var qSvcHIVTesting:QuestionText = new QuestionText("DisHIVTesting","HIV/AIDS support & testing","0");
+			public var qSvcOtherMed:QuestionText = new QuestionText("DisOtherMed","Other medical services","0");
+			public var qSvcOtherMedSpec:QuestionText = new QuestionText("DisOtherMedSpec","Other (specify)","");
+			public var qSvcFamilyServices:QuestionText = new QuestionText("DisFamilyServices","Family services","0");
+			public var qSvcChildCare:QuestionText = new QuestionText("DisChildCare","Child care","0");
+			public var qSvcPreemployment:QuestionText = new QuestionText("DisPreemployment","(1) Pre-employment","0");
+			public var qSvcEmploymentCoaching:QuestionText = new QuestionText("DisEmploymentCoaching","(2) Employment coaching","0");
+			public var qSvcServicesCoordination:QuestionText = new QuestionText("DisServicesCoordination","Individual services coordination","0");
+			public var qSvcTransportation:QuestionText = new QuestionText("DisTransportation","Transportation","0");
+			public var qSvcHIVService:QuestionText = new QuestionText("DisHIVService","HIV/AIDS services","0");
+			public var qSvcDrugFreeHousing:QuestionText = new QuestionText("DisDrugFreeHousing","Supportive drug-free housing","0");
+			public var qSvcCareCoordination:QuestionText = new QuestionText("DisCareCoordination","Care coordination","0");
+			public var qSvcOtherCaseMgmt:QuestionText = new QuestionText("DisOtherCaseMgmt","Other case management","0");
+			public var qSvcOtherCaseMgmtSpec:QuestionText = new QuestionText("DisOtherCaseMgmtSpec","Other (specify)","");
+			public var qSvcContinuingCare:QuestionText = new QuestionText("DisContinuingCare","Continuing care","0");
+			public var qSvcRelapsePrevention:QuestionText = new QuestionText("DisRelapsePrevention","Relapse prevention","0");
+			public var qSvcRecoveryCoaching:QuestionText = new QuestionText("DisRecoveryCoaching","Recovery coaching","0");
+			public var qSvcSelfHelp:QuestionText = new QuestionText("DisSelfHelp","Self-help and support groups","0");
+			public var qSvcSpiritualSupport:QuestionText = new QuestionText("DisSpiritualSupport","Spiritual support","0");
+			public var qSvcOtherAfterCare:QuestionText = new QuestionText("DisOtherAfterCare","Other after care services","0");
+			public var qSvcOtherAfterCareSpec:QuestionText = new QuestionText("DisOtherAfterCareSpec","Other (specify)","");
+			public var qSvcSubstanceEduc:QuestionText = new QuestionText("DisSubstanceEduc","Substance abuse education","0");
+			public var qSvcHIVEduc:QuestionText = new QuestionText("DisHIVEduc","HIV/AIDS education","0");
+			public var qSvcOtherEduc:QuestionText = new QuestionText("DisOtherEduc","Other education services","0");
+			public var qSvcOtherEducSpec:QuestionText = new QuestionText("DisOtherEducSpec","Other (specify)","");
+			public var qSvcPeerCoaching:QuestionText = new QuestionText("DisPeerCoaching","Peer coaching or mentoring","0");
+			public var qSvcHousingSupport:QuestionText = new QuestionText("DisHousingSupport","Housing support","0");
+			public var qSvcAlcDrugSocial:QuestionText = new QuestionText("DisAlcDrugSocial","Alcohol/Drug-free social activities","0");
+			public var SvcInfoReferral:QuestionText = new QuestionText("DisInfoReferral","Information and referral","0");
+			public var qSvcOtherPeer:QuestionText = new QuestionText("DisOtherPeer","Other peer-to-peer recovery support","0");
+			public var qSvcOtherPeerSpec:QuestionText = new QuestionText("DisOtherPeerSpec","Other (specify)","");
+
+			public override function createForm():void
+			{
+				createText("Medical Services","h1");
+				var g:TileGroup = new TileGroup();
+				g.requestedColumnCount = 2;
+				g.requestedRowCount = 3;
+				g.orientation = "columns";
+				g.verticalGap = 3;
+				addElement(g);
+				addGroupedQuestion(qSvcMedCare,g);
+				addGroupedQuestion(qSvcAlcDrugTesting,g);
+				addGroupedQuestion(qSvcHIVTesting,g);
+				addGroupedQuestion(qSvcOtherMed,g);
+				addGroupedQuestion(qSvcOtherMedSpec,g);
+				
+				createText("Case Management Services","h1");
+				g = new TileGroup();
+				g.requestedColumnCount = 2;
+				g.requestedRowCount = 6;
+				g.orientation = "columns";
+				g.verticalGap = 3;
+				addElement(g);
+				addGroupedQuestion(qSvcFamilyServices,g);
+				addGroupedQuestion(qSvcChildCare,g);
+				addHeader("Employment service",g);
+				addGroupedQuestion(qSvcPreemployment,g);
+				addGroupedQuestion(qSvcEmploymentCoaching,g);
+				addGroupedQuestion(qSvcServicesCoordination,g);
+				addGroupedQuestion(qSvcTransportation,g);
+				addGroupedQuestion(qSvcHIVService,g);
+				addGroupedQuestion(qSvcDrugFreeHousing,g);
+				addGroupedQuestion(qSvcCareCoordination,g);
+				addGroupedQuestion(qSvcOtherCaseMgmt,g);
+				addGroupedQuestion(qSvcOtherCaseMgmtSpec,g);
+				
+				createText("After Care Services","h1");
+				g = new TileGroup();
+				g.requestedColumnCount = 2;
+				g.requestedRowCount = 4;
+				g.orientation = "columns";
+				g.verticalGap = 3;
+				addElement(g);
+				addGroupedQuestion(qSvcContinuingCare,g);
+				addGroupedQuestion(qSvcRelapsePrevention,g);
+				addGroupedQuestion(qSvcRecoveryCoaching,g);
+				addGroupedQuestion(qSvcSelfHelp,g);
+				addGroupedQuestion(qSvcSpiritualSupport,g);
+				addGroupedQuestion(qSvcOtherAfterCare,g);
+				addGroupedQuestion(qSvcOtherAfterCareSpec,g);
+				
+				createText("Education Services","h1");
+				g = new TileGroup();
+				g.requestedColumnCount = 2;
+				g.requestedRowCount = 2;
+				g.orientation = "columns";
+				g.verticalGap = 3;
+				addElement(g);
+				addGroupedQuestion(qSvcSubstanceEduc,g);
+				addGroupedQuestion(qSvcHIVEduc,g);
+				addGroupedQuestion(qSvcOtherEduc,g);
+				addGroupedQuestion(qSvcOtherEducSpec,g);
+				
+				createText("Peer-To-Peer Recovery Support Services","h1");
+				g = new TileGroup();
+				g.requestedColumnCount = 2;
+				g.requestedRowCount = 3;
+				g.orientation = "columns";
+				g.verticalGap = 3;
+				addElement(g);
+				addGroupedQuestion(qSvcPeerCoaching,g);
+				addGroupedQuestion(qSvcHousingSupport,g);
+				addGroupedQuestion(qSvcAlcDrugSocial,g);
+				addGroupedQuestion(SvcInfoReferral,g);
+				addGroupedQuestion(qSvcOtherPeer,g);
+				addGroupedQuestion(qSvcOtherPeerSpec,g);
+				
+				//Validators
+				addRequiredValidator(qSvcOtherMedSpec);
+				addRequiredValidator(qSvcOtherCaseMgmtSpec);
+				addRequiredValidator(qSvcOtherAfterCareSpec);
+				addRequiredValidator(qSvcOtherEducSpec);
+				addRequiredValidator(qSvcOtherPeerSpec);
+				
+				//Control Logic
+				addSkipDropDown(qSvcOtherMed,["0"],[qSvcOtherMedSpec]);
+				addSkipDropDown(qSvcOtherCaseMgmt,["0"],[qSvcOtherCaseMgmtSpec]);
+				addSkipDropDown(qSvcOtherAfterCare,["0"],[qSvcOtherAfterCareSpec]);
+				addSkipDropDown(qSvcOtherEduc,["0"],[qSvcOtherEducSpec]);
+				addSkipDropDown(qSvcOtherPeer,["0"],[qSvcOtherPeerSpec]);
+			}
+			
+			private function addGroupedQuestion(q:QuestionClass, g:TileGroup):void
+			{
+				questions.push(q);
+				q.inputControl.width = 60;
+				g.addElement(q);
+				addNumberValidator(q,0,999,true);
+			}
+			
+			protected function addHeader(text:String, g:TileGroup):void
+			{
+				var f:FormItem = new FormItem();
+				f.label = text;
+				f.width = 200;
+				f.setStyle("fontWeight","bold");
+				g.addElement(f);
+			}
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+</dci:DCIForm>

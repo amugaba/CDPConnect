@@ -11,68 +11,31 @@
 		<![CDATA[
 			import com.adobe.serializers.utility.TypeUtility;
 			
-			import components.DateAgeValidator;
 			import components.QuestionClass;
 			import components.QuestionList;
 			import components.QuestionText;
 			import components.QuestionTextRefusable;
-			import components.SkipMultipleHandler;
-			import components.SkipPattern;
-			import components.SkipPatternMultiple;
-			import components.SkipPatternRange;
 			import components.dci.DCIForm;
+			import components.dci.InterviewType;
 			
-			import flash.globalization.DateTimeFormatter;
-			import flash.globalization.LocaleID;
-			
-			import mx.binding.utils.BindingUtils;
 			import mx.collections.ArrayCollection;
 			import mx.collections.ArrayList;
 			import mx.controls.Alert;
 			import mx.controls.DateField;
-			import mx.controls.Label;
-			import mx.controls.Text;
-			import mx.controls.buttonBarClasses.ButtonBarButton;
 			import mx.core.FlexGlobals;
-			import mx.events.CloseEvent;
-			import mx.events.FlexEvent;
 			import mx.events.ValidationResultEvent;
 			import mx.rpc.events.ResultEvent;
-			import mx.utils.ArrayUtil;
-			import mx.validators.DateValidator;
-			import mx.validators.NumberValidator;
-			import mx.validators.StringValidator;
 			import mx.validators.ValidationResult;
-			import mx.validators.Validator;
-			
-			import spark.components.DropDownList;
-			import spark.components.FormHeading;
-			import spark.components.FormItem;
-			import spark.components.RichText;
-			import spark.components.TextArea;
-			import spark.components.TextInput;
-			import spark.events.DropDownEvent;
-			import spark.events.IndexChangeEvent;
-			import spark.validators.CurrencyValidator;
 			
 			import valueObjects.ClientVO;
 			import valueObjects.GpraVO;
 			
 			protected var questionDict:Dictionary = new Dictionary();
-			protected var dateFormatter:DateTimeFormatter = new DateTimeFormatter(LocaleID.DEFAULT);
 			
-			
-			protected var ynrdm:ArrayList = new ArrayList(["Yes","No","Refused","Don't Know","Missing Data"]);
-			protected var ynrm:ArrayList = new ArrayList(["Yes","No","Refused","Missing Data"]);
-			protected var rdm:ArrayList = new ArrayList(["Refused","Don't Know","Missing Data"]);
 			protected var gpraConstructed:Boolean = false;
 			protected var global:CDPConnectFlex = FlexGlobals.topLevelApplication as CDPConnectFlex;
-			protected var ethnicCount:int = 0;
 			protected var dciForms:Array;
-			
-			public function creationCompleteHandler():void
-			{
-			}
+			protected var dciTabs:Array;
 			
 			protected function resetGPRA():void
 			{
@@ -87,15 +50,17 @@
 				if(!gpraConstructed)
 				{
 					gpraConstructed = true;
-					dateFormatter.setDateTimePattern("MM/dd/yyyy");
 					
-					recordForm.createForm();
+					/*recordForm.createForm();
 					sbirtForm.createForm();
+					services1Form.createForm();
+					services2Form.createForm();
 					demoForm.createForm();
 					demo2Form.createForm();
 					military1Form.createForm();
 					military2Form.createForm();
 					drugForm.createForm();
+					drug2Form.createForm();
 					livingForm.createForm();
 					employmentForm.createForm();
 					crimeForm.createForm();
@@ -103,116 +68,180 @@
 					health2Form.createForm();
 					health3Form.createForm();
 					health4Form.createForm();
+					health5Form.createForm();
 					socialForm.createForm();
 					followupForm.createForm();
 					dischargeForm.createForm();
+					dischargeServices1Form.createForm();
+					dischargeServices2Form.createForm();*/
 					
-					dciForms = new Array([recordForm,demoForm,military1Form,military2Form,drugForm,livingForm,employmentForm,crimeForm,health1Form,health2Form,health3Form,health4Form,socialForm,followupForm,dischargeForm]);
+					dciForms = new Array(recordForm,sbirtForm,services1Form,services2Form,demoForm,demo2Form,military1Form,military2Form,drugForm,drug2Form,livingForm,employmentForm,
+						crimeForm,health1Form,health2Form,health3Form,health4Form,health5Form,socialForm,followupForm,dischargeForm,dischargeServices1Form,dischargeServices2Form);
+					
+					dciTabs = new Array(recordTab,sbirtTab,services1Tab,services2Tab,demoTab,demo2Tab,military1Tab,military2Tab,drugTab,drug2Tab,livingTab,employmentTab,
+						crimeTab,health1Tab,health2Tab,health3Tab,health4Tab,health5Tab,socialTab,followupTab,dischargeTab,dischargeServices1Tab,dischargeServices2Tab);
+					
+					for each(var f:DCIForm in dciForms)
+						f.createForm();
 				}
 				else
 				{
 					resetGPRA();
 				}
 				
-				if(global.activeGPRA.type == 1)
+				if(global.activeGPRA.type == InterviewType.INTAKE_SBIRT_NEG)
 				{
-					enableFollowup(false);
-					enableDischarge(false);
+					enableSectionSBIRT(true);
 					enableSectionA(true);
+					enableSectionB(false);
+					enableSectionCtoG(false);
+					enableSectionI(false);
+					enableSectionJ(false);
+					enableSectionK(false);
 				}
-				else if(global.activeGPRA.type == 2)
+				else if(global.activeGPRA.type == InterviewType.INTAKE_SBIRT_BI)
 				{
-					enableFollowup(true);
-					enableDischarge(false);
-					enableSectionA(false);
+					enableSectionSBIRT(true);
+					enableSectionA(true);
+					enableSectionB(true);
+					enableSectionCtoG(false);
+					enableSectionI(false);
+					enableSectionJ(false);
+					enableSectionK(false);
 				}
-				else if(global.activeGPRA.type == 5)
+				else if(global.activeGPRA.type == InterviewType.INTAKE)
 				{
-					enableFollowup(false);
-					enableDischarge(true);
+					enableSectionSBIRT(false);
+					enableSectionA(true);
+					enableSectionB(true);
+					enableSectionCtoG(true);
+					enableSectionI(false);
+					enableSectionJ(false);
+					enableSectionK(false);
+				}
+				else if(global.activeGPRA.type == InterviewType.FOLLOWUP)
+				{
+					enableSectionSBIRT(false);
 					enableSectionA(false);
+					enableSectionB(true);
+					enableSectionCtoG(true);
+					enableSectionI(true);
+					enableSectionJ(false);
+					enableSectionK(true);
+				}
+				else if(global.activeGPRA.type == InterviewType.DISCHARGE)
+				{
+					enableSectionSBIRT(false);
+					enableSectionA(false);
+					enableSectionB(true);
+					enableSectionCtoG(true);
+					enableSectionI(false);
+					enableSectionJ(true);
+					enableSectionK(true);
 				}
 				
-				//if GPRA has already been finalized, it cannot be changed
-				/*if(global.activeGPRA.status == 1)
-				{
-					if(viewStack.contains(saveTab))
-						viewStack.removeChild(saveTab);
-				}
-				else
-				{
-					if(!viewStack.contains(saveTab))
-						viewStack.addChildAt(saveTab,viewStack.numChildren);
-				}*/
-				
-				recordForm.qClientID.answer = String(global.activeClient.autoid);
-				recordForm.qInterviewTypeCode.input.selectedIndex = global.activeGPRA.type-1;
-				recordForm.qInterviewDate.answer = dateFormatter.format(new Date());
 				//validateGPRA();
 				viewStack.selectedChild = recordTab;
 			}
 			
-			protected function enableSectionA(enabled:Boolean):void
+			protected function enableSectionSBIRT(enabled:Boolean):void
+			{
+				sbirtForm.enableForm(enabled);
+				enableTab(sbirtTab,enabled);
+			}
+			
+			protected function enableTab(tab:NavigatorContent, enabled:Boolean):void
 			{
 				if(enabled)
 				{
-					if(!viewStack.contains(demoTab))
-						viewStack.addChildAt(demoTab,viewStack.getChildIndex(recordTab)+1);
-					if(!viewStack.contains(military1Tab))
-						viewStack.addChildAt(military1Tab,viewStack.getChildIndex(demoTab)+1);
-					if(!viewStack.contains(military2Tab))
-						viewStack.addChildAt(military2Tab,viewStack.getChildIndex(military1Tab)+1);
+					viewStack.addChildAt(tab,Math.min(dciTabs.indexOf(tab),viewStack.numChildren));
+				}
+				else
+				{
+					if(viewStack.contains(tab))
+						viewStack.removeChild(tab);
+				}
+			}
+			
+			protected function enableSectionB(enabled:Boolean):void
+			{
+				drugForm.enableForm(enabled);
+				drug2Form.enableForm(enabled);
+				enableTab(drugTab,enabled);
+				enableTab(drug2Tab,enabled);
+			}
+			
+			protected function enableSectionCtoG(enabled:Boolean):void
+			{
+				enableTab(livingTab,enabled);
+				enableTab(employmentTab,enabled);
+				enableTab(crimeTab,enabled);
+				enableTab(health1Tab,enabled);
+				enableTab(health2Tab,enabled);
+				enableTab(health3Tab,enabled);
+				enableTab(health4Tab,enabled);
+				enableTab(health5Tab,enabled);
+				enableTab(socialTab,enabled);
+			}
+			
+			protected function enableSectionK(enabled:Boolean):void
+			{
+				enableTab(dischargeServices1Tab,enabled);
+				enableTab(dischargeServices2Tab,enabled);
+			}
+			
+			protected function enableSectionA(enabled:Boolean):void
+			{
+				services1Form.enableForm(enabled);
+				services2Form.enableForm(enabled);
+				demoForm.enableForm(enabled);
+				demo2Form.enableForm(enabled);
+				military1Form.enableForm(enabled);
+				military2Form.enableForm(enabled);
+				
+				enableTab(services1Tab,enabled);
+				enableTab(services2Tab,enabled);
+				enableTab(demoTab,enabled);
+				enableTab(demo2Tab,enabled);
+				enableTab(military1Tab,enabled);
+				enableTab(military2Tab,enabled);
+				
+				if(enabled)
+				{
 					var dv:DateAgeValidator = recordForm.qInterviewDate.validator as DateAgeValidator;
 					dv.max = 365;
 				}
-				else
-				{
-					if(viewStack.contains(demoTab))
-						viewStack.removeChild(demoTab);
-					if(viewStack.contains(military1Tab))
-						viewStack.removeChild(military1Tab);
-					if(viewStack.contains(military2Tab))
-						viewStack.removeChild(military2Tab);
-				}
-				recordForm.qCooccurringScreen.visible = enabled;
-				recordForm.qCooccurringScreenStatus.visible = enabled;
-				recordForm.qConductedInterview.enabled = !enabled;
+
 				demoForm.qDateOfBirth.validator.enabled = enabled;
 			}
 			
-			protected function enableFollowup(enabled:Boolean):void
+			protected function enableSectionI(enabled:Boolean):void
 			{
+				enableTab(followupTab,enabled);
 				if(enabled)
 				{
-					if(!viewStack.contains(followupTab))
-						viewStack.addChildAt(followupTab,viewStack.getChildIndex(socialTab)+1);
-					if(global.activeClient.intake.data.source["GenderCode"] != 1)
+					//Skip based on answer in intake DCI, since gender question not asked in followup
+					if(global.activeClient.intake.data.source["Gender"] != 1)
 						livingForm.qPregnant.enable();
+					
+					//The followup date cannot be before the intake date
 					var dv:DateAgeValidator = recordForm.qInterviewDate.validator as DateAgeValidator;
 					dv.max = (new Date().time - DateField.stringToDate(global.activeClient.intake.date,"MM/DD/YYYY").time) / 1000 / 60 / 60 / 24;
 				}
-				else
-				{
-					if(viewStack.contains(followupTab))
-						viewStack.removeChild(followupTab);
-				}
 			}
 			
-			protected function enableDischarge(enabled:Boolean):void
+			protected function enableSectionJ(enabled:Boolean):void
 			{
+				enableTab(dischargeTab,enabled);
 				if(enabled)
 				{
-					if(!viewStack.contains(dischargeTab))
-						viewStack.addChildAt(dischargeTab,viewStack.getChildIndex(socialTab)+1);
+					//Skip based on answer in intake DCI, since gender question not asked in followup
 					if(global.activeClient.intake.data.source["GenderCode"] != 1)
 						livingForm.qPregnant.enable();
+					
+					//The followup date cannot be before the intake date
 					var dv:DateAgeValidator = recordForm.qInterviewDate.validator as DateAgeValidator;
 					dv.max = 1 + (new Date().time - DateField.stringToDate(global.activeClient.intake.date,"MM/DD/YYYY").time) / 1000 / 60 / 60 / 24;
-				}
-				else
-				{
-					if(viewStack.contains(dischargeTab))
-						viewStack.removeChild(dischargeTab);
 				}
 				dischargeForm.qDischargeDate.validator.enabled = enabled;
 			}
@@ -766,6 +795,12 @@
 		<s:NavigatorContent id="sbirtTab" width="100%" height="100%" label="SBIRT">
 			<dci:SBIRTForm id="sbirtForm"/>
 		</s:NavigatorContent>
+		<s:NavigatorContent id="services1Tab" width="100%" height="100%" label="Services1">
+			<dci:Services1Form id="services1Form"/>
+		</s:NavigatorContent>
+		<s:NavigatorContent id="services2Tab" width="100%" height="100%" label="Services2">
+			<dci:Services2Form id="services2Form"/>
+		</s:NavigatorContent>
 		<s:NavigatorContent id="demoTab" width="100%" height="100%" label="Demographic">
 			<dci:DemographicsForm id="demoForm"/>
 		</s:NavigatorContent>
@@ -778,8 +813,11 @@
 		<s:NavigatorContent id="military2Tab" width="100%" height="100%" label="Military2">
 			<dci:Military2Form id="military2Form"/>
 		</s:NavigatorContent>
-		<s:NavigatorContent id="drugTab" width="100%" height="100%" label="Drug">
+		<s:NavigatorContent id="drugTab" width="100%" height="100%" label="Drug1">
 			<dci:DrugForm id="drugForm" />
+		</s:NavigatorContent>
+		<s:NavigatorContent id="drug2Tab" width="100%" height="100%" label="Drug2">
+			<dci:Drug2Form id="drug2Form" />
 		</s:NavigatorContent>
 		<s:NavigatorContent id="livingTab" width="100%" height="100%" label="Living">
 			<dci:LivingForm id="livingForm" />
@@ -802,6 +840,9 @@
 		<s:NavigatorContent id="health4Tab" width="100%" height="100%" label="Health4">
 			<dci:Health4Form id="health4Form" />
 		</s:NavigatorContent>
+		<s:NavigatorContent id="health5Tab" width="100%" height="100%" label="Health5">
+			<dci:Health5Form id="health5Form" />
+		</s:NavigatorContent>
 		<s:NavigatorContent id="socialTab" width="100%" height="100%" label="Social">
 			<dci:SocialForm id="socialForm" />
 		</s:NavigatorContent>
@@ -810,6 +851,12 @@
 		</s:NavigatorContent>
 		<s:NavigatorContent id="dischargeTab" width="100%" height="100%" label="Discharge">
 			<dci:DischargeForm id="dischargeForm" />
+		</s:NavigatorContent>
+		<s:NavigatorContent id="dischargeServices1Tab" width="100%" height="100%" label="Services 1">
+			<dci:Services1DischargeForm id="dischargeServices1Form" />
+		</s:NavigatorContent>
+		<s:NavigatorContent id="dischargeServices2Tab" width="100%" height="100%" label="Services 2">
+			<dci:Services2DischargeForm id="dischargeServices2Form" />
 		</s:NavigatorContent>
 		<s:NavigatorContent id="saveTab" width="100%" height="100%" label="Save">
 			<s:Button id="saveButton" x="200" y="200" label="Validate and Save GPRA"

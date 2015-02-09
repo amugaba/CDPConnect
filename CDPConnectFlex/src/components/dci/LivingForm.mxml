@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <dci:DCIForm xmlns:fx="http://ns.adobe.com/mxml/2009" 
 			 xmlns:s="library://ns.adobe.com/flex/spark" 
-			 xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:dci="components.dci.*" width="100%" height="100%">
+			 xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:dci="components.dci.*" width="100%" height="100%"
+			 labelWidth="270">
 	<fx:Script>
 		<![CDATA[
 			import components.QuestionList;
@@ -12,54 +13,47 @@
 			import mx.collections.ArrayList;
 			import mx.validators.NumberValidator;
 			
-			public var qLivingWhere:QuestionList = new QuestionList("LivingWhere","Where have you been living most of the time?",new ArrayList(["Shelter","Street/Outdoors","Institution","Housed","Refused","Don't Know","Missing Data"]),0);
-			public var qLivingHoused:QuestionList = new QuestionList("LivingHoused","If housed, specify:",new ArrayList(["Own/Rent apartment, room, or house","Someone else's apartment, room, or house","Halfway house",
-				"Residential Treatment","Other housed","Dormitory/College Residence","Refused","Don't Know","Missing Data"]),0);
-			public var qLivingHousedSpec:QuestionText = new QuestionText("LivingHousedSpec","Other housed, specify:","");
-			public var qImpactStress:QuestionList = new QuestionList("ImpactStress","How stressful have things been for you because of your use of alcohol or other drugs?",new ArrayList(["Not at all",
-				"Somewhat","Considerably","Extremely","Refused","Don't Know","Missing Data"]),0);
-			public var qImpactActivity:QuestionList = new QuestionList("ImpactActivity","Has your use of alcohol or other drugs caused you to reduce or give up important activities?",new ArrayList(["Not at all",
-				"Somewhat","Considerably","Extremely","Refused","Don't Know","Missing Data"]),0);
-			public var qImpactEmotional:QuestionList = new QuestionList("ImpactEmotional","Has your use of alcohol and other drugs caused you to have emotional problems?",new ArrayList(["Not at all","Somewhat",
-				"Considerably","Extremely","Refused","Don't Know","Missing Data"]),0);
+			public var qLivingWhere:QuestionList = new QuestionList("LivingWhere","Where have you been living most of the time?",new ArrayList(["House rented by client","House owned by client","Place not meant for habitation (vehicle, anywhere outside)","Emergency shelter, including hotel or motel","Staying or living with family/friends","Transition housing","Substance abuse treatment facility or detox center","Residential treatment (substance abuse or mental health)","Therapeutic community or halfway house","Psychiatric hospital or other psychiatric facility","Long-term care facility or nursing home","Hospital or other residential non-psychiatric medical facility","Permanent supportive housing","Foster care home or foster care group home","Jail, prison, or juvenille detention facility","Other","Refused","Don't Know","Missing Data"]),0);
+			public var qLivingOtherSpec:QuestionText = new QuestionText("LivingOtherSpec","Other (specify)","");
+			public var qHomelessNights:QuestionTextRefusable = new QuestionTextRefusable("HomelessNights","How many nights have you been homeless?","0");
+			public var qImpactStress:QuestionList = new QuestionList("ImpactStress","How stressful have things been for you because of your use of alcohol or other drugs?",new ArrayList(["Not at all","Somewhat","Considerably","Extremely","Refused","Don't Know","Missing Data"]),0);
+			public var qImpactActivity:QuestionList = new QuestionList("ImpactActivity","Has your use of alcohol or other drugs caused you to reduce or give up important activities?",new ArrayList(["Not at all","Somewhat","Considerably","Extremely","Refused","Don't Know","Missing Data"]),0);
+			public var qImpactEmotional:QuestionList = new QuestionList("ImpactEmotional","Has your use of alcohol and other drugs caused you to have emotional problems?",new ArrayList(["Not at all","Somewhat","Considerably","Extremely","Refused","Don't Know","Missing Data"]),0);
 			public var qPregnant:QuestionList = new QuestionList("Pregnant","Are you currently pregnant?",ynrdm,1);
 			public var qChildren:QuestionList = new QuestionList("Children","Do you have children?",ynrdm,1);
 			public var qChildrenNr:QuestionTextRefusable = new QuestionTextRefusable("ChildrenNr","How many children do you have?","1");
-			public var qChildrenCustody:QuestionList = new QuestionList("ChildrenCustody","Are any of your children living with someone else due to a child protection order?",ynrdm,1);
-			public var qChildrenCustodyNr:QuestionTextRefusable = new QuestionTextRefusable("ChildrenCustodyNr","How many of your children are living with someone else due to a child protection court order?","1");
+			public var qChildrenCustodyNr:QuestionTextRefusable = new QuestionTextRefusable("ChildrenCustodyNr","How many of your children are living with someone else due to a child protection court order?","0");
 			public var qChildrenCustodyLost:QuestionTextRefusable = new QuestionTextRefusable("ChildrenCustodyLost","For how many of your children have you parental lost rights?","0");
 			
 			//Living Form Area
 			public override function createForm():void
 			{
 				//Questions
-				createText("During the past 30 days:","h1");
-				addQuestion(qLivingWhere);
-				addQuestion(qLivingHoused, 200);
-				addQuestion(qLivingHousedSpec);
+				createText("In the the past 30 days...","h1");
+				addQuestion(qLivingWhere,300);
+				addQuestion(qLivingOtherSpec);
+				addQuestion(qHomelessNights);
 				addQuestion(qImpactStress);
 				addQuestion(qImpactActivity);
 				addQuestion(qImpactEmotional);
 				addQuestion(qPregnant);
 				addQuestion(qChildren);
 				addQuestion(qChildrenNr);
-				addQuestion(qChildrenCustody);
 				addQuestion(qChildrenCustodyNr);
 				addQuestion(qChildrenCustodyLost);
 				
 				//Validators
-				addRequiredValidator(qLivingHousedSpec);
+				addRequiredValidator(qLivingOtherSpec);
+				addNumberValidator(qHomelessNights,0,30,true);
 				addNumberValidator(qChildrenNr,1,99,true);
-				addNumberValidator(qChildrenCustodyNr,1,1,true);
+				addNumberValidator(qChildrenCustodyNr,0,1,true);
 				addNumberValidator(qChildrenCustodyLost,0,1,true);
 				BindingUtils.bindSetter(function():void{(qChildrenCustodyNr.validator as NumberValidator).maxValue = Number(qChildrenNr.answer)}, qChildrenNr.inputControl, "text");
 				BindingUtils.bindSetter(function():void{(qChildrenCustodyLost.validator as NumberValidator).maxValue = Number(qChildrenNr.answer)}, qChildrenNr.inputControl, "text");
 				
 				//Control Logic
-				addSkipDropDown(qLivingWhere,["Shelter","Street/Outdoors","Institution","Refused","Don't Know","Missing Data"],[qLivingHoused]);
-				addSkipDropDown(qLivingHoused,["Own/Rent apartment, room, or house","Someone else's apartment, room, or house","Halfway house","Residential Treatment","Dormitory/College Residence","Refused","Don't Know","Missing Data"],[qLivingHousedSpec]);
-				addSkipDropDown(qChildren,["No","Refused","Don't Know","Missing Data"],[qChildrenNr,qChildrenCustody,qChildrenCustodyLost]);
-				addSkipDropDown(qChildrenCustody,["No","Refused","Don't Know","Missing Data"],[qChildrenCustodyNr]);
+				addSkipDropDown(qLivingWhere,["Other"],[qLivingOtherSpec],true);
+				addSkipDropDown(qChildren,["Yes"],[qChildrenNr,qChildrenCustodyNr,qChildrenCustodyLost],true);
 			}
 		]]>
 	</fx:Script>

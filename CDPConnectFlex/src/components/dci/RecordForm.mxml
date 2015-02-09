@@ -10,14 +10,18 @@
 			import components.QuestionText;
 			
 			import mx.collections.ArrayList;
+			import flash.globalization.DateTimeFormatter;
+			import flash.globalization.LocaleID;
 			
 			public var qClientID:QuestionText = new QuestionText("ClientID","Client ID","",false);
 			public var qInterviewTypeCode:QuestionList = new QuestionList("InterviewTypeCode","Interview Type",new ArrayList(["Intake","6 Month Followup","12 Month Followup","3 Month Followup","Discharge", "Discharge: Administrative"]),0,false);
-			public var qConductedInterview:QuestionList = new QuestionList("ConductedInterview","Did you conduct a followup/discharge interview?",new ArrayList(["Yes","No"]),0);
+			public var qConductedInterview:QuestionList = new QuestionList("ConductedInterview","Did you conduct a followup/discharge interview?",yn,0);
 			public var qInterviewDate:QuestionText = new QuestionText("InterviewDate","Interview Date","");
 			public var qCooccurringScreen:QuestionList = new QuestionList("CooccurringScreen","Was the client screened by your program for co-occurring mental health and substance use disorders?",new ArrayList(["Yes","No","Missing Data"]),0);
 			public var qCooccurringScreenStatus:QuestionList = new QuestionList("CooccurringScreenStatus","Did the client screen positive for co-occurring mental health and substance use disorders?",new ArrayList(["Yes","No","Missing Data"]),1);
 
+			protected var dateFormatter:DateTimeFormatter = new DateTimeFormatter(LocaleID.DEFAULT);
+			
 			//Record Form Area
 			public override function createForm():void
 			{
@@ -30,20 +34,28 @@
 				addQuestion(qCooccurringScreenStatus);
 				
 				//Validators
-				var dv1:DateAgeValidator = new DateAgeValidator();
-				dv1.required = true;
-				dv1.source = qInterviewDate.inputControl;
-				dv1.property = "text";
-				dv1.minType = DateAgeValidator.DAY;
-				dv1.min = 0;
-				dv1.maxType = DateAgeValidator.DAY;
-				dv1.max = 365;
-				qInterviewDate.validator = dv1;
+				addDateAgeValidator(qInterviewDate,0,DateAgeValidator.DAY,365,DateAgeValidator.DAY);
 				
 				//Control Logic
 				//addSkipDropDown("InterviewTypeCode",["Intake"],["ConductedInterview"]);
 				addSkipDropDown(qConductedInterview,["No"],[qInterviewDate]);
 				addSkipDropDown(qCooccurringScreen,["No","Missing Data"],[qCooccurringScreenStatus]);
+				
+				//Prepopulate
+				dateFormatter.setDateTimePattern("MM/dd/yyyy");
+				populateForm();
+			}
+			
+			public override function reset():void
+			{
+				populateForm();
+			}
+			
+			private function populateForm():void
+			{
+				qClientID.answer = String(global.activeClient.autoid);
+				qInterviewTypeCode.input.selectedIndex = global.activeGPRA.type-1;
+				qInterviewDate.answer = dateFormatter.format(new Date());
 			}
 			
 			

@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dci:DCIForm xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			 xmlns:s="library://ns.adobe.com/flex/spark" 
+			 xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:dci="components.dci.*" width="100%" height="100%"
+			 labelWidth="200">
+	<fx:Script>
+		<![CDATA[
+			import components.QuestionClass;
+			import components.QuestionText;
+			
+			import mx.collections.ArrayList;
+			import mx.containers.FormItem;
+			
+			import spark.components.TileGroup;
+			
+			public var qSvcCaseManagement:QuestionText = new QuestionText("DisCaseManagement","Case managment","0");
+			public var qSvcDayTreatment:QuestionText = new QuestionText("DisDayTreatment","Day treatment","0");
+			public var qSvcInpatient:QuestionText = new QuestionText("DisInpatient","Inpatient/Hospital","0");
+			public var qSvcOutpatient:QuestionText = new QuestionText("DisOutpatient","Outpatient","0");
+			public var qSvcOutreach:QuestionText = new QuestionText("DisOutreach","Outreach","0");
+			public var qSvcIntensiveOutpatient:QuestionText = new QuestionText("DisIntensiveOutpatient","Intensive outpatient","0");
+			public var qSvcMethadoneOp:QuestionText = new QuestionText("DisMethadoneOp","Methadone","0");
+			public var qSvcBuprenorphineOp:QuestionText = new QuestionText("DisBuprenorphineOp","Buprenorphine","0");
+			public var qSvcNaltrexoneOp:QuestionText = new QuestionText("DisNaltrexoneOp","Naltrexone (Oral)","0");
+			public var qSvcVivitrolOp:QuestionText = new QuestionText("DisVivitrolOp","Vivitrol (Injectable)","0");
+			public var qSvcDisulfiramOp:QuestionText = new QuestionText("DisDisulfiramOp","Disulfiram","0");
+			public var qSvcAcamprosateOp:QuestionText = new QuestionText("DisAcamprosateOp","Acamprosate","0");
+			public var qSvcNaltrexoneAl:QuestionText = new QuestionText("DisNaltrexoneAl","Naltrexone (Oral)","0");
+			public var qSvcVivitrolAl:QuestionText = new QuestionText("DisVivitrolAl","Vivitrol (Injectable)","0");
+			public var qSvcDisulfiramAl:QuestionText = new QuestionText("DisDisulfiramAl","Disulfiram","0");
+			public var qSvcAcamprosateAl:QuestionText = new QuestionText("DisAcamprosateAl","Acamprosate","0");
+			public var qSvcResidential:QuestionText = new QuestionText("DisResidential","Residential/Rehabilitation","0");
+			public var qSvcDetoxHospital:QuestionText = new QuestionText("DisDetoxHospital","Hospital inpatient","0");
+			public var qSvcDetoxResidential:QuestionText = new QuestionText("DisDetoxResidential","Free standing residential","0");
+			public var qSvcDetoxAmbulatory:QuestionText = new QuestionText("DisDetoxAmbulatory","Ambulatory detoxification","0");
+			public var qSvcAfterCare:QuestionText = new QuestionText("DisAfterCare","After care","0");
+			public var qSvcRecoverySupport:QuestionText = new QuestionText("DisRecoverySupport","Recovery support","0");
+			public var qSvcModOther:QuestionText = new QuestionText("DisModOther","Other","0");
+			public var qSvcModOtherSpec:QuestionText = new QuestionText("DisModOtherSpec", "Other (specify)","");
+			
+			public var qSvcScreening:QuestionText = new QuestionText("DisScreening","Screening","0");
+			public var qSvcBriefIntervention:QuestionText = new QuestionText("DisBriefIntervention","Brief intervention","0");
+			public var qSvcBriefTreatment:QuestionText = new QuestionText("DisBriefTreatment","Brief treatment","0");
+			public var qSvcReferralToTreatment:QuestionText = new QuestionText("DisReferralToTreatment","Referral to treatment","0");
+			public var qSvcAssessment:QuestionText = new QuestionText("DisAssessment","Assessment","0");
+			public var qSvcTreatmentPlanning:QuestionText = new QuestionText("DisTreatmentPlanning","Treatment/Recovery planning","0");
+			public var qSvcIndivCounseling:QuestionText = new QuestionText("DisIndivCounseling","Individual counseling","0");
+			public var qSvcGroupCounseling:QuestionText = new QuestionText("DisGroupCounseling","Group counseling","0");
+			public var qSvcFamilyCounseling:QuestionText = new QuestionText("DisFamilyCounseling","Family/Marriage counseling","0");
+			public var qSvcCoocTreatment:QuestionText = new QuestionText("DisCoocTreatment","Co-occuring treatment/Recovery","0");
+			public var qSvcPharmaInterven:QuestionText = new QuestionText("DisPharmaInterven","Pharmacological interventions","0");
+			public var qSvcHIVCounseling:QuestionText = new QuestionText("DisHIVCounseling","HIV/AIDS counseling","0");
+			public var qSvcMentalHealth:QuestionText = new QuestionText("DisMentalHealth","Mental health services","0");
+			public var qSvcOtherClinical:QuestionText = new QuestionText("DisOtherClinical","Other clinical services","0");
+			public var qSvcOtherClinicalSpec:QuestionText = new QuestionText("DisOtherClinicalSpec", "Other (specify)","");
+			
+			public override function createForm():void
+			{
+				createText("Modality (Record number of days)","h1");
+				var g:TileGroup = new TileGroup();
+				g.requestedColumnCount = 2;
+				g.requestedRowCount = 14;
+				g.orientation = "columns";
+				g.verticalGap = 3;
+				addElement(g);
+				addGroupedQuestion(qSvcCaseManagement,g);
+				addGroupedQuestion(qSvcDayTreatment,g);
+				addGroupedQuestion(qSvcInpatient,g);
+				addGroupedQuestion(qSvcOutpatient,g);
+				addGroupedQuestion(qSvcOutreach,g);
+				addGroupedQuestion(qSvcIntensiveOutpatient,g);
+				addHeader("Medication assisted treatment",g);
+				addHeader("For Opioid Addiction",g);
+				addGroupedQuestion(qSvcMethadoneOp,g);
+				addGroupedQuestion(qSvcBuprenorphineOp,g);
+				addGroupedQuestion(qSvcNaltrexoneOp,g);
+				addGroupedQuestion(qSvcVivitrolOp,g);
+				addGroupedQuestion(qSvcDisulfiramOp,g);
+				addGroupedQuestion(qSvcAcamprosateOp,g);
+				addHeader("For Alcohol Addiction",g);
+				addGroupedQuestion(qSvcNaltrexoneAl,g);
+				addGroupedQuestion(qSvcVivitrolAl,g);
+				addGroupedQuestion(qSvcDisulfiramAl,g);
+				addGroupedQuestion(qSvcAcamprosateAl,g);
+				addGroupedQuestion(qSvcResidential,g);
+				addHeader("Detoxification",g);
+				addGroupedQuestion(qSvcDetoxHospital,g);
+				addGroupedQuestion(qSvcDetoxResidential,g);
+				addGroupedQuestion(qSvcDetoxAmbulatory,g);
+				addGroupedQuestion(qSvcAfterCare,g);
+				addGroupedQuestion(qSvcRecoverySupport,g);
+				addGroupedQuestion(qSvcModOther,g);
+				addGroupedQuestion(qSvcModOtherSpec,g);
+				//qSvcModOtherSpec.inputControl.width = 90;
+				
+				addDivider();
+				createText("Treatment Services (Record number of sessions)","h1");
+				g = new TileGroup();
+				g.requestedColumnCount = 2;
+				g.requestedRowCount = 8;
+				g.orientation = "columns";
+				g.verticalGap = 3;
+				addElement(g);
+				addGroupedQuestion(qSvcScreening,g);
+				addGroupedQuestion(qSvcBriefIntervention,g);
+				addGroupedQuestion(qSvcBriefTreatment,g);
+				addGroupedQuestion(qSvcReferralToTreatment,g);
+				addGroupedQuestion(qSvcAssessment,g);
+				addGroupedQuestion(qSvcTreatmentPlanning,g);
+				addGroupedQuestion(qSvcIndivCounseling,g);
+				addGroupedQuestion(qSvcGroupCounseling,g);
+				addGroupedQuestion(qSvcFamilyCounseling,g);
+				addGroupedQuestion(qSvcCoocTreatment,g);
+				addGroupedQuestion(qSvcPharmaInterven,g);
+				addGroupedQuestion(qSvcHIVCounseling,g);
+				addGroupedQuestion(qSvcMentalHealth,g);
+				addGroupedQuestion(qSvcOtherClinical,g);
+				addGroupedQuestion(qSvcOtherClinicalSpec,g);
+				
+				//Validators
+				addRequiredValidator(qSvcModOtherSpec);
+				addRequiredValidator(qSvcOtherClinicalSpec);
+				
+				//Control Logic
+				addSkipDropDown(qSvcModOther,["0"],[qSvcModOtherSpec]);
+				addSkipDropDown(qSvcOtherClinical,["0"],[qSvcOtherClinicalSpec]);
+			}
+			
+			private function addGroupedQuestion(q:QuestionClass, g:TileGroup):void
+			{
+				questions.push(q);
+				q.inputControl.width = 60;
+				g.addElement(q);
+				addNumberValidator(q,0,999,true);
+			}
+			
+			protected function addHeader(text:String, g:TileGroup):void
+			{
+				var f:FormItem = new FormItem();
+				f.label = text;
+				f.width = 200;
+				f.setStyle("fontWeight","bold");
+				g.addElement(f);
+			}
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+</dci:DCIForm>

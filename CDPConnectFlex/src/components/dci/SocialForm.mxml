@@ -12,25 +12,20 @@
 			import mx.collections.ArrayList;
 			import mx.validators.NumberValidator;
 			
-			public var qAttendVoluntary:QuestionList = new QuestionList("AttendVoluntary","Voluntary self-help groups for recovery that were not affiliated with a religious or faith-based organization",ynrdm,1);
-			public var qAttendVoluntaryTimes:QuestionTextRefusable = new QuestionTextRefusable("AttendVoluntaryTimes","","0");
-			public var qAttendReligious:QuestionList = new QuestionList("AttendReligious","Religious/faith affiliated recovery self-help groups",ynrdm,1);
-			public var qAttendReligiousTimes:QuestionTextRefusable = new QuestionTextRefusable("AttendReligiousTimes","","0");
-			public var qAttendOtherOrg:QuestionList = new QuestionList("AttendOtherOrg","Meetings of organizations that support recovery other than the organizations described above",ynrdm,1);
-			public var qAttendOtherOrgTimes:QuestionTextRefusable = new QuestionTextRefusable("AttendOtherOrgTimes","","0");
-			public var qInteractFamilyFriends:QuestionList = new QuestionList("InteractFamilyFriends","In the past 30 days, did you have interaction with family and/or friends that are supportive of your recovery?",ynrdm,1);
-			public var qWhomInTrouble:QuestionList = new QuestionList("WhomInTrouble","To whom do you turn to when you are having trouble?",new ArrayList(["No One","Clergy Member","Family Member","Friends","Other","Refused","Don't Know","Missing Data"]),0);
+			private var agreementResponses:ArrayList = new ArrayList(["Strongly agree","Agree","Undecided","Disagree","Strongly disagree","Refused","Don't Know","Missing Data"]);
+			public var qFamilySupport:QuestionList = new QuestionList("FamilySupport","In a crisis, I would have the support I need from family and friends.",agreementResponses,0);
+			public var qCommunityBelonging:QuestionList = new QuestionList("CommunityBelonging","I feel I belong in my community.",agreementResponses,0);
+			public var qWhomInTrouble:QuestionList = new QuestionList("WhomInTrouble","To whom do you turn when you are having trouble?",new ArrayList(["No One","Clergy Member","Family Member","Friends","Other","Refused","Don't Know","Missing Data"]),0);
 			public var qWhomInTroubleSpec:QuestionText = new QuestionText("WhomInTroubleSpec","Other, specify:","");
 			
 			//Social Form Area
 			public override function createForm():void
 			{
 				//Questions
-				createText("In the past 30 days, did you attend any _____? If yes, specify how many times.","h1");
-				addSocialQuestion(qAttendVoluntary,qAttendVoluntaryTimes,64);
-				addSocialQuestion(qAttendReligious,qAttendReligiousTimes,36);
-				addSocialQuestion(qAttendOtherOrg,qAttendOtherOrgTimes,50);				
-				addQuestion(qInteractFamilyFriends);				
+				createText("Please indicate your disagreement/agreement with each of the following statements. Answer for relationships with persons other than your mental health provider(s) over the past 30 days.","h1");
+				addQuestion(qFamilySupport,130);
+				addQuestion(qCommunityBelonging,130);
+				addDivider();
 				addQuestion(qWhomInTrouble);
 				addQuestion(qWhomInTroubleSpec);
 				
@@ -38,22 +33,9 @@
 				addRequiredValidator(qWhomInTroubleSpec);
 				
 				//Control Logic
-				addSkipDropDown(qWhomInTrouble,["No One","Clergy Member","Family Member","Friends","Refused","Don't Know","Missing Data"],[qWhomInTroubleSpec]);				
+				addSkipDropDown(qWhomInTrouble,["Other"],[qWhomInTroubleSpec],true);				
 			}
-			protected function addSocialQuestion(socialQ:QuestionList, daysQ:QuestionTextRefusable, height:int=22):void
-			{
-				addQuestion(socialQ);
-				socialQ.inputControl.width = 90;
-				socialQ.direction = "horizontal";
-				
-				questions.push(daysQ);
-				socialQ.addElement(daysQ.input);
-				socialQ.addElement(daysQ.refuseInput);
-				daysQ.inline = true;
-				
-				addNumberValidator(daysQ,1,30,true);
-				addSkipDropDown(socialQ,["No","Refused","Don't Know","Missing Data"],[daysQ]);
-			}
+			
 		]]>
 	</fx:Script>
 	<fx:Declarations>

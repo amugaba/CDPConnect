@@ -12,38 +12,55 @@
 			import mx.collections.ArrayList;
 			import mx.validators.NumberValidator;
 			
-			public var qDepression:QuestionTextRefusable = new QuestionTextRefusable("Depression","Experienced serious depression","0");
-			public var qAnxiety:QuestionTextRefusable = new QuestionTextRefusable("Anxiety","Experienced serious anxiety or tension","0");
-			public var qHallucinations:QuestionTextRefusable = new QuestionTextRefusable("Hallucinations","Experienced hallucinations","0");
-			public var qBrainFunction:QuestionTextRefusable = new QuestionTextRefusable("BrainFunction","Experienced trouble understanding, concentrating, or remembering","0");
-			public var qViolentBehavior:QuestionTextRefusable = new QuestionTextRefusable("ViolentBehavior","Experienced trouble controlling violent behavior","0");
-			public var qSuicide:QuestionTextRefusable = new QuestionTextRefusable("Suicide","Attempted suicide","0");
-			public var qPsycholEmotMedication:QuestionTextRefusable = new QuestionTextRefusable("PsycholEmotMedication","Been prescribed medication for psychological/emotional problem","0");
-			public var qPsycholEmotImpact:QuestionList = new QuestionList("PsycholEmotImpact","How much have you been bothered by these psychological or emotional problems in the past 30 days?",new ArrayList(["Not at " +
-				"all","Slightly","Moderately","Considerably","Extremely","Refused","Don't Know","Missing Data"]),0);
+			public var qSexActivity:QuestionList = new QuestionList("SexActivity","During the past 30 days, did you engage in sexual activity?",new ArrayList(["Yes","No","Not permitted to ask","Refused","Don't Know","Missing Data"]),1);
+			private var responses:ArrayList = new ArrayList(["Yes, protected","Yes, unprotected","No","Refused","Don't Know","Missing Data"]);
+			public var qVaginalContacts:QuestionList = new QuestionList("VaginalContacts","Vaginal sexual contacts",responses,2);
+			public var qOralContacts:QuestionList = new QuestionList("OralContacts","Oral sexual contacts",responses,2);
+			public var qAnalContacts:QuestionList = new QuestionList("AnalContacts","Anal sexual contacts",responses,2);
+			public var qSexUnprotHIVAids:QuestionList = new QuestionList("SexUnprotHIVAids","HIV positive or has AIDS",ynrdm,1);
+			public var qSexUnprotInjDrugUser:QuestionList = new QuestionList("SexUnprotInjDrugUser","An injection drug user",ynrdm,1);
+			public var qSexUnprotHigh:QuestionList = new QuestionList("SexUnprotHigh","High on some substance",ynrdm,1);
 			
-			//Health3 Form Area
+			private var testResponses:ArrayList = new ArrayList(["Negative/Non-reactive","Positive/reactive","Invalid/Indeterminate","Refused","Don't Know","Missing Data"]);
+			public var qiHIVTest:QuestionList = new QuestionList("iHIVTest","Have you ever been tested for HIV?",ynrdm,1);
+			public var qiHIVTestResult:QuestionList = new QuestionList("iHIVTestResult","What was the result?",testResponses,0);
+			public var qiHepBTest:QuestionList = new QuestionList("iHepBTest","Have you ever been tested for Hepatitis B?",ynrdm,1);
+			public var qiHepBTestResult:QuestionList = new QuestionList("iHepBTestResult","What was the result?",testResponses,0);
+			public var qiHepCTest:QuestionList = new QuestionList("iHepCTest","Have you ever been tested for Hepatitis C?",ynrdm,1);
+			public var qiHepCTestResult:QuestionList = new QuestionList("iHepCTestResult","What was the result?",testResponses,0);
+			public var qiHepCTestConfirm:QuestionList = new QuestionList("iHepCTestConfirm","If Positive/Reactive, did you receive a confirmatory test?",ynrdm,1);
+			
+			//Health2 Form Area
 			public override function createForm():void
 			{
 				//Questions
-				createText("In the past 30 days, not due to your use of alcohol or drugs, how many days have you:","h1");
-				addQuestion(qDepression);
-				addQuestion(qAnxiety);
-				addQuestion(qHallucinations);
-				addQuestion(qBrainFunction);
-				addQuestion(qViolentBehavior);
-				addQuestion(qSuicide);
-				addQuestion(qPsycholEmotMedication);
-				addQuestion(qPsycholEmotImpact);
+				addQuestion(qSexActivity,125);
+				createText("Did you engage in protected or unprotected...","h1");
+				addQuestion(qVaginalContacts);
+				addQuestion(qOralContacts);
+				addQuestion(qAnalContacts);
+				createText("Unprotected sexual contacts were with an individual who is or was...","h1");
+				addQuestion(qSexUnprotHIVAids);
+				addQuestion(qSexUnprotInjDrugUser);
+				addQuestion(qSexUnprotHigh);
+				addDivider();
+				var resultWidth:int = 160;
+				addQuestion(qiHIVTest);
+				addQuestion(qiHIVTestResult,resultWidth);
+				addQuestion(qiHepBTest);
+				addQuestion(qiHepBTestResult,resultWidth);
+				addQuestion(qiHepCTest);
+				addQuestion(qiHepCTestResult,resultWidth);
+				addQuestion(qiHepCTestConfirm);
 				
 				//Validators
-				addNumberValidator(qDepression,0,30,true);
-				addNumberValidator(qAnxiety,0,30,true);
-				addNumberValidator(qHallucinations,0,30,true);
-				addNumberValidator(qBrainFunction,0,30,true);
-				addNumberValidator(qViolentBehavior,0,30,true);
-				addNumberValidator(qSuicide,0,30,true);
-				addNumberValidator(qPsycholEmotMedication,0,30,true);
+				
+				//Control Logic
+				addSkipDropDown(qSexActivity,["Yes"],[qVaginalContacts,qOralContacts,qAnalContacts,qSexUnprotHIVAids,qSexUnprotInjDrugUser,qSexUnprotHigh],true);
+				addSkipDropDown(qiHIVTest,["Yes"],[qiHIVTestResult],true);
+				addSkipDropDown(qiHepBTest,["Yes"],[qiHepBTestResult],true);
+				addSkipDropDown(qiHepCTest,["Yes"],[qiHepCTestResult],true);
+				addSkipDropDown(qiHepCTestResult,["Positive/reactive"],[qiHepCTestConfirm],true);
 				
 			}
 		]]>

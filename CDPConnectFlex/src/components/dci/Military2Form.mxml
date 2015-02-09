@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <dci:DCIForm xmlns:fx="http://ns.adobe.com/mxml/2009" 
 			 xmlns:s="library://ns.adobe.com/flex/spark" 
-			 xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:dci="components.dci.*" width="100%" height="100%">
+			 xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:dci="components.dci.*" width="100%" height="100%"
+			 labelWidth="370">
 	<fx:Script>
 		<![CDATA[
 			import components.DropDownValidator;
@@ -17,8 +18,7 @@
 			import mx.states.OverrideBase;
 			
 			public var qFamilyActiveDuty:QuestionList = new QuestionList("FamilyActiveDuty","Is anyone in your immediate family currently serving as a member of one of the branches of the United States Uniformed Services on active duty, reserve components or National Guard?",new ArrayList(["No","Yes, only one","Yes, more than one","Refused","Don't Know","Missing Data"]),0);
-			public var qServiceMemRelationship:QuestionList = new QuestionList("ServiceMemRelationship","What is the relationship of that person (Service Member) to you?",new ArrayList(["Mother","Father","Brother","Sister",
-				"Spouse","Partner","Child","Other","Missing Data"]),0);
+			public var qServiceMemRelationship:QuestionList = new QuestionList("ServiceMemRelationship","What is the relationship of that person (Service Member) to you?",new ArrayList(["Mother","Father","Brother","Sister","Spouse","Partner","Daughter","Son","Self","Other","Missing Data"]),0);
 			public var qServiceMemExpOther:QuestionText = new QuestionText("ServiceMemExpOther","Other, specify","");
 			public var qServiceMemExpDeployed:QuestionList = new QuestionList("ServiceMemExpDeployed","Deployed in support of combat operations (e.g., Iraq or Afghanistan)?",ynrdm,1);
 			public var qServiceMemExpInjured:QuestionList = new QuestionList("ServiceMemExpInjured","Was physically injured during combat operations?",ynrdm,1);
@@ -31,6 +31,8 @@
 			//Military2 Form Area
 			public override function createForm():void
 			{
+				viewstackIndex = 7;
+				
 				//Questions
 				addQuestion(qFamilyActiveDuty, 150);
 				createText("The following four questions relate to experiences you or a member of your immediate family may have had while serving.","h1");
@@ -41,13 +43,15 @@
 				addQuestion(qServiceMemExpInjured);
 				addQuestion(qServiceMemExpCombatStress);
 				addQuestion(qServiceMemExpDeceased);
+				createText("Complete the above questions for each family member and then click 'Add'. To remove an item, select it in the list to the right, and then click 'Remove'.","h1");
 				setElementIndex(military2Group,numElements-1);
 				
 				//Validators
 				addDropDownValidator(qFamilyActiveDuty,["No","Refused","Don't Know","Missing Data"]);
 				
 				//Control Logic
-				addSkipDropDown(qServiceMemRelationship,["Mother","Father","Brother","Sister","Spouse","Partner","Child"],[qServiceMemExpOther]);
+				addSkipDropDown(qServiceMemRelationship,["Self","Mother","Father","Brother","Sister","Spouse","Partner","Daughter","Son","Missing Data"],[qServiceMemExpOther]);
+				addSkipDropDown(qServiceMemRelationship,["Self"],[qServiceMemExpDeceased]);
 				addSkipDropDown(qFamilyActiveDuty,["No","Refused","Don't Know","Missing Data"],[qServiceMemRelationship,qServiceMemExpDeployed,qServiceMemExpInjured,qServiceMemExpCombatStress,qServiceMemExpDeceased]);
 				(qFamilyActiveDuty.skipPatterns[0] as SkipPattern).skipWhenInvalid = true;
 			}
@@ -102,9 +106,9 @@
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
 	<s:Group width="400" height="100" id="military2Group">
-		<s:List id="military2List" width="300" height="75" x="0" y="0"
+		<s:List id="military2List" width="300" height="75" x="50" y="0"
 				dataProvider="{familyVeterans}" allowMultipleSelection="false"></s:List>
-		<s:Button label="Add" click="military2AddButtonHandler(event)" x="310" y="10"/>
-		<s:Button label="Remove" click="military2RemoveButtonHandler(event)" x="310" y="40"/>
+		<s:Button label="Add" click="military2AddButtonHandler(event)" x="360" y="10"/>
+		<s:Button label="Remove" click="military2RemoveButtonHandler(event)" x="360" y="40"/>
 	</s:Group>
 </dci:DCIForm>

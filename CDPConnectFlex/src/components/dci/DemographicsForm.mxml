@@ -50,6 +50,8 @@
 			//Demographics Form Area
 			public override function createForm():void
 			{
+				viewstackIndex = 4;
+				
 				//Questions
 				addQuestion(qDateOfBirth);
 				
@@ -90,15 +92,7 @@
 				addGroupedQuestion(qRacePacificIslander,g);				
 				
 				//Validators
-				var dv1:DateAgeValidator = new DateAgeValidator();
-				dv1.required = true;
-				dv1.source = qDateOfBirth.inputControl;
-				dv1.property = "text";
-				dv1.minType = DateAgeValidator.YEAR;
-				dv1.min = 3;
-				dv1.maxType = DateAgeValidator.YEAR;
-				dv1.max = 100;
-				qDateOfBirth.validator = dv1;
+				addDateAgeValidator(qDateOfBirth,3,DateAgeValidator.YEAR,100,DateAgeValidator.YEAR);
 				
 				addDropDownValidator(qHispanicLatino,["No","Refused","Missing Data"]);
 				addRequiredValidator(qEthnicOtherSpecify);

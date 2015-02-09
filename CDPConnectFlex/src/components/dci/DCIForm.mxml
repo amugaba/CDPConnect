@@ -5,6 +5,7 @@
 		 labelWidth="260">
 	<fx:Script>
 		<![CDATA[
+			import components.DateAgeValidator;
 			import components.DropDownValidator;
 			import components.GpraPage;
 			import components.QuestionClass;
@@ -28,9 +29,12 @@
 			
 			protected var global:CDPConnectFlex = FlexGlobals.topLevelApplication as CDPConnectFlex;
 			public var questions:Vector.<QuestionClass> = new Vector.<QuestionClass>();
+			protected static var yn:ArrayList = new ArrayList(["Yes","No"]);
 			protected static var ynrdm:ArrayList = new ArrayList(["Yes","No","Refused","Don't Know","Missing Data"]);
 			protected static var ynrm:ArrayList = new ArrayList(["Yes","No","Refused","Missing Data"]);
 			protected static var rdm:ArrayList = new ArrayList(["Refused","Don't Know","Missing Data"]);
+			
+			public var viewstackIndex:int = 0;
 			
 			public function addQuestion(q:QuestionClass, width:int = -1):void
 			{
@@ -56,6 +60,21 @@
 				h.height = 5;
 				h.percentWidth = 100;
 				addElement(h);
+			}
+			
+			protected function addDateAgeValidator(q:QuestionClass, min:Number = Number.NaN, minType:String = DateAgeValidator.DAY, max:Number = Number.NaN, maxType:String = DateAgeValidator.YEAR, required:Boolean = true):void
+			{
+				var dv1:DateAgeValidator = new DateAgeValidator();
+				dv1.required = true;
+				dv1.source = q.inputControl;
+				dv1.property = "text";
+				dv1.minType = minType;
+				if(!isNaN(min))
+					dv1.min = min;
+				if(!isNaN(max))
+					dv1.max = max;
+				dv1.maxType = maxType;
+				q.validator = dv1;
 			}
 			
 			protected function addNumberValidator(q:QuestionClass, min:Number = Number.NaN, max:Number = Number.NaN, isInt:Boolean = false, required:Boolean = true):void
@@ -98,9 +117,9 @@
 				q.validator = v;
 			}
 			
-			protected function addSkipDropDown(sourceQuestion:QuestionClass, skipAnswers:Array, skipQuestions:Array):void
+			protected function addSkipDropDown(sourceQuestion:QuestionClass, skipAnswers:Array, skipQuestions:Array, inverse:Boolean = false):void
 			{
-				var skip:SkipPattern = new SkipPattern(sourceQuestion,skipQuestions,skipAnswers,[IndexChangeEvent.CHANGE]);
+				var skip:SkipPattern = new SkipPattern(sourceQuestion,skipQuestions,skipAnswers,[IndexChangeEvent.CHANGE],inverse);
 				sourceQuestion.skipPatterns.push(skip);
 			}
 			
@@ -135,9 +154,13 @@
 			{
 				var t:Text = new Text();
 				t.text = text;
-				t.width = 500-10;//This needs to be changed to access the GPRAPage viewstack.width value - 10
+				t.width = 540-10;//This needs to be changed to access the GPRAPage viewstack.width value - 10
 				t.styleName = style;
 				addElement(t);
+			}
+			
+			public function enableForm(enabled:Boolean):void
+			{
 			}
 		]]>
 	</fx:Script>

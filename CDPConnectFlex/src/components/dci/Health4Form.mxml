@@ -12,32 +12,46 @@
 			import mx.collections.ArrayList;
 			import mx.validators.NumberValidator;
 			
-			public var qAnyViolence:QuestionList = new QuestionList("AnyViolence","Have you ever experienced violence or trauma in any setting (including community or school violence; domestic violence; physical, psychological, " +
-				"or sexual maltreatment/assault within or outside of the family; natural disaster; terrorism; neglect; or traumatic grief?)",ynrdm,1);
-			public var qNightmares:QuestionList = new QuestionList("Nightmares","Have had nightmares about it or thought about it when you did not want to?",ynrdm,1);
-			public var qTriedHard:QuestionList = new QuestionList("TriedHard","Tried hard not to think about it or went out of your way to avoid situations that remind you of it?",ynrdm,1);
-			public var qConstantGuard:QuestionList = new QuestionList("ConstantGuard","Were constantly on guard, watchful, or easily startled?",ynrdm,1);
-			public var qNumbAndDetach:QuestionList = new QuestionList("NumbAndDetach","Felt numb and detached from others, activities, or your surroundings?",ynrdm,1);
-			public var qPhysicallyHurt:QuestionList = new QuestionList("PhysicallyHurt","In the past 30 days, how often have you been hit, kicked, slapped, or otherwise physically hurt?",new ArrayList(["Never","A few times",
-				"More than a few times","Refused","Don't Know","Missing Data"]),0);
+			public var qAttendVoluntary:QuestionList = new QuestionList("AttendVoluntary","Voluntary self-help groups for recovery that were not affiliated with a religious or faith-based organization",ynrdm,1);
+			public var qAttendVoluntaryTimes:QuestionTextRefusable = new QuestionTextRefusable("AttendVoluntaryTimes","","0");
+			public var qAttendReligious:QuestionList = new QuestionList("AttendReligious","Religious/faith affiliated recovery self-help groups",ynrdm,1);
+			public var qAttendReligiousTimes:QuestionTextRefusable = new QuestionTextRefusable("AttendReligiousTimes","","0");
+			public var qAttendOtherOrg:QuestionList = new QuestionList("AttendOtherOrg","Meetings of organizations that support recovery other than the organizations described above",ynrdm,1);
+			public var qAttendOtherOrgTimes:QuestionTextRefusable = new QuestionTextRefusable("AttendOtherOrgTimes","","0");
+			public var qInteractFamilyFriends:QuestionList = new QuestionList("InteractFamilyFriends","In the past 30 days, have you had interaction with family and/or friends that are supportive of your recovery?",ynrdm,1);
+			public var qAccomplishedGoals:QuestionList = new QuestionList("AccomplishedGoals","In the past 30 days, I generally accomplished what I set out to do.",new ArrayList(["Strongly agree","Agree","Undecided","Disagree","Strongly disagree","Refused","Don't Know","Missing Data"]),0);
+			public var qManageHealth:QuestionList = new QuestionList("ManageHealth","I feel capable of managing my health care needs.",new ArrayList(["On my own most of the time","With support from others most of the time","On my own","Some of the time and with support from others","Some of the time","Rarely or never","Refused","Don't Know","Missing Data"]),0);
 			
-			//Health4 Form Area
+			//Health3 Form Area
 			public override function createForm():void
 			{
 				//Questions
-				addQuestion(qAnyViolence);
-				createText("Did any of these experiences feel so frightening, horrible, or upsetting that, in the past and/or the present, you:","h1");
-				addQuestion(qNightmares);
-				addQuestion(qTriedHard);
-				addQuestion(qConstantGuard);
-				addQuestion(qNumbAndDetach);
-				addQuestion(qPhysicallyHurt,130);
+				createText("The following three questions refer to non-professional, peer-operated organizations devoted to helping individuals who have addiction related problems such as: Alcoholics Anonymous, Narcotics Anonymous, Oxford House, Secular Organization for Sobriety, or Women for Sobriety","");
+				createText("In the past 30 days, did you attend any _____? If yes, specify how many times.","h1");
+				addSocialQuestion(qAttendVoluntary,qAttendVoluntaryTimes,64);
+				addSocialQuestion(qAttendReligious,qAttendReligiousTimes,36);
+				addSocialQuestion(qAttendOtherOrg,qAttendOtherOrgTimes,50);
+				addDivider();
+				addQuestion(qInteractFamilyFriends);
+				addQuestion(qAccomplishedGoals,130);
+				addQuestion(qManageHealth,280);
 				
 				//Validators
+			}
+			
+			protected function addSocialQuestion(socialQ:QuestionList, daysQ:QuestionTextRefusable, height:int=22):void
+			{
+				addQuestion(socialQ);
+				socialQ.inputControl.width = 90;
+				socialQ.direction = "horizontal";
 				
-				//Control Logic
-				addSkipDropDown(qAnyViolence,["No","Refused","Don't Know","Missing Data"],[qNightmares,qTriedHard,qConstantGuard,qNumbAndDetach]);
+				questions.push(daysQ);
+				socialQ.addElement(daysQ.input);
+				socialQ.addElement(daysQ.refuseInput);
+				daysQ.inline = true;
 				
+				addNumberValidator(daysQ,1,30,true);
+				addSkipDropDown(socialQ,["Yes"],[daysQ],true);
 			}
 		]]>
 	</fx:Script>

@@ -121,7 +121,6 @@ By David Tidd
 				}
 				pageHome.creationCompleteHandler();
 				pageClient.creationCompleteHandler();
-				pageGPRA.creationCompleteHandler();
 			}
 
 			protected function logoutButton_clickHandler(event:MouseEvent):void
