@@ -36,13 +36,13 @@
 				//Questions
 				addQuestion(qFamilyActiveDuty, 150);
 				createText("The following four questions relate to experiences you or a member of your immediate family may have had while serving.","h1");
-				addQuestion(qServiceMemRelationship);
-				addQuestion(qServiceMemExpOther);
+				addElement(qServiceMemRelationship);
+				addElement(qServiceMemExpOther);
 				createText("Has the Service Member experienced any of the following?","h1");
-				addQuestion(qServiceMemExpDeployed);
-				addQuestion(qServiceMemExpInjured);
-				addQuestion(qServiceMemExpCombatStress);
-				addQuestion(qServiceMemExpDeceased);
+				addElement(qServiceMemExpDeployed);
+				addElement(qServiceMemExpInjured);
+				addElement(qServiceMemExpCombatStress);
+				addElement(qServiceMemExpDeceased);
 				createText("Complete the above questions for each family member and then click 'Add'. To remove an item, select it in the list to the right, and then click 'Remove'.","h1");
 				setElementIndex(military2Group,numElements-1);
 				
@@ -99,6 +99,33 @@
 				super.reset();
 				familyVeterans = new ArrayList();
 				updateFamilyValidator();
+			}
+			
+			public override function saveData(gpraData:Array):void
+			{
+				super.saveData(gpraData);
+				
+				var i:Number = 1;
+				for each(var arr:Array in familyVeterans.source)
+				{
+					var relation:String = arr[0];
+					var relationOther:String = arr[1];
+					var deployed:String = arr[2];
+					var injured:String = arr[3];
+					var stressed:String = arr[4];
+					var dead:String = arr[5];
+					
+					gpraData["ServiceMemRelationship"+String(i)] = questionValue(relation, qServiceMemRelationship);
+					if(relation == "Other")
+						gpraData["ServiceMemExpOther"+String(i)] = relationOther;
+					
+					gpraData["ServiceMemExpDeployed"+String(i)] = questionValue(deployed, qServiceMemExpDeployed);
+					gpraData["ServiceMemExpInjured"+String(i)] = questionValue(injured, qServiceMemExpInjured);
+					gpraData["ServiceMemExpCombatStress"+String(i)] = questionValue(stressed, qServiceMemExpCombatStress);
+					gpraData["ServiceMemExpDeceased"+String(i)] = questionValue(dead, qServiceMemExpDeceased);
+
+					i += 1;
+				}
 			}
 		]]>
 	</fx:Script>

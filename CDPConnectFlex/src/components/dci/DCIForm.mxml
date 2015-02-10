@@ -162,6 +162,52 @@
 			public function enableForm(enabled:Boolean):void
 			{
 			}
+			
+			public function saveData(gpraData:Array):void
+			{
+				for each(var q:QuestionClass in questions)
+				{
+					gpraData[q.codeName] = q.answer;
+					
+					var answer:Object;
+					if(q.isSkipped)
+						answer = null; //question is being skipped, put null for N/A
+					else if(q is QuestionTextRefusable)
+					{
+						var qr:QuestionTextRefusable = q as QuestionTextRefusable;
+						if(qr.refuseInput.selectedIndex > 0)
+							answer = -6 - qr.refuseInput.selectedIndex; //put -7 for Refused, -8 for DK, -9 for MI
+						else
+							answer = Number(qr.answer);
+					}
+					else if(q is QuestionText)
+					{
+						answer = q.answer;
+					}
+					else if(q is QuestionList)
+					{
+						answer = questionValue(q.answer, q as QuestionList);
+					}
+					if(answer != null)
+						gpraData[q.codeName] = answer;
+				}
+			}
+			
+			protected function questionValue(answer:String, q:QuestionList):int
+			{
+				if(answer == "Yes")
+					return 1;
+				if(answer == "No")
+					return 0;
+				if(answer == "Refused")
+					return -7;
+				if(answer == "Don't Know")
+					return -8;
+				if(answer == "Missing Data")
+					return -9;
+				return q.input.dataProvider.getItemIndex(answer);
+			}
+			
 		]]>
 	</fx:Script>
 	<fx:Style>

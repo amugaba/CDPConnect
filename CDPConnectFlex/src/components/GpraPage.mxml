@@ -109,7 +109,17 @@
 					enableSectionJ(false);
 					enableSectionK(false);
 				}
-				else if(global.activeGPRA.type == InterviewType.INTAKE)
+				else if(global.activeGPRA.type == InterviewType.INTAKE_SBIRT_RT)
+				{
+					enableSectionSBIRT(true);
+					enableSectionA(true);
+					enableSectionB(true);
+					enableSectionCtoG(true);
+					enableSectionI(false);
+					enableSectionJ(false);
+					enableSectionK(false);
+				}
+				else if(global.activeGPRA.type == InterviewType.INTAKE_GENERAL)
 				{
 					enableSectionSBIRT(false);
 					enableSectionA(true);
@@ -129,12 +139,32 @@
 					enableSectionJ(false);
 					enableSectionK(true);
 				}
+				else if(global.activeGPRA.type == InterviewType.FOLLOWUP_SBIRT_BI)
+				{
+					enableSectionSBIRT(false);
+					enableSectionA(false);
+					enableSectionB(true);
+					enableSectionCtoG(false);
+					enableSectionI(true);
+					enableSectionJ(false);
+					enableSectionK(true);
+				}
 				else if(global.activeGPRA.type == InterviewType.DISCHARGE)
 				{
 					enableSectionSBIRT(false);
 					enableSectionA(false);
 					enableSectionB(true);
 					enableSectionCtoG(true);
+					enableSectionI(false);
+					enableSectionJ(true);
+					enableSectionK(true);
+				}
+				else if(global.activeGPRA.type == InterviewType.DISCHARGE_NO_INTERVIEW)
+				{
+					enableSectionSBIRT(false);
+					enableSectionA(false);
+					enableSectionB(false);
+					enableSectionCtoG(false);
 					enableSectionI(false);
 					enableSectionJ(true);
 					enableSectionK(true);
@@ -374,332 +404,29 @@
 			protected function parseForm():void
 			{
 				var gpraData:Array = new Array();
-				var answer:Object;
+				
 				var date:Date = DateField.stringToDate(recordForm.qInterviewDate.answer,"MM/DD/YYYY");
-				for each(var q:QuestionClass in questionDict)
+				for(var i:int = 0; i < dciForms.length; i++)
 				{
-					if(q.parent == followupForm && recordForm.qInterviewTypeCode.answer != "6 Month Followup")
+					//if this form isn't active, skip it
+					if(!viewStack.contains(dciTabs[i]))
 						continue;
-					if(q.parent == dischargeForm && recordForm.qInterviewTypeCode.answer != "Discharge")
-						continue;
-					if(["ServiceMemRelationship","ServiceMemExpOther","ServiceMemExpDeployed","ServiceMemExpInjured","ServiceMemExpCombatStress","ServiceMemExpDeceased"].indexOf(q.codeName) != -1)
-						continue;
-					if(q is QuestionTextRefusable)
-					{
-						var qr:QuestionTextRefusable = q as QuestionTextRefusable;
-						if(qr.refuseInput.selectedIndex > 0)
-							answer = -6 - qr.refuseInput.selectedIndex; //put -7 for Refused, -8 for DK, -9 for MI
-						else if(q.isSkipped)
-							answer = -1; //question is being skipped, put -1 for N/A
-						else
-							answer = Number(qr.answer);
-						/*if(q.codeName == "ArrestedDrugDays")
-						{
-							if((getQuestion("ArrestedDays") as QuestionTextRefusable).refuseInput.selectedIndex > 0)
-								answer = 0;
-						}*/
-					}
-					else if(q is QuestionText)
-					{
-						if(q.isSkipped)
-						{
-							//answer = -1; //question is being skipped, put -1 for N/A
-							answer = null;
-						}
-						else
-							answer = q.answer;
-					}
-					else if(q is QuestionList)
-					{
-						var ql:QuestionList = q as QuestionList;
-						answer = ql.input.selectedIndex + 1;
-						if(ql.input.dataProvider.getItemAt(0) == "Yes" && ql.input.dataProvider.getItemAt(1) == "No")
-						{
-							if(q.answer == "Yes")
-								answer = 1;
-							else if(q.answer == "No")
-								answer = 0;
-						}
-							
 						
-						if(q.isSkipped)
-							answer = -1;
-						else if(q.answer == "Refused")
-							answer = -7;
-						else if(q.answer == "Don't Know")
-							answer = -8;
-						else if(q.answer == "Missing Data")
-							answer = -9;
-						
-						//Special codes
-						/*if(["MilitaryServed","ActiveDuty","FamilyActiveDuty","EducationYears","PhysicallyHurt"].indexOf(q.codeName) != -1)
-						{
-							answer = ql.input.selectedIndex; //These codes count up from 0
-						}
-						else if(q.codeName == "EmployStatus" && q.answer == "Other")
-						{
-							answer = 0;
-						}
-						else if(["IraqAfghanistan","PersianGulf","VietnamSoutheastAsia","Korea","WWII","DeployedCombatZone"].indexOf(q.codeName) != -1)
-						{
-							var nDep:String = getQuestion("NeverDeployed").answer;
-							if(nDep == "No")
-								answer = 0;
-							else if(nDep == "Refused")
-								answer = -7;
-							else if(nDep == "Don't Know")
-								answer = -8;
-							else if(nDep == "Missing Data")
-								answer = -9;
-						}
-						else if(["ImpactStress","ImpactActivity","ImpactEmotional"].indexOf(q.codeName) != -1 && q.isSkipped)
-						{
-							answer = 5; //These use 5 for Not Applicable
-						}
-						else if(q.codeName == "FLWPStatus")
-						{
-							if(answer == 2)
-								answer = 11;
-							else if(answer == 3)
-								answer = 12;
-							else if(answer == 4)
-								answer = 21; 
-							else if(answer == 5)
-								answer = 22; 
-							else if(answer == 6)
-								answer = 23; 
-							else if(answer == 7)
-								answer = 24; 
-							else if(answer == 8)
-								answer = 31; 
-							else if(answer == 9)
-								answer = 32; 
-						}*/
-					}
-					/*if(q.codeName == "DateOfBirth")
-					{
-						var bday:Date = DateField.stringToDate(q.answer,"MM/DD/YYYY");
-						if(bday != null)
-						{
-							gpraData["BirthYear"] = bday.fullYear;
-							gpraData["BirthMonth"] = bday.month + 1;
-							var age:Number = Math.floor((date.time - bday.time) / 1000 / 60 / 60 / 24 / 365);
-							gpraData["Age"] = age;
-							if(age > 9 && age < 13)
-								gpraData["AgeGroup"] = 0;
-							else if(age < 18)
-								gpraData["AgeGroup"] = 1;
-							else if(age < 25)
-								gpraData["AgeGroup"] = 2;
-							else if(age < 35)
-								gpraData["AgeGroup"] = 3;
-							else if(age < 45)
-								gpraData["AgeGroup"] = 4;
-							else if(age < 55)
-								gpraData["AgeGroup"] = 5;
-							else if(age < 65)
-								gpraData["AgeGroup"] = 6;
-							else
-								gpraData["AgeGroup"] = 7;
-						}
-					}*/
-					if(answer != null)
-						gpraData[q.codeName] = answer;
-				}
-				//Add in other fields
-				var leadingZeroes:String = "";//SAIS ID has to be 12 characters
-				for(var z:int = String(global.activeClient.autoid).length; z < 12; z++)
-					leadingZeroes += "0";
-				gpraData["ClientID"] = global.activeClient.autoid;
-				gpraData["SAISID"] = leadingZeroes + String(global.activeClient.autoid);
-				gpraData["GrantNo"] = "TI024261";
-				//gpraData["InterviewSeqNum"] = 1;//this is based on episode # for SBIRT
-				//gpraData["GrantInactFlag"] = 0;
-				//gpraData["InactFlag"] = 0;//once discharge and followup are done, this should be 1
-				//gpraData["gpra_status"] = finalized ? 1: 0;
-				//gpraData["Veteran"] = -99;
-				//if(gpraData["CooccurringScreen"] == -9)
-				//	gpraData["CooccurringScreenStatus"] = -9;
-				/*if(gpraData["InterviewTypeCode"] == 1)
-					gpraData["IntakeDate"] = gpraData["InterviewDate"];//this is only true if interviewtypecode == 1, have to get it from the db
-				else
-				{
-					for each(var g:GpraVO in global.activeClient.gpras)
-					{
-						if(g.type == 1)
-							gpraData["IntakeDate"] = g.date;
-					}
-				}
-				gpraData["InterviewCreateDate"] = dateFormatter.format(new Date());//is this done by SAIS?
-				*/
-				/*if(date != null)
-				{
-					var month:Number = date.month+1;
-					gpraData["Month"] = month;
-					if(month > 9)
-						gpraData["FFY"] = date.fullYear+1;
-					else
-						gpraData["FFY"] = date.fullYear;
-					if(month > 9)
-						gpraData["Quarter"] = 1;
-					else if(month > 6)
-						gpraData["Quarter"] = 4; 
-					else if(month > 3)
-						gpraData["Quarter"] = 3; 
-					else
-						gpraData["Quarter"] = 2;
+					var form:DCIForm = dciForms[i];					
+					form.saveData(gpraData);
 				}
 				
-				if(gpraData["EmployStatus"] > 0 && gpraData["EmployStatus"] < 3)
-					gpraData["Employment"] = 1;
-				else if(gpraData["EmployStatus"] > 2)
-					gpraData["Employment"] = 2;
-				else if(gpraData["EmployStatus"] < 0)
-					gpraData["Employment"] = -9;
-				*/
-				var i:Number = 1;
-				for each(var arr:Array in military2Form.familyVeterans.source)
-				{
-					if(arr[0] == "Missing Data")
-						gpraData["ServiceMemRelationship"+String(i)] = -9;
-					else
-						gpraData["ServiceMemRelationship"+String(i)] = military2Form.qServiceMemRelationship.input.dataProvider.getItemIndex(arr[0])+1;
-					if(gpraData["ServiceMemRelationship"+String(i)] == 8)
-					//if(arr[1] == "")
-					//	gpraData["ServiceMemExpOther"+String(i)] = null;
-					//else
-						gpraData["ServiceMemExpOther"+String(i)] = arr[1];
-					if(arr[2] == "Yes")
-						gpraData["ServiceMemExpDeployed"+String(i)] = 1;
-					else if(arr[2] == "No")
-						gpraData["ServiceMemExpDeployed"+String(i)] = 0;
-					else
-						gpraData["ServiceMemExpDeployed"+String(i)] = -5 - military2Form.qServiceMemExpDeployed.input.dataProvider.getItemIndex(arr[2]);
-					if(arr[3] == "Yes")
-						gpraData["ServiceMemExpInjured"+String(i)] = 1;
-					else if(arr[3] == "No")
-						gpraData["ServiceMemExpInjured"+String(i)] = 0;
-					else
-						gpraData["ServiceMemExpInjured"+String(i)] = -5 - military2Form.qServiceMemExpDeployed.input.dataProvider.getItemIndex(arr[3]);
-					if(arr[4] == "Yes")
-						gpraData["ServiceMemExpCombatStress"+String(i)] = 1;
-					else if(arr[4] == "No")
-						gpraData["ServiceMemExpCombatStress"+String(i)] = 0;
-					else
-						gpraData["ServiceMemExpCombatStress"+String(i)] = -5 - military2Form.qServiceMemExpDeployed.input.dataProvider.getItemIndex(arr[4]);
-					if(arr[5] == "Yes")
-						gpraData["ServiceMemExpDeceased"+String(i)] = 1;
-					else if(arr[5] == "No")
-						gpraData["ServiceMemExpDeceased"+String(i)] = 0;
-					else
-						gpraData["ServiceMemExpDeceased"+String(i)] = -5 - military2Form.qServiceMemExpDeployed.input.dataProvider.getItemIndex(arr[5]);
-					i += 1;
-				}
-				for(i; i<=6; i++)
-				{
-					gpraData["ServiceMemRelationship"+String(i)] = -1;
-					//gpraData["ServiceMemExpOther"+String(i)] = -1;
-					gpraData["ServiceMemExpDeployed"+String(i)] = -1;
-					gpraData["ServiceMemExpInjured"+String(i)] = -1;
-					gpraData["ServiceMemExpCombatStress"+String(i)] = -1;
-					gpraData["ServiceMemExpDeceased"+String(i)] = -1;
-				}
+				//Add in other fields
+				gpraData["ClientID"] = global.activeClient.autoid;
+				gpraData["SAISID"] = String(global.activeClient.autoid);
+				gpraData["GrantNo"] = global.activeGrant.grantCode;
+				
 				//If doing discharge or followup, get gender from the intake
 				if(global.activeGPRA.type != 1)
-					gpraData["GenderCode"] = global.activeClient.intake.data.source["GenderCode"];
-				addServicesCodes(gpraData);
-				//setNullValues(gpraData);
+					gpraData["Gender"] = global.activeClient.intake.data.source["Gender"];
+				
 				global.activeGPRA.data = gpraData;
 				saveGpraResult.token = gpraService.saveGpra(global.activeGPRA);
-			}
-			
-			protected function setNullValues(gpraData:Array):void
-			{
-				if(gpraData["InterviewTypeCode"] == 1)
-					delete gpraData["ConductedInterview"];
-				if(gpraData["ConductedInterview"] == 0)
-					delete gpraData["InterviewDate"];
-				/*if(gpraData["InterviewTypeCode"] != 2)
-				{
-					gpraData.
-					gpraData["FLWPStatus"] = null;
-					gpraData["FLWPStatusSpec"] = null;
-					gpraData["ReceivingServices"] = null;
-				}
-				if(gpraData["InterviewTypeCode"] != 5)
-				{
-					gpraData["DischargeDate"] = null;
-					gpraData["DischargeStatusCompl"] = null;
-					gpraData["DischargeStatusTermReason"] = null;
-					gpraData["OtherDischargeStatTermRsnSpec"] = null;
-					gpraData["jHIVTest"] = null;
-					gpraData["jHIVTestResult"] = null;
-				}*/
-			}
-			
-			protected function addServicesCodes(gpraData:Array):void
-			{
-				gpraData["SvcAfterCare"] = 0;
-				gpraData["SvcAlcoholDrugTesting"] = 0;
-				gpraData["SvcAmbulatoryDetox"] = 0;
-				gpraData["SvcAssessment"] = 0;
-				gpraData["SvcBriefIntervention"] = 0;
-				gpraData["SvcBriefTreatment"] = 1;
-				gpraData["SvcCaseManagement"] = 0;
-				gpraData["SvcChildCare"] = 0;
-				gpraData["SvcCoOccurring"] = 0;
-				gpraData["SvcContinuingCare"] = 0;
-				gpraData["SvcDayTreatment"] = 0;
-				gpraData["SvcDrugFreeHousing"] = 0;
-				gpraData["SvcDrugFreeSocial"] = 0;
-				gpraData["SvcEmploymentCoaching"] = 0;
-				gpraData["SvcFamilyMarriageCouns"] = 0;
-				gpraData["SvcFamilyServices"] = 0;
-				gpraData["SvcFreeStandingRes"] = 0;
-				gpraData["SvcGroupCouns"] = 0;
-				gpraData["SvcHIVAIDSCouns"] = 0;
-				gpraData["SvcHIVAIDSEdu"] = 0;
-				gpraData["SvcHIVAIDSMedical"] = 0;
-				gpraData["SvcHIVAIDSServices"] = 0;
-				gpraData["SvcHospitalInpatient"] = 0;
-				gpraData["SvcHousingSupport"] = 0;
-				gpraData["SvcIndividualCoord"] = 0;
-				gpraData["SvcIndividualCouns"] = 0;
-				gpraData["SvcInformationReferral"] = 0;
-				gpraData["SvcInpatient"] = 0;
-				gpraData["SvcIntensiveOutpatient"] = 0;
-				gpraData["SvcMedicalCare"] = 0;
-				gpraData["SvcMethadone"] = 0;
-				gpraData["SvcOtherAfterCare"] = 0;
-				//gpraData["SvcOtherAfterCareSpec"] = -1;
-				gpraData["SvcOtherCaseMgmt"] = 0;
-				//gpraData["SvcOtherCaseMgmtSpec"] = -1;
-				gpraData["SvcOtherClinicalCouns"] = 0;
-				//gpraData["SvcOtherClinicalCounsSpec"] = -1;
-				gpraData["SvcOtherEdu"] = 0;
-				//gpraData["SvcOtherEduSpec"] = -1;
-				gpraData["SvcOtherMedical"] = 0;
-				//gpraData["SvcOtherMedicalSpec"] = -1;
-				gpraData["SvcOtherModalitiesSpec"] = "SATED Services";
-				gpraData["SvcOtherRecovery"] = 0;//called FB_FLAG in codebook for some reason
-				//gpraData["SvcOtherRecoverySpec"] = -1;
-				gpraData["SvcOtherModalities"] = 1;
-				gpraData["SvcOutpatient"] = 0;
-				gpraData["SvcOutreach"] = 0;
-				gpraData["SvcPeerCoaching"] = 0;
-				gpraData["SvcPharmacological"] = 0;
-				gpraData["SvcPreEmployment"] = 0;
-				gpraData["SvcRecoveryCoaching"] = 0;
-				gpraData["SvcRecoverySupport"] = 0;
-				gpraData["SvcReferralTreatment"] = 0;
-				gpraData["SvcRelapsePrevention"] = 0;
-				gpraData["SvcResidentialRehab"] = 0;
-				gpraData["SvcScreening"] = 1;
-				gpraData["SvcSelfHelpSupport"] = 0;
-				gpraData["SvcSpiritualSupport"] = 0;
-				gpraData["SvcSubstanceAbuseEdu"] = 0;
-				gpraData["SvcTransportation"] = 0;
-				gpraData["SvcTreatmentPlanning"] = 0;
 			}
 			
 			protected function saveButton_clickHandler(event:MouseEvent):void
@@ -774,6 +501,21 @@
 				g.date = global.activeGPRA.data.source["InterviewCreateDate"];
 				global.activeGPRA = g;
 			}
+			
+			protected function headerButton_clickHandler(event:MouseEvent):void
+			{
+				var output:String = "";
+				var file:FileReference = new FileReference();
+				
+				for each(var form:DCIForm in dciForms)
+				{
+					//get each question code from each form
+					for each(var q:QuestionClass in form.questions)
+						output += q.codeName + "\r\n";
+				}
+				file.save(output,"CodeNames.csv");
+			}
+			
 		]]>
 	</fx:Script>
 	<fx:Declarations>
@@ -861,6 +603,8 @@
 		<s:NavigatorContent id="saveTab" width="100%" height="100%" label="Save">
 			<s:Button id="saveButton" x="200" y="200" label="Validate and Save GPRA"
 					  click="saveButton_clickHandler(event)"/>
+			<s:Button id="headerButton" x="200" y="300" label="Get Headers"
+					  click="headerButton_clickHandler(event)"/>
 		</s:NavigatorContent>
 	</mx:ViewStack>
 </s:NavigatorContent>
