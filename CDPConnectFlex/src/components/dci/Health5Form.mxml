@@ -50,6 +50,7 @@
 				
 				//Validators
 				addRequiredValidator(qViolenceOtherSpec);
+				qViolenceOtherSpec.answerType = String;
 				
 				//Control Logic
 				addSkipDropDown(qAnyViolence,["Yes"],[qViolenceDisaster,qViolenceSchool,qViolenceInterpersonal,qViolenceMilitary,qViolenceOther,qNightmares,qTriedHard,qConstantGuard,qNumbAndDetach],true);

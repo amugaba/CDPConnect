@@ -26,7 +26,7 @@ package components
 					return;
 			}
 			
-			if((Number(sourceQuestion.answer) >= skipMin && Number(sourceQuestion.answer) <= skipMax) != skipInvert)
+			if(sourceQuestion.answer.length == 0 || (Number(sourceQuestion.answer) >= skipMin && Number(sourceQuestion.answer) <= skipMax) != skipInvert)
 			{
 				doSkip();
 			}

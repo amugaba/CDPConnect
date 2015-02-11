@@ -40,8 +40,8 @@
 				addNumberValidator(qArrestedConfineDays,0,15);
 				addNumberValidator(qNrCrimes,0,999);
 				BindingUtils.bindSetter(function():void{(qArrestedDrugDays.validator as NumberValidator).maxValue = Number(qArrestedDays.answer)}, qArrestedDays.inputControl, "text");
-				BindingUtils.bindSetter(function():void{(qArrestedConfineDays.validator as NumberValidator).minValue = global.pageGPRA.livingForm.qLivingWhere.answerIndex == 15 ? 16 : 0;
-					(qArrestedConfineDays.validator as NumberValidator).maxValue = global.pageGPRA.livingForm.qLivingWhere.answerIndex == 15 ? 30 : 15}, global.pageGPRA.livingForm.qLivingWhere.inputControl, "selectedIndex");
+				BindingUtils.bindSetter(function():void{(qArrestedConfineDays.validator as NumberValidator).minValue = global.pageGPRA.livingForm.qLivingWhere.getAnswerIndex() == 15 ? 16 : 0;
+					(qArrestedConfineDays.validator as NumberValidator).maxValue = global.pageGPRA.livingForm.qLivingWhere.getAnswerIndex() == 15 ? 30 : 15}, global.pageGPRA.livingForm.qLivingWhere.inputControl, "selectedIndex");
 				BindingUtils.bindSetter(function():void{(qNrCrimes.validator as NumberValidator).minValue = Number(global.pageGPRA.drugForm.qIllegalDrugsDays.answer)}, global.pageGPRA.drugForm.qIllegalDrugsDays.inputControl, "text");
 				
 				//Control Logic

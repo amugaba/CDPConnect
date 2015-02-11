@@ -94,6 +94,7 @@
 				addGroupedQuestion(qSvcRecoverySupport,g);
 				addGroupedQuestion(qSvcModOther,g);
 				addGroupedQuestion(qSvcModOtherSpec,g);
+				qSvcModOtherSpec.answerType = String;
 				//qSvcModOtherSpec.inputControl.width = 90;
 				
 				addDivider();
@@ -119,6 +120,7 @@
 				addGroupedQuestion(qSvcMentalHealth,g);
 				addGroupedQuestion(qSvcOtherClinical,g);
 				addGroupedQuestion(qSvcOtherClinicalSpec,g);
+				qSvcOtherClinicalSpec.answerType = String;
 				
 				//Validators
 				addRequiredValidator(qSvcModOtherSpec);

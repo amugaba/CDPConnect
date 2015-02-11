@@ -93,9 +93,10 @@
 				
 				//Validators
 				addDateAgeValidator(qDateOfBirth,3,DateAgeValidator.YEAR,100,DateAgeValidator.YEAR);
-				
 				addDropDownValidator(qHispanicLatino,["No","Refused","Missing Data"]);
 				addRequiredValidator(qEthnicOtherSpecify);
+				qDateOfBirth.answerType = String;
+				qEthnicOtherSpecify.answerType = String;
 				
 				createEthnicBindings();
 				

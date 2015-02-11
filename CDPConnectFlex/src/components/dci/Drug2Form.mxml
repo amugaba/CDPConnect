@@ -41,6 +41,7 @@
 				addNumberValidator(qECigarettesDays,0,30,true);
 				addNumberValidator(qOtherTobaccoDays,0,30,true);
 				addRequiredValidator(qOtherTobaccoSpec);
+				qOtherTobaccoSpec.answerType = String;
 				
 				//Control Logic
 				addSkipTextNumber(qOtherTobaccoDays,[qOtherTobaccoSpec],["0"]);

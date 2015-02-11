@@ -46,6 +46,8 @@
 				addQuestion(qDeployedOtherSpec);
 				
 				//Validators
+				addRequiredValidator(qDeployedOtherSpec);
+				qDeployedOtherSpec.answerType = String;
 				
 				//Control Logic
 				addSkipDropDown(qMilitaryServed,["No","Refused","Don't Know","Missing Data"],[qMilitaryBranch,qMilitaryComponent,qActiveDuty,qNeverDeployed]);

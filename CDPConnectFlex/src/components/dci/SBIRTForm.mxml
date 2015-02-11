@@ -31,7 +31,6 @@
 				addQuestion(qAUDIT,scoreWidth);
 				addQuestion(qCAGE,scoreWidth);
 				addQuestion(qDAST,scoreWidth);
-				addQuestion(qDAST,scoreWidth);
 				addQuestion(qDAST10,scoreWidth);
 				addQuestion(qNIAAA,scoreWidth);
 				addQuestion(qASSIST,scoreWidth);
@@ -47,7 +46,11 @@
 				addNumberValidator(qNIAAA,0,10,true,false);//what even is this score?
 				addNumberValidator(qASSIST,0,33,true,false);
 				addNumberValidator(qOtherScreen,0,1000,true,false);
-				addSkipTextRange(qOtherScreen,[qOtherScreenSpec]);
+				addRequiredValidator(qOtherScreenSpec);
+				qOtherScreenSpec.answerType = String;
+				
+				//Control Logic
+				addSkipTextRange(qOtherScreen,[qOtherScreenSpec],0,999,true);
 			}
 		]]>
 	</fx:Script>

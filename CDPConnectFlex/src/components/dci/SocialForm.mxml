@@ -31,6 +31,7 @@
 				
 				//Validators
 				addRequiredValidator(qWhomInTroubleSpec);
+				qWhomInTroubleSpec.answerType = String;
 				
 				//Control Logic
 				addSkipDropDown(qWhomInTrouble,["Other"],[qWhomInTroubleSpec],true);				

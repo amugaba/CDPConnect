@@ -7,7 +7,6 @@ package services.gpraservice
 import com.adobe.fiber.core.model_internal;
 import com.adobe.fiber.services.wrapper.RemoteObjectServiceWrapper;
 import com.adobe.serializers.utility.TypeUtility;
-import mx.collections.ArrayCollection;
 import mx.rpc.AbstractOperation;
 import mx.rpc.AsyncToken;
 import mx.rpc.remoting.Operation;
@@ -49,6 +48,7 @@ internal class _Super_GpraService extends com.adobe.fiber.services.wrapper.Remot
          operation.resultElementType = Object;
         operations["getAllGprasArray"] = operation;
         operation = new mx.rpc.remoting.Operation(null, "setGprasUploaded");
+         operation.resultType = Object;
         operations["setGprasUploaded"] = operation;
         operation = new mx.rpc.remoting.Operation(null, "getGpraSummaryByClientID");
          operation.resultElementType = valueObjects.GpraVO;
@@ -176,7 +176,7 @@ internal class _Super_GpraService extends com.adobe.fiber.services.wrapper.Remot
       *
       * @return an mx.rpc.AsyncToken whose result property will be populated with the result of the operation when the server response is received.
       */
-    public function setGprasUploaded(autoids:ArrayCollection) : mx.rpc.AsyncToken
+    public function setGprasUploaded(autoids:Object) : mx.rpc.AsyncToken
     {
         var _internal_operation:mx.rpc.AbstractOperation = _serviceControl.getOperation("setGprasUploaded");
 		var _internal_token:mx.rpc.AsyncToken = _internal_operation.send(autoids) ;

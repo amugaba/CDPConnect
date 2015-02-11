@@ -132,6 +132,11 @@
 				addRequiredValidator(qSvcOtherAfterCareSpec);
 				addRequiredValidator(qSvcOtherEducSpec);
 				addRequiredValidator(qSvcOtherPeerSpec);
+				qSvcOtherMedSpec.answerType = String;
+				qSvcOtherCaseMgmtSpec.answerType = String;
+				qSvcOtherAfterCareSpec.answerType = String;
+				qSvcOtherEducSpec.answerType = String;
+				qSvcOtherPeerSpec.answerType = String;
 				
 				//Control Logic
 				addSkipDropDown(qSvcOtherMed,["No"],[qSvcOtherMedSpec]);

@@ -54,7 +54,10 @@
 				addQuestion(qDressingDifficult);
 				
 				//Validators
+				addRequiredValidator(qForeignLanguageOtherSpec);
 				addRequiredValidator(qGenderOtherSpecify);
+				qForeignLanguageOtherSpec.answerType = String;
+				qGenderOtherSpecify.answerType = String;
 				
 				//Control Logic
 				addSkipDropDown(qForeignLanguage,["No","Refused","Don't Know","Missing Data"],[qForeignLanguageSpec]);

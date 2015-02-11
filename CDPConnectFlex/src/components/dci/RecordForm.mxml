@@ -9,9 +9,10 @@
 			import components.QuestionList;
 			import components.QuestionText;
 			
-			import mx.collections.ArrayList;
 			import flash.globalization.DateTimeFormatter;
 			import flash.globalization.LocaleID;
+			
+			import mx.collections.ArrayList;
 			
 			public var qClientID:QuestionText = new QuestionText("ClientID","Client ID","",false);
 			public var qInterviewTypeCode:QuestionList = new QuestionList("InterviewTypeCode","Interview Type",new ArrayList(["Intake","6 Month Followup","12 Month Followup","3 Month Followup","Discharge", "Discharge: Administrative"]),0,false);
@@ -35,6 +36,7 @@
 				
 				//Validators
 				addDateAgeValidator(qInterviewDate,0,DateAgeValidator.DAY,365,DateAgeValidator.DAY);
+				qInterviewDate.answerType = String;
 				
 				//Control Logic
 				//addSkipDropDown("InterviewTypeCode",["Intake"],["ConductedInterview"]);
@@ -54,7 +56,14 @@
 			private function populateForm():void
 			{
 				qClientID.answer = String(global.activeClient.autoid);
-				qInterviewTypeCode.input.selectedIndex = global.activeGPRA.type-1;
+				if([InterviewType.INTAKE_GENERAL,InterviewType.INTAKE_SBIRT_BI,InterviewType.INTAKE_SBIRT_NEG,InterviewType.INTAKE_SBIRT_RT].indexOf(global.activeGPRA.type) != -1)
+					qInterviewTypeCode.answer = "Intake";
+				else if([InterviewType.FOLLOWUP,InterviewType.FOLLOWUP_SBIRT_BI].indexOf(global.activeGPRA.type) != -1)
+					qInterviewTypeCode.answer = "6 Month Followup";
+				else if(InterviewType.DISCHARGE == global.activeGPRA.type)
+					qInterviewTypeCode.answer = "Discharge";
+				else if(InterviewType.DISCHARGE == global.activeGPRA.type)
+					qInterviewTypeCode.answer = "Discharge: Administrative";
 				qInterviewDate.answer = dateFormatter.format(new Date());
 			}
 			

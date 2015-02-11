@@ -1,5 +1,7 @@
 package components
 {
+	import components.dci.DCIForm;
+	
 	import flash.display.InteractiveObject;
 	
 	import mx.collections.ArrayList;
@@ -34,9 +36,14 @@ package components
 				input.selectedIndex = input.dataProvider.getItemIndex(value);
 		}
 		
-		public function get answerIndex():int
+		public function getAnswerIndex():int
 		{
-			return input.selectedIndex + 1;
+			return input.selectedIndex;
+		}
+		
+		public function setAnswerIndex(val:int):void
+		{
+			input.selectedIndex = val;
 		}
 		
 		public override function restoreDefault():void

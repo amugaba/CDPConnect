@@ -115,7 +115,7 @@ class GpraService
 	 */
 	public function getGpraSummaryByClientID($clientID)
 	{		
-		$stmt = $this->connection->prepare("SELECT autoid,InterviewTypeCode,InterviewDate FROM $this->tablename where ClientID=?");
+		$stmt = $this->connection->prepare("SELECT autoid,InterviewTypeCode,InterviewDate FROM $this->tablename where client_autoid=?");
 		$this->throwExceptionOnError();
 		
 		$stmt->bind_param('i', $clientID);

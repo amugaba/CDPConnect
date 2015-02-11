@@ -79,6 +79,7 @@
 				addNumberValidator(qIllegalDrugsDays,0,30,true);
 				addNumberValidator(qAlcoholDrugBothDays,0,0,true);
 				addRequiredValidator(qOtherIllegalDrugsSpec);
+				qOtherIllegalDrugsSpec.answerType = String;
 				
 				BindingUtils.bindSetter(function():void{
 					(qAlcoholIntoxDays.validator as NumberValidator).maxValue = Number(qAlcoholDays.answer);

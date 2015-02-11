@@ -417,13 +417,14 @@
 				}
 				
 				//Add in other fields
-				gpraData["ClientID"] = global.activeClient.autoid;
-				gpraData["SAISID"] = String(global.activeClient.autoid);
-				gpraData["GrantNo"] = global.activeGrant.grantCode;
+				gpraData["client_autoid"] = global.activeClient.autoid;//DB autoid and DCI client ID need to be different
 				
 				//If doing discharge or followup, get gender from the intake
-				if(global.activeGPRA.type != 1)
+				if([InterviewType.INTAKE_GENERAL,InterviewType.INTAKE_SBIRT_BI,InterviewType.INTAKE_SBIRT_NEG,InterviewType.INTAKE_SBIRT_RT].indexOf(global.activeGPRA.type) == -1)
+				{
 					gpraData["Gender"] = global.activeClient.intake.data.source["Gender"];
+					gpraData["IntakeDate"] = global.activeClient.intake.date;
+				}
 				
 				global.activeGPRA.data = gpraData;
 				saveGpraResult.token = gpraService.saveGpra(global.activeGPRA);
@@ -511,7 +512,7 @@
 				{
 					//get each question code from each form
 					for each(var q:QuestionClass in form.questions)
-						output += q.codeName + "\r\n";
+						output += q.codeName + "," + q.className + "," + q.answerType.toString() + "\r\n";
 				}
 				file.save(output,"CodeNames.csv");
 			}

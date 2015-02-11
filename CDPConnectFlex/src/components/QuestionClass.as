@@ -17,6 +17,7 @@ package components
 		public var validator:Validator = null;
 		public var inline:Boolean = false;
 		public var isSkipped:Boolean = false;
+		public var answerType:Class = int;
 		
 		public function QuestionClass(codeName:String,label:String)
 		{

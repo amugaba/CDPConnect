@@ -29,10 +29,22 @@
 			
 			protected var global:CDPConnectFlex = FlexGlobals.topLevelApplication as CDPConnectFlex;
 			public var questions:Vector.<QuestionClass> = new Vector.<QuestionClass>();
-			protected static var yn:ArrayList = new ArrayList(["Yes","No"]);
-			protected static var ynrdm:ArrayList = new ArrayList(["Yes","No","Refused","Don't Know","Missing Data"]);
-			protected static var ynrm:ArrayList = new ArrayList(["Yes","No","Refused","Missing Data"]);
-			protected static var rdm:ArrayList = new ArrayList(["Refused","Don't Know","Missing Data"]);
+			protected static var yn:ArrayList = new ArrayList([YES_VALUE,NO_VALUE]);
+			protected static var ynrdm:ArrayList = new ArrayList([YES_VALUE,NO_VALUE,REFUSED_VALUE,DONT_KNOW_VALUE,MISSING_VALUE]);
+			protected static var ynrm:ArrayList = new ArrayList([YES_VALUE,NO_VALUE,REFUSED_VALUE,MISSING_VALUE]);
+			protected static var rdm:ArrayList = new ArrayList([REFUSED_VALUE,DONT_KNOW_VALUE,MISSING_VALUE]);
+			
+			public static var YES_CODE:int = 1;
+			public static var NO_CODE:int = 0;
+			public static var REFUSED_CODE:int = -7;
+			public static var DONT_KNOW_CODE:int = -8;
+			public static var MISSING_CODE:int = -9;
+			
+			public static var YES_VALUE:String = "Yes";
+			public static var NO_VALUE:String = "No";
+			public static var REFUSED_VALUE:String = "Refused";
+			public static var DONT_KNOW_VALUE:String = "Don't Know";
+			public static var MISSING_VALUE:String = "Missing Data";
 			
 			public var viewstackIndex:int = 0;
 			
@@ -167,29 +179,121 @@
 			{
 				for each(var q:QuestionClass in questions)
 				{
-					gpraData[q.codeName] = q.answer;
+					//gpraData[q.codeName] = q.answer;
 					
-					var answer:Object;
+					var valInt:int;
+					var valString:String;
+					
 					if(q.isSkipped)
-						answer = null; //question is being skipped, put null for N/A
+					{
+						//gpraData[q.codeName] = null; //question is being skipped, put null for N/A
+						continue;
+					}
 					else if(q is QuestionTextRefusable)
 					{
-						var qr:QuestionTextRefusable = q as QuestionTextRefusable;
-						if(qr.refuseInput.selectedIndex > 0)
-							answer = -6 - qr.refuseInput.selectedIndex; //put -7 for Refused, -8 for DK, -9 for MI
-						else
-							answer = Number(qr.answer);
+						if(q.answerType == int)
+							gpraData[q.codeName] = getDBValue_qTextRef_int(q as QuestionTextRefusable)
+						else if(q.answerType == String)
+							gpraData[q.codeName] = getDBValue_qTextRef_str(q as QuestionTextRefusable)
 					}
 					else if(q is QuestionText)
 					{
-						answer = q.answer;
+						if(q.answerType == int && q.answer.length > 0)
+							gpraData[q.codeName] = Number(q.answer);
+						else if(q.answerType == String)
+							gpraData[q.codeName] = q.answer;
 					}
 					else if(q is QuestionList)
 					{
-						answer = questionValue(q.answer, q as QuestionList);
+						gpraData[q.codeName] = getDBValue_qList(q as QuestionList);
 					}
-					if(answer != null)
-						gpraData[q.codeName] = answer;
+				}
+			}
+			
+			private function getDBValue_qTextRef_int(q:QuestionTextRefusable):int
+			{				
+				if(q.refuseInput.selectedItem == REFUSED_VALUE)
+					return REFUSED_CODE;
+				else if(q.refuseInput.selectedItem == DONT_KNOW_VALUE)
+					return DONT_KNOW_CODE;
+				else if(q.refuseInput.selectedItem == MISSING_VALUE)
+					return MISSING_CODE;
+				else
+					return Number(q.answer);
+			}
+			
+			private function getDBValue_qTextRef_str(q:QuestionTextRefusable):String
+			{				
+				if(q.refuseInput.selectedItem == REFUSED_VALUE)
+					return REFUSED_CODE.toString();
+				else if(q.refuseInput.selectedItem == DONT_KNOW_VALUE)
+					return DONT_KNOW_CODE.toString();
+				else if(q.refuseInput.selectedItem == MISSING_VALUE)
+					return MISSING_CODE.toString();
+				else
+					return q.answer;
+			}
+			
+			private function getDBValue_qList(q:QuestionList):int
+			{
+				if(q.answer == YES_VALUE)
+					return YES_CODE;
+				else if(q.answer == NO_VALUE)
+					return NO_CODE;
+				else if(q.answer == REFUSED_VALUE)
+					return REFUSED_CODE;
+				else if(q.answer == DONT_KNOW_VALUE)
+					return DONT_KNOW_CODE;
+				else if(q.answer == MISSING_VALUE)
+					return MISSING_CODE;
+				else
+					return q.getAnswerIndex();
+			}
+			
+			private function loadDBValue_qRef_int(q:QuestionTextRefusable, code:int):void
+			{
+				if(code == REFUSED_CODE)
+					q.refuseInput.selectedIndex = 1;
+				else if(code == DONT_KNOW_CODE)
+					q.refuseInput.selectedIndex = 2;
+				else if(code == MISSING_CODE)
+					q.refuseInput.selectedIndex = 3;
+				else
+					q.answer = code.toString();
+			}
+			
+			private function loadDBValue_qRef_str(q:QuestionTextRefusable, val:String):void
+			{
+				var code:int = parseInt(val);
+				if(code == REFUSED_CODE)
+					q.refuseInput.selectedIndex = 1;
+				else if(code == DONT_KNOW_CODE)
+					q.refuseInput.selectedIndex = 2;
+				else if(code == MISSING_CODE)
+					q.refuseInput.selectedIndex = 3;
+				else
+					q.answer = val;
+			}
+			
+			private function loadDBValue_qList(q:QuestionList, code:int):void
+			{
+				if(isNaN(code))
+					q.disable();
+				else
+				{
+					//first set it the index naively
+					q.setAnswerIndex(code);
+					//then if it can accept a special code, set it
+					if(code == REFUSED_CODE)
+						q.answer = REFUSED_VALUE;
+					else if(code == DONT_KNOW_CODE)
+						q.answer = DONT_KNOW_VALUE;
+					else if(code == MISSING_CODE)
+						q.answer = MISSING_VALUE;
+					else if(code == YES_CODE)
+						q.answer = YES_VALUE;
+					else if(code == NO_CODE)
+						q.answer = NO_VALUE;
 				}
 			}
 			
@@ -206,7 +310,7 @@
 				if(answer == "Missing Data")
 					return -9;
 				return q.input.dataProvider.getItemIndex(answer);
-			}
+			}			
 			
 		]]>
 	</fx:Script>

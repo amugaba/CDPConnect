@@ -220,6 +220,7 @@
 					g.autoid = -1;
 					g.type = InterviewType.INTAKE_SBIRT_NEG;
 					g.status = 0;
+					g.clientid = global.activeClient.autoid;
 					global.activeGPRA = g;
 					global.pageViewstack.selectedChild = global.pageGPRA;
 					global.pageGpraButton.enabled = true;
@@ -239,6 +240,7 @@
 					g.autoid = -1;
 					g.type = InterviewType.INTAKE_SBIRT_BI;
 					g.status = 0;
+					g.clientid = global.activeClient.autoid;
 					global.activeGPRA = g;
 					global.pageViewstack.selectedChild = global.pageGPRA;
 					global.pageGpraButton.enabled = true;
@@ -282,6 +284,7 @@
 					g.autoid = -1;
 					g.type = 5;
 					g.status = 0;
+					g.clientid = global.activeClient.autoid;
 					global.activeGPRA = g;
 					global.pageViewstack.selectedChild = global.pageGPRA;
 					global.pageGpraButton.enabled = true;
@@ -303,6 +306,7 @@
 					g.autoid = -1;
 					g.type = 2;
 					g.status = 0;
+					g.clientid = global.activeClient.autoid;
 					global.activeGPRA = g;
 					global.pageViewstack.selectedChild = global.pageGPRA;
 					global.pageGpraButton.enabled = true;

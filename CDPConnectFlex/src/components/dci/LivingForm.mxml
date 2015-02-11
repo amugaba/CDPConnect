@@ -50,6 +50,7 @@
 				addNumberValidator(qChildrenCustodyLost,0,1,true);
 				BindingUtils.bindSetter(function():void{(qChildrenCustodyNr.validator as NumberValidator).maxValue = Number(qChildrenNr.answer)}, qChildrenNr.inputControl, "text");
 				BindingUtils.bindSetter(function():void{(qChildrenCustodyLost.validator as NumberValidator).maxValue = Number(qChildrenNr.answer)}, qChildrenNr.inputControl, "text");
+				qLivingOtherSpec.answerType = String;
 				
 				//Control Logic
 				addSkipDropDown(qLivingWhere,["Other"],[qLivingOtherSpec],true);

@@ -66,6 +66,9 @@
 				addNumberValidator(qIncomeFamFriends,0,9999999);
 				addNumberValidator(qIncomeOther,0,9999999);
 				addRequiredValidator(qIncomeOtherSpec);
+				qTrainingProgramSpec.answerType = String;
+				qEmployStatusSpec.answerType = String;
+				qIncomeOtherSpec.answerType = String;
 				
 				//Control Logic
 				addSkipDropDown(qTrainingProgram,["Other"],[qTrainingProgramSpec],true);
