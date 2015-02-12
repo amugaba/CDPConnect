@@ -411,7 +411,7 @@
 					//if this form isn't active, skip it
 					if(!viewStack.contains(dciTabs[i]))
 						continue;
-						
+					
 					var form:DCIForm = dciForms[i];					
 					form.saveData(gpraData);
 				}
@@ -426,8 +426,7 @@
 					gpraData["IntakeDate"] = global.activeClient.intake.date;
 				}
 				
-				global.activeGPRA.data = gpraData;
-				saveGpraResult.token = gpraService.saveGpra(global.activeGPRA);
+				saveDCIResult.token = gpraService.saveDCI(-1,gpraData);
 			}
 			
 			protected function saveButton_clickHandler(event:MouseEvent):void
@@ -517,6 +516,32 @@
 				file.save(output,"CodeNames.csv");
 			}
 			
+			protected function saveDCIResult_resultHandler(event:ResultEvent):void
+			{
+				//global.pageClient.populateClientForm();
+				var g:GpraVO = new GpraVO();
+				if(saveDCIResult.lastResult > 0)
+				{
+					g.autoid = saveGpraResult.lastResult;
+					Alert.show("New GPRA created.");
+				}
+				else if(saveDCIResult.lastResult == 0)
+				{
+					//g.autoid = global.activeGPRA.autoid; //this needs to be fixed
+					Alert.show("Existing GPRA updated.");
+				}
+				
+				/*g.status = global.activeGPRA.data.source["gpra_status"];
+				if(g.status == 1)
+				{
+				viewStack.selectedChild = recordTab;
+				viewStack.removeChild(saveTab);
+				}*/
+				//g.type = global.activeGPRA.data.source["InterviewTypeCode"];
+				//g.date = global.activeGPRA.data.source["InterviewCreateDate"];
+				global.activeGPRA = g;
+			}
+			
 		]]>
 	</fx:Script>
 	<fx:Declarations>
@@ -524,6 +549,7 @@
 								 fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
 								 showBusyCursor="true"/>
 		<s:CallResponder id="saveGpraResult" result="saveGpraResult_resultHandler(event)"/>
+		<s:CallResponder id="saveDCIResult" result="saveDCIResult_resultHandler(event)"/>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 		
 	</fx:Declarations>

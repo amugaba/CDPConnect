@@ -27,7 +27,6 @@ internal class _Super_GpraService extends com.adobe.fiber.services.wrapper.Remot
         _serviceControl = new mx.rpc.remoting.RemoteObject();
 
         // initialize RemoteClass alias for all entities returned by functions of this service
-        valueObjects.GpraVO._initRemoteClassAlias();
 
         var operations:Object = new Object();
         var operation:mx.rpc.remoting.Operation;
@@ -51,11 +50,14 @@ internal class _Super_GpraService extends com.adobe.fiber.services.wrapper.Remot
          operation.resultType = Object;
         operations["setGprasUploaded"] = operation;
         operation = new mx.rpc.remoting.Operation(null, "getGpraSummaryByClientID");
-         operation.resultElementType = valueObjects.GpraVO;
+         operation.resultElementType = Object;
         operations["getGpraSummaryByClientID"] = operation;
         operation = new mx.rpc.remoting.Operation(null, "saveGpra");
          operation.resultType = int;
         operations["saveGpra"] = operation;
+        operation = new mx.rpc.remoting.Operation(null, "saveDCI");
+         operation.resultType = int;
+        operations["saveDCI"] = operation;
 
         _serviceControl.operations = operations;
         _serviceControl.convertResultHandler = com.adobe.serializers.utility.TypeUtility.convertResultHandler;
@@ -216,6 +218,24 @@ internal class _Super_GpraService extends com.adobe.fiber.services.wrapper.Remot
     {
         var _internal_operation:mx.rpc.AbstractOperation = _serviceControl.getOperation("saveGpra");
 		var _internal_token:mx.rpc.AsyncToken = _internal_operation.send(gpra) ;
+        return _internal_token;
+    }
+     
+    /**
+      * This method is a generated wrapper used to call the 'saveDCI' operation. It returns an mx.rpc.AsyncToken whose 
+      * result property will be populated with the result of the operation when the server response is received. 
+      * To use this result from MXML code, define a CallResponder component and assign its token property to this method's return value. 
+      * You can then bind to CallResponder.lastResult or listen for the CallResponder.result or fault events.
+      *
+      * @see mx.rpc.AsyncToken
+      * @see mx.rpc.CallResponder 
+      *
+      * @return an mx.rpc.AsyncToken whose result property will be populated with the result of the operation when the server response is received.
+      */
+    public function saveDCI(autoid:int, data:Object) : mx.rpc.AsyncToken
+    {
+        var _internal_operation:mx.rpc.AbstractOperation = _serviceControl.getOperation("saveDCI");
+		var _internal_token:mx.rpc.AsyncToken = _internal_operation.send(autoid,data) ;
         return _internal_token;
     }
      

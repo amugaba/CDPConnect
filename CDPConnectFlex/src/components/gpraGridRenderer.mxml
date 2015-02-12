@@ -5,21 +5,33 @@
 	
 	<fx:Script>
 		<![CDATA[
+			import components.dci.InterviewType;
+			
 			import mx.controls.Button;
 			override public function prepare(hasBeenRecycled:Boolean):void {
 				if(column.dataField == "type")
 				{
-					if(data[column.dataField] == 1)
+					if(data[column.dataField] == InterviewType.INTAKE_GENERAL)
 						lblData.text = "Intake";
-					else if(data[column.dataField] == 2)
+					else if(data[column.dataField] == InterviewType.INTAKE_SBIRT_BI)
+						lblData.text = "Intake (SBIRT BI)";
+					else if(data[column.dataField] == InterviewType.INTAKE_SBIRT_NEG)
+						lblData.text = "Intake (SBIRT Neg)";
+					else if(data[column.dataField] == InterviewType.INTAKE_SBIRT_RT)
+						lblData.text = "Intake (SBIRT BT/RT)";
+					else if(data[column.dataField] == InterviewType.FOLLOWUP)
 						lblData.text = "Followup";
-					else if(data[column.dataField] == 5)
+					else if(data[column.dataField] == InterviewType.FOLLOWUP_SBIRT_BI)
+						lblData.text = "Followup (SBIRT BI)";
+					else if(data[column.dataField] == InterviewType.DISCHARGE)
 						lblData.text = "Discharge";
+					else if(data[column.dataField] == InterviewType.DISCHARGE_NO_INTERVIEW)
+						lblData.text = "Discharge (Admin)";
 				}
 				else if(column.dataField == "status")
 				{
 					if(data[column.dataField] == 0)
-						lblData.text = "Active";
+						lblData.text = "Incomplete";
 					else if(data[column.dataField] == 1)
 						lblData.text = "Complete";
 				}

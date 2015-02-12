@@ -12,6 +12,7 @@
 			import components.SkipMultipleHandler;
 			import components.SkipPattern;
 			
+			import mx.collections.ArrayCollection;
 			import mx.collections.ArrayList;
 			import mx.containers.FormItem;
 			import mx.controls.Alert;

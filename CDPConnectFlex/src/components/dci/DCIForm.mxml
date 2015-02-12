@@ -74,7 +74,7 @@
 				addElement(h);
 			}
 			
-			protected function addDateAgeValidator(q:QuestionClass, min:Number = Number.NaN, minType:String = DateAgeValidator.DAY, max:Number = Number.NaN, maxType:String = DateAgeValidator.YEAR, required:Boolean = true):void
+			protected function addDateAgeValidator(q:QuestionClass, min:Number, minType:String, max:Number, maxType:String, required:Boolean = true):void
 			{
 				var dv1:DateAgeValidator = new DateAgeValidator();
 				dv1.required = true;
