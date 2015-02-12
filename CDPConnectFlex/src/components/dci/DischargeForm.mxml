@@ -5,10 +5,11 @@
 			 labelWidth="305">
 	<fx:Script>
 		<![CDATA[
-			import components.DateAgeValidator;
-			import components.QuestionList;
-			import components.QuestionText;
-			import components.QuestionTextRefusable;
+			import components.questions.QuestionList;
+			import components.questions.QuestionText;
+			import components.questions.QuestionTextRefusable;
+			import components.validators.DateAgeValidator;
+			import components.validators.Valid;
 			
 			import mx.binding.utils.BindingUtils;
 			import mx.collections.ArrayList;
@@ -61,9 +62,9 @@
 				addQuestion(qdHepCConfirmResult,resultWidth);;
 				
 				//Validators
-				addDateAgeValidator(qDischargeDate,0,DateAgeValidator.DAY,1,DateAgeValidator.YEAR);
-				addDateAgeValidator(qDischargeDate,0,DateAgeValidator.DAY,3,DateAgeValidator.YEAR);
-				addRequiredValidator(qDischargeSpec);
+				Valid.addDateAgeValidator(qDischargeDate,0,DateAgeValidator.DAY,1,DateAgeValidator.YEAR);
+				Valid.addDateAgeValidator(qDischargeDate,0,DateAgeValidator.DAY,3,DateAgeValidator.YEAR);
+				Valid.addRequiredValidator(qDischargeSpec);
 				qDischargeSpec.answerType = String;
 				
 				//Control Logic

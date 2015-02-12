@@ -6,10 +6,12 @@ package valueObjects
 {
 import com.adobe.fiber.styles.IStyle;
 import com.adobe.fiber.styles.Style;
+import com.adobe.fiber.styles.StyleValidator;
 import com.adobe.fiber.valueobjects.AbstractEntityMetadata;
 import com.adobe.fiber.valueobjects.AvailablePropertyIterator;
 import com.adobe.fiber.valueobjects.IPropertyIterator;
 import mx.collections.ArrayCollection;
+import mx.events.ValidationResultEvent;
 import com.adobe.fiber.core.model_internal;
 import com.adobe.fiber.valueobjects.IModelType;
 import mx.events.PropertyChangeEvent;
@@ -23,7 +25,7 @@ internal class _GpraVOEntityMetadata extends com.adobe.fiber.valueobjects.Abstra
 
     model_internal static var allProperties:Array = new Array("autoid", "clientid", "type", "date", "status", "data");
     model_internal static var allAssociationProperties:Array = new Array();
-    model_internal static var allRequiredProperties:Array = new Array();
+    model_internal static var allRequiredProperties:Array = new Array("autoid", "clientid", "type", "date", "status", "data");
     model_internal static var allAlwaysAvailableProperties:Array = new Array("autoid", "clientid", "type", "date", "status", "data");
     model_internal static var guardedProperties:Array = new Array();
     model_internal static var dataProperties:Array = new Array("autoid", "clientid", "type", "date", "status", "data");
@@ -37,6 +39,16 @@ internal class _GpraVOEntityMetadata extends com.adobe.fiber.valueobjects.Abstra
     model_internal static var dependedOnServices:Array = new Array();
     model_internal static var propertyTypeMap:Object;
 
+    
+    model_internal var _dateIsValid:Boolean;
+    model_internal var _dateValidator:com.adobe.fiber.styles.StyleValidator;
+    model_internal var _dateIsValidCacheInitialized:Boolean = false;
+    model_internal var _dateValidationFailureMessages:Array;
+    
+    model_internal var _dataIsValid:Boolean;
+    model_internal var _dataValidator:com.adobe.fiber.styles.StyleValidator;
+    model_internal var _dataIsValidCacheInitialized:Boolean = false;
+    model_internal var _dataValidationFailureMessages:Array;
 
     model_internal var _instance:_Super_GpraVO;
     model_internal static var _nullStyle:com.adobe.fiber.styles.Style = new com.adobe.fiber.styles.Style();
@@ -70,6 +82,16 @@ internal class _GpraVOEntityMetadata extends com.adobe.fiber.valueobjects.Abstra
         model_internal::propertyTypeMap["data"] = "ArrayCollection";
 
         model_internal::_instance = value;
+        model_internal::_dateValidator = new StyleValidator(model_internal::_instance.model_internal::_doValidationForDate);
+        model_internal::_dateValidator.required = true;
+        model_internal::_dateValidator.requiredFieldError = "date is required";
+        //model_internal::_dateValidator.source = model_internal::_instance;
+        //model_internal::_dateValidator.property = "date";
+        model_internal::_dataValidator = new StyleValidator(model_internal::_instance.model_internal::_doValidationForData);
+        model_internal::_dataValidator.required = true;
+        model_internal::_dataValidator.requiredFieldError = "data is required";
+        //model_internal::_dataValidator.source = model_internal::_instance;
+        //model_internal::_dataValidator.property = "data";
     }
 
     override public function getEntityName():String
@@ -336,6 +358,22 @@ internal class _GpraVOEntityMetadata extends com.adobe.fiber.valueobjects.Abstra
     /**
      * derived property recalculation
      */
+    public function invalidateDependentOnDate():void
+    {
+        if (model_internal::_dateIsValidCacheInitialized )
+        {
+            model_internal::_instance.model_internal::_doValidationCacheOfDate = null;
+            model_internal::calculateDateIsValid();
+        }
+    }
+    public function invalidateDependentOnData():void
+    {
+        if (model_internal::_dataIsValidCacheInitialized )
+        {
+            model_internal::_instance.model_internal::_doValidationCacheOfData = null;
+            model_internal::calculateDataIsValid();
+        }
+    }
 
     model_internal function fireChangeEvent(propertyName:String, oldValue:Object, newValue:Object):void
     {
@@ -366,6 +404,100 @@ internal class _GpraVOEntityMetadata extends com.adobe.fiber.valueobjects.Abstra
         return model_internal::_nullStyle;
     }
 
+    public function get dateValidator() : StyleValidator
+    {
+        return model_internal::_dateValidator;
+    }
+
+    model_internal function set _dateIsValid_der(value:Boolean):void 
+    {
+        var oldValue:Boolean = model_internal::_dateIsValid;         
+        if (oldValue !== value)
+        {
+            model_internal::_dateIsValid = value;
+            this.dispatchEvent(mx.events.PropertyChangeEvent.createUpdateEvent(this, "dateIsValid", oldValue, value));
+        }                             
+    }
+
+    [Bindable(event="propertyChange")]
+    public function get dateIsValid():Boolean
+    {
+        if (!model_internal::_dateIsValidCacheInitialized)
+        {
+            model_internal::calculateDateIsValid();
+        }
+
+        return model_internal::_dateIsValid;
+    }
+
+    model_internal function calculateDateIsValid():void
+    {
+        var valRes:ValidationResultEvent = model_internal::_dateValidator.validate(model_internal::_instance.date)
+        model_internal::_dateIsValid_der = (valRes.results == null);
+        model_internal::_dateIsValidCacheInitialized = true;
+        if (valRes.results == null)
+             model_internal::dateValidationFailureMessages_der = emptyArray;
+        else
+        {
+            var _valFailures:Array = new Array();
+            for (var a:int = 0 ; a<valRes.results.length ; a++)
+            {
+                _valFailures.push(valRes.results[a].errorMessage);
+            }
+            model_internal::dateValidationFailureMessages_der = _valFailures;
+        }
+    }
+
+    [Bindable(event="propertyChange")]
+    public function get dateValidationFailureMessages():Array
+    {
+        if (model_internal::_dateValidationFailureMessages == null)
+            model_internal::calculateDateIsValid();
+
+        return _dateValidationFailureMessages;
+    }
+
+    model_internal function set dateValidationFailureMessages_der(value:Array) : void
+    {
+        var oldValue:Array = model_internal::_dateValidationFailureMessages;
+
+        var needUpdate : Boolean = false;
+        if (oldValue == null)
+            needUpdate = true;
+    
+        // avoid firing the event when old and new value are different empty arrays
+        if (!needUpdate && (oldValue !== value && (oldValue.length > 0 || value.length > 0)))
+        {
+            if (oldValue.length == value.length)
+            {
+                for (var a:int=0; a < oldValue.length; a++)
+                {
+                    if (oldValue[a] !== value[a])
+                    {
+                        needUpdate = true;
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                needUpdate = true;
+            }
+        }
+
+        if (needUpdate)
+        {
+            model_internal::_dateValidationFailureMessages = value;   
+            this.dispatchEvent(mx.events.PropertyChangeEvent.createUpdateEvent(this, "dateValidationFailureMessages", oldValue, value));
+            // Only execute calculateIsValid if it has been called before, to update the validationFailureMessages for
+            // the entire entity.
+            if (model_internal::_instance.model_internal::_cacheInitialized_isValid)
+            {
+                model_internal::_instance.model_internal::isValid_der = model_internal::_instance.model_internal::calculateIsValid();
+            }
+        }
+    }
+
     [Bindable(event="propertyChange")]   
     public function get statusStyle():com.adobe.fiber.styles.Style
     {
@@ -376,6 +508,100 @@ internal class _GpraVOEntityMetadata extends com.adobe.fiber.valueobjects.Abstra
     public function get dataStyle():com.adobe.fiber.styles.Style
     {
         return model_internal::_nullStyle;
+    }
+
+    public function get dataValidator() : StyleValidator
+    {
+        return model_internal::_dataValidator;
+    }
+
+    model_internal function set _dataIsValid_der(value:Boolean):void 
+    {
+        var oldValue:Boolean = model_internal::_dataIsValid;         
+        if (oldValue !== value)
+        {
+            model_internal::_dataIsValid = value;
+            this.dispatchEvent(mx.events.PropertyChangeEvent.createUpdateEvent(this, "dataIsValid", oldValue, value));
+        }                             
+    }
+
+    [Bindable(event="propertyChange")]
+    public function get dataIsValid():Boolean
+    {
+        if (!model_internal::_dataIsValidCacheInitialized)
+        {
+            model_internal::calculateDataIsValid();
+        }
+
+        return model_internal::_dataIsValid;
+    }
+
+    model_internal function calculateDataIsValid():void
+    {
+        var valRes:ValidationResultEvent = model_internal::_dataValidator.validate(model_internal::_instance.data)
+        model_internal::_dataIsValid_der = (valRes.results == null);
+        model_internal::_dataIsValidCacheInitialized = true;
+        if (valRes.results == null)
+             model_internal::dataValidationFailureMessages_der = emptyArray;
+        else
+        {
+            var _valFailures:Array = new Array();
+            for (var a:int = 0 ; a<valRes.results.length ; a++)
+            {
+                _valFailures.push(valRes.results[a].errorMessage);
+            }
+            model_internal::dataValidationFailureMessages_der = _valFailures;
+        }
+    }
+
+    [Bindable(event="propertyChange")]
+    public function get dataValidationFailureMessages():Array
+    {
+        if (model_internal::_dataValidationFailureMessages == null)
+            model_internal::calculateDataIsValid();
+
+        return _dataValidationFailureMessages;
+    }
+
+    model_internal function set dataValidationFailureMessages_der(value:Array) : void
+    {
+        var oldValue:Array = model_internal::_dataValidationFailureMessages;
+
+        var needUpdate : Boolean = false;
+        if (oldValue == null)
+            needUpdate = true;
+    
+        // avoid firing the event when old and new value are different empty arrays
+        if (!needUpdate && (oldValue !== value && (oldValue.length > 0 || value.length > 0)))
+        {
+            if (oldValue.length == value.length)
+            {
+                for (var a:int=0; a < oldValue.length; a++)
+                {
+                    if (oldValue[a] !== value[a])
+                    {
+                        needUpdate = true;
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                needUpdate = true;
+            }
+        }
+
+        if (needUpdate)
+        {
+            model_internal::_dataValidationFailureMessages = value;   
+            this.dispatchEvent(mx.events.PropertyChangeEvent.createUpdateEvent(this, "dataValidationFailureMessages", oldValue, value));
+            // Only execute calculateIsValid if it has been called before, to update the validationFailureMessages for
+            // the entire entity.
+            if (model_internal::_instance.model_internal::_cacheInitialized_isValid)
+            {
+                model_internal::_instance.model_internal::isValid_der = model_internal::_instance.model_internal::calculateIsValid();
+            }
+        }
     }
 
 
@@ -403,6 +629,14 @@ internal class _GpraVOEntityMetadata extends com.adobe.fiber.valueobjects.Abstra
      {
          switch(propertyName)
          {
+            case("date"):
+            {
+                return dateValidationFailureMessages;
+            }
+            case("data"):
+            {
+                return dataValidationFailureMessages;
+            }
             default:
             {
                 return emptyArray;

@@ -4,9 +4,10 @@
 			 xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:dci="components.dci.*" width="100%" height="100%">
 	<fx:Script>
 		<![CDATA[
-			import components.QuestionList;
-			import components.QuestionText;
-			import components.QuestionTextRefusable;
+			import components.questions.QuestionList;
+			import components.questions.QuestionText;
+			import components.questions.QuestionTextRefusable;
+			import components.validators.Valid;
 			
 			import mx.binding.utils.BindingUtils;
 			import mx.collections.ArrayList;
@@ -56,16 +57,16 @@
 				addQuestion(qIncomeOtherSpec,75);
 				
 				//Validators
-				addRequiredValidator(qTrainingProgramSpec);
-				addRequiredValidator(qEmployStatusSpec);
-				addNumberValidator(qIncomeWages,0,9999999);
-				addNumberValidator(qIncomePubAssist,0,9999999);
-				addNumberValidator(qIncomeRetirement,0,9999999);
-				addNumberValidator(qIncomeDisability,0,9999999);
-				addNumberValidator(qIncomeNonLegal,0,9999999);
-				addNumberValidator(qIncomeFamFriends,0,9999999);
-				addNumberValidator(qIncomeOther,0,9999999);
-				addRequiredValidator(qIncomeOtherSpec);
+				Valid.addRequiredValidator(qTrainingProgramSpec);
+				Valid.addRequiredValidator(qEmployStatusSpec);
+				Valid.addNumberValidator(qIncomeWages,0,9999999);
+				Valid.addNumberValidator(qIncomePubAssist,0,9999999);
+				Valid.addNumberValidator(qIncomeRetirement,0,9999999);
+				Valid.addNumberValidator(qIncomeDisability,0,9999999);
+				Valid.addNumberValidator(qIncomeNonLegal,0,9999999);
+				Valid.addNumberValidator(qIncomeFamFriends,0,9999999);
+				Valid.addNumberValidator(qIncomeOther,0,9999999);
+				Valid.addRequiredValidator(qIncomeOtherSpec);
 				qTrainingProgramSpec.answerType = String;
 				qEmployStatusSpec.answerType = String;
 				qIncomeOtherSpec.answerType = String;

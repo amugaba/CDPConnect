@@ -61,12 +61,9 @@
       </annotation>
       <parameter name="item" type="ClientVO"/>
     </function>
-    <function name="searchClients" return-type="ClientVO[]">
+    <function name="searchClients" return-type="opaque[]">
       <annotation name="analyze group">
-        <item name="analyzed">true</item>
-      </annotation>
-      <annotation name="ValidProperties">
-        <item name="propertySpecifier">autoid,gpras,intake,discharge,followup,firstname,lastname,dob,ssn,intakestaff,createddate</item>
+        <item name="analyzed">false</item>
       </annotation>
       <annotation name="original signature">
         <item name="returnType">opaque</item>
@@ -79,6 +76,28 @@
       <parameter name="intakestaff" type="string"/>
     </function>
   </service>
+  <entity name="GpraVO">
+    <annotation name="EntityProperties">
+      <item name="EntityOriginalName">GpraVO</item>
+      <item name="location">C:/wamp/www/CDPConnect/CDPConnect/services/GpraVO.php</item>
+    </annotation>
+    <annotation name="ServerProperties">
+      <item name="RemoteClass">GpraVO</item>
+      <item name="IncludeRemoteClass">nonempty</item>
+    </annotation>
+    <annotation name="service Group">
+      <item name="service">ClientService</item>
+    </annotation>
+    <annotation name="ActionScriptGeneration">
+      <item name="Package">valueObjects</item>
+    </annotation>
+    <property name="autoid" type="integer" required="true"/>
+    <property name="clientid" type="integer" required="true"/>
+    <property name="type" type="integer" required="true"/>
+    <property name="date" type="string" required="true"/>
+    <property name="status" type="integer" required="true"/>
+    <property name="data" type="opaque[]" required="true"/>
+  </entity>
   <entity name="ClientVO">
     <annotation name="EntityProperties">
       <item name="EntityOriginalName">ClientVO</item>
@@ -103,9 +122,6 @@
     <annotation name="ActionScriptGeneration">
       <item name="Package">valueObjects</item>
     </annotation>
-    <annotation name="searchClients">
-      <item name="propertySpecifier">autoid,gpras,intake,discharge,followup,firstname,lastname,dob,ssn,intakestaff,createddate</item>
-    </annotation>
     <property name="autoid" type="integer" required="true"/>
     <property name="gpras" type="opaque[]" required="true"/>
     <property name="intake" type="GpraVO" required="true"/>
@@ -117,179 +133,6 @@
     <property name="ssn" type="string" required="true"/>
     <property name="intakestaff" type="string" required="true"/>
     <property name="createddate" type="string" required="true"/>
-  </entity>
-  <service name="UserService">
-    <annotation name="ActionScriptGeneration">
-      <item name="Source">UserService</item>
-      <item name="ServiceType">RemoteObject</item>
-      <item name="Package">services.userservice</item>
-      <item name="Endpoint">http://localhost//CDPConnect/CDPConnect/public/gateway.php</item>
-      <item name="Destination">UserService</item>
-    </annotation>
-    <annotation name="ServiceTypeGroup">
-      <item name="ServiceBackendType">com.zend.php.flashbuilder.php</item>
-    </annotation>
-    <annotation name="ServiceConfig">
-      <item name="PHP_RELATIVE_LOCATION">CDPConnect/CDPConnect/services/UserService.php</item>
-      <item name="PHP_SERVER_ROOT">C:/wamp/www</item>
-      <item name="PHP_WORKSPACE_LOCATION">/CDPConnect/services/UserService.php</item>
-      <item name="DEFAULT_ENTITY_PACKAGE">valueObjects</item>
-      <item name="PHP_SERVICES_FOLDER">C:/wamp/www/CDPConnect/CDPConnect/public/bin-debug/services</item>
-      <item name="PHP_LOCATION">C:/wamp/www/CDPConnect/CDPConnect/services/UserService.php</item>
-      <item name="LINKED_FILE">UserService.php</item>
-      <item name="PHP_SERVER_ROOT_URL">http://localhost/</item>
-      <item name="ABSOLUTE_ENDPOINT">http://localhost//CDPConnect/CDPConnect/public/gateway.php</item>
-      <item name="PHP_CLASS_NAME">UserService</item>
-    </annotation>
-    <function name="loginUser" return-type="UserVO">
-      <annotation name="analyze group">
-        <item name="analyzed">true</item>
-      </annotation>
-      <annotation name="original signature">
-        <item name="returnType">UserVO</item>
-      </annotation>
-      <annotation name="ValidProperties">
-        <item name="propertySpecifier">username,name,password,initials,facility,email,admin,grantid</item>
-      </annotation>
-      <parameter name="username" type="string"/>
-      <parameter name="password" type="string"/>
-    </function>
-    <function name="updateUser" return-type="boolean">
-      <annotation name="analyze group">
-        <item name="analyzed">true</item>
-      </annotation>
-      <annotation name="original signature">
-        <item name="returnType">boolean</item>
-      </annotation>
-      <parameter name="user" type="UserVO"/>
-    </function>
-    <function name="getUsers" return-type="UserVO[]">
-      <annotation name="analyze group">
-        <item name="analyzed">true</item>
-      </annotation>
-      <annotation name="original signature">
-        <item name="returnType">UserVO</item>
-      </annotation>
-      <annotation name="ValidProperties">
-        <item name="propertySpecifier">username,name,password,initials,facility,email,admin,grantid</item>
-      </annotation>
-    </function>
-    <function name="emailPassword" return-type="boolean">
-      <annotation name="analyze group">
-        <item name="analyzed">true</item>
-      </annotation>
-      <annotation name="original signature">
-        <item name="returnType">opaque</item>
-      </annotation>
-      <parameter name="username" type="string"/>
-    </function>
-  </service>
-  <entity name="UserVO">
-    <annotation name="EntityProperties">
-      <item name="EntityOriginalName">UserVO</item>
-      <item name="location">C:/wamp/www/CDPConnect/CDPConnect/services/UserVO.php</item>
-    </annotation>
-    <annotation name="ServerProperties">
-      <item name="RemoteClass">UserVO</item>
-      <item name="IncludeRemoteClass">nonempty</item>
-    </annotation>
-    <annotation name="loginUser">
-      <item name="propertySpecifier">username,name,password,initials,facility,email,admin,grantid</item>
-    </annotation>
-    <annotation name="getUsers">
-      <item name="propertySpecifier">username,name,password,initials,facility,email,admin,grantid</item>
-    </annotation>
-    <annotation name="service Group">
-      <item name="service">UserService</item>
-    </annotation>
-    <annotation name="ActionScriptGeneration">
-      <item name="Package">valueObjects</item>
-    </annotation>
-    <property name="username" type="string"/>
-    <property name="name" type="string"/>
-    <property name="password" type="string"/>
-    <property name="initials" type="string"/>
-    <property name="facility" type="string"/>
-    <property name="email" type="string"/>
-    <property name="admin" type="integer"/>
-    <property name="grantid" type="integer" required="true"/>
-  </entity>
-  <service name="MiscService">
-    <annotation name="ActionScriptGeneration">
-      <item name="Source">MiscService</item>
-      <item name="ServiceType">RemoteObject</item>
-      <item name="Package">services.miscservice</item>
-      <item name="Endpoint">http://localhost//CDPConnect/CDPConnect/public/gateway.php</item>
-      <item name="Destination">MiscService</item>
-    </annotation>
-    <annotation name="ServiceTypeGroup">
-      <item name="ServiceBackendType">com.zend.php.flashbuilder.php</item>
-    </annotation>
-    <annotation name="ServiceConfig">
-      <item name="PHP_RELATIVE_LOCATION">CDPConnect/CDPConnect/services/MiscService.php</item>
-      <item name="PHP_SERVER_ROOT">C:/wamp/www</item>
-      <item name="PHP_WORKSPACE_LOCATION">/CDPConnect/services/MiscService.php</item>
-      <item name="DEFAULT_ENTITY_PACKAGE">valueObjects</item>
-      <item name="PHP_SERVICES_FOLDER">C:/wamp/www/CDPConnect/CDPConnect/public/bin-debug/services</item>
-      <item name="PHP_LOCATION">C:/wamp/www/CDPConnect/CDPConnect/services/MiscService.php</item>
-      <item name="LINKED_FILE">MiscService.php</item>
-      <item name="PHP_SERVER_ROOT_URL">http://localhost/</item>
-      <item name="ABSOLUTE_ENDPOINT">http://localhost//CDPConnect/CDPConnect/public/gateway.php</item>
-      <item name="PHP_CLASS_NAME">MiscService</item>
-    </annotation>
-    <function name="getFacilities" return-type="string[]">
-      <annotation name="analyze group">
-        <item name="analyzed">true</item>
-      </annotation>
-      <annotation name="original signature">
-        <item name="returnType">opaque</item>
-      </annotation>
-    </function>
-    <function name="getGrant" return-type="GrantVO">
-      <annotation name="analyze group">
-        <item name="analyzed">true</item>
-      </annotation>
-      <annotation name="ValidProperties">
-        <item name="propertySpecifier">autoid,name,samhsaCenter,programType,grantCode</item>
-      </annotation>
-      <annotation name="original signature">
-        <item name="returnType">GrantVO</item>
-      </annotation>
-      <parameter name="grantID" type="integer"/>
-    </function>
-    <function name="updateGrant" return-type="void">
-      <annotation name="analyze group">
-        <item name="analyzed">true</item>
-      </annotation>
-      <annotation name="original signature">
-        <item name="returnType">opaque</item>
-      </annotation>
-      <parameter name="grant" type="GrantVO"/>
-    </function>
-  </service>
-  <entity name="GrantVO">
-    <annotation name="EntityProperties">
-      <item name="EntityOriginalName">GrantVO</item>
-      <item name="location">C:/wamp/www/CDPConnect/CDPConnect/services/GrantVO.php</item>
-    </annotation>
-    <annotation name="ServerProperties">
-      <item name="RemoteClass">GrantVO</item>
-      <item name="IncludeRemoteClass">nonempty</item>
-    </annotation>
-    <annotation name="getGrant">
-      <item name="propertySpecifier">autoid,name,samhsaCenter,programType,grantCode</item>
-    </annotation>
-    <annotation name="service Group">
-      <item name="service">MiscService,MiscServiceDummy</item>
-    </annotation>
-    <annotation name="ActionScriptGeneration">
-      <item name="Package">valueObjects</item>
-    </annotation>
-    <property name="autoid" type="integer"/>
-    <property name="name" type="string"/>
-    <property name="samhsaCenter" type="integer"/>
-    <property name="programType" type="integer"/>
-    <property name="grantCode" type="string"/>
   </entity>
   <service name="GpraService">
     <annotation name="ActionScriptGeneration">
@@ -309,7 +152,7 @@
       <item name="DEFAULT_ENTITY_PACKAGE">valueObjects</item>
       <item name="PHP_SERVICES_FOLDER">C:/wamp/www/CDPConnect/CDPConnect/public/bin-debug/services</item>
       <item name="PHP_LOCATION">C:/wamp/www/CDPConnect/CDPConnect/services/GpraService.php</item>
-      <item name="LINKED_FILE">GpraService.php</item>
+      <item name="LINKED_FILE">GpraService_GpraService.php</item>
       <item name="PHP_SERVER_ROOT_URL">http://localhost/</item>
       <item name="ABSOLUTE_ENDPOINT">http://localhost//CDPConnect/CDPConnect/public/gateway.php</item>
       <item name="PHP_CLASS_NAME">GpraService</item>
@@ -374,51 +217,179 @@
       </annotation>
       <parameter name="clientID" type="integer"/>
     </function>
-    <function name="saveGpra" return-type="integer">
-      <annotation name="analyze group">
-        <item name="analyzed">true</item>
-      </annotation>
-      <annotation name="original signature">
-        <item name="returnType">integer</item>
-      </annotation>
-      <parameter name="gpra" type="GpraVO"/>
-    </function>
     <function name="saveDCI" return-type="integer">
       <annotation name="analyze group">
         <item name="analyzed">true</item>
       </annotation>
       <annotation name="original signature">
-        <item name="inputParamNames">gpra</item>
-        <item name="inputParams">integer,opaque</item>
-        <item name="returnType">integer</item>
+        <item name="returnType">opaque</item>
       </annotation>
       <parameter name="autoid" type="integer"/>
       <parameter name="data" type="opaque"/>
     </function>
   </service>
-  <entity name="GpraVO">
+  <service name="UserService">
+    <annotation name="ActionScriptGeneration">
+      <item name="Source">UserService</item>
+      <item name="ServiceType">RemoteObject</item>
+      <item name="Package">services.userservice</item>
+      <item name="Endpoint">http://localhost//CDPConnect/CDPConnect/public/gateway.php</item>
+      <item name="Destination">UserService</item>
+    </annotation>
+    <annotation name="ServiceTypeGroup">
+      <item name="ServiceBackendType">com.zend.php.flashbuilder.php</item>
+    </annotation>
+    <annotation name="ServiceConfig">
+      <item name="PHP_RELATIVE_LOCATION">CDPConnect/CDPConnect/services/UserService.php</item>
+      <item name="PHP_SERVER_ROOT">C:/wamp/www</item>
+      <item name="PHP_WORKSPACE_LOCATION">/CDPConnect/services/UserService.php</item>
+      <item name="DEFAULT_ENTITY_PACKAGE">valueObjects</item>
+      <item name="PHP_SERVICES_FOLDER">C:/wamp/www/CDPConnect/CDPConnect/public/bin-debug/services</item>
+      <item name="PHP_LOCATION">C:/wamp/www/CDPConnect/CDPConnect/services/UserService.php</item>
+      <item name="LINKED_FILE">UserService.php</item>
+      <item name="PHP_SERVER_ROOT_URL">http://localhost/</item>
+      <item name="ABSOLUTE_ENDPOINT">http://localhost//CDPConnect/CDPConnect/public/gateway.php</item>
+      <item name="PHP_CLASS_NAME">UserService</item>
+    </annotation>
+    <function name="loginUser" return-type="UserVO">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="returnType">opaque</item>
+      </annotation>
+      <parameter name="username" type="string"/>
+      <parameter name="password" type="string"/>
+    </function>
+    <function name="updateUser" return-type="boolean">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="returnType">opaque</item>
+      </annotation>
+      <parameter name="user" type="UserVO"/>
+    </function>
+    <function name="getUsers" return-type="UserVO[]">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="returnType">opaque</item>
+      </annotation>
+    </function>
+    <function name="emailPassword" return-type="boolean">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="returnType">opaque</item>
+      </annotation>
+      <parameter name="username" type="string"/>
+    </function>
+  </service>
+  <entity name="UserVO">
     <annotation name="EntityProperties">
-      <item name="EntityOriginalName">GpraVO</item>
-      <item name="location">C:/wamp/www/CDPConnect/CDPConnect/services/GpraVO.php</item>
+      <item name="EntityOriginalName">UserVO</item>
+      <item name="location">C:/wamp/www/CDPConnect/CDPConnect/services/UserVO.php</item>
     </annotation>
     <annotation name="ServerProperties">
-      <item name="RemoteClass">GpraVO</item>
+      <item name="RemoteClass">UserVO</item>
       <item name="IncludeRemoteClass">nonempty</item>
     </annotation>
+    <annotation name="loginUser">
+      <item name="propertySpecifier">username,name,password,initials,facility,email,admin,grantid</item>
+    </annotation>
+    <annotation name="getUsers">
+      <item name="propertySpecifier">username,name,password,initials,facility,email,admin,grantid</item>
+    </annotation>
     <annotation name="service Group">
-      <item name="service">GpraService,ClientService</item>
+      <item name="service">UserService</item>
     </annotation>
     <annotation name="ActionScriptGeneration">
       <item name="Package">valueObjects</item>
     </annotation>
-    <annotation name="getGpraSummaryByClientID">
-      <item name="propertySpecifier">autoid,clientid,type,date,status,data</item>
+    <property name="username" type="string" required="true"/>
+    <property name="name" type="string" required="true"/>
+    <property name="password" type="string" required="true"/>
+    <property name="initials" type="string" required="true"/>
+    <property name="facility" type="string" required="true"/>
+    <property name="email" type="string" required="true"/>
+    <property name="admin" type="integer" required="true"/>
+    <property name="grantid" type="integer" required="true"/>
+  </entity>
+  <service name="MiscService">
+    <annotation name="ActionScriptGeneration">
+      <item name="Source">MiscService</item>
+      <item name="ServiceType">RemoteObject</item>
+      <item name="Package">services.miscservice</item>
+      <item name="Endpoint">http://localhost//CDPConnect/CDPConnect/public/gateway.php</item>
+      <item name="Destination">MiscService</item>
     </annotation>
-    <property name="autoid" type="integer"/>
-    <property name="clientid" type="integer"/>
-    <property name="type" type="integer"/>
-    <property name="date" type="string"/>
-    <property name="status" type="integer"/>
-    <property name="data" type="opaque[]"/>
+    <annotation name="ServiceTypeGroup">
+      <item name="ServiceBackendType">com.zend.php.flashbuilder.php</item>
+    </annotation>
+    <annotation name="ServiceConfig">
+      <item name="PHP_RELATIVE_LOCATION">CDPConnect/CDPConnect/services/MiscService.php</item>
+      <item name="PHP_SERVER_ROOT">C:/wamp/www</item>
+      <item name="PHP_WORKSPACE_LOCATION">/CDPConnect/services/MiscService.php</item>
+      <item name="DEFAULT_ENTITY_PACKAGE">valueObjects</item>
+      <item name="PHP_SERVICES_FOLDER">C:/wamp/www/CDPConnect/CDPConnect/public/bin-debug/services</item>
+      <item name="PHP_LOCATION">C:/wamp/www/CDPConnect/CDPConnect/services/MiscService.php</item>
+      <item name="LINKED_FILE">MiscService.php</item>
+      <item name="PHP_SERVER_ROOT_URL">http://localhost/</item>
+      <item name="ABSOLUTE_ENDPOINT">http://localhost//CDPConnect/CDPConnect/public/gateway.php</item>
+      <item name="PHP_CLASS_NAME">MiscService</item>
+    </annotation>
+    <function name="getFacilities" return-type="opaque[]">
+      <annotation name="analyze group">
+        <item name="analyzed">false</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="returnType">opaque</item>
+      </annotation>
+    </function>
+    <function name="getGrant" return-type="GrantVO">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="returnType">opaque</item>
+      </annotation>
+      <parameter name="grantID" type="integer"/>
+    </function>
+    <function name="updateGrant" return-type="opaque">
+      <annotation name="analyze group">
+        <item name="analyzed">false</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="returnType">opaque</item>
+      </annotation>
+      <parameter name="grant" type="GrantVO"/>
+    </function>
+  </service>
+  <entity name="GrantVO">
+    <annotation name="EntityProperties">
+      <item name="EntityOriginalName">GrantVO</item>
+      <item name="location">C:/wamp/www/CDPConnect/CDPConnect/services/GrantVO.php</item>
+    </annotation>
+    <annotation name="ServerProperties">
+      <item name="RemoteClass">GrantVO</item>
+      <item name="IncludeRemoteClass">nonempty</item>
+    </annotation>
+    <annotation name="getGrant">
+      <item name="propertySpecifier">autoid,name,samhsaCenter,programType,grantCode</item>
+    </annotation>
+    <annotation name="service Group">
+      <item name="service">MiscService</item>
+    </annotation>
+    <annotation name="ActionScriptGeneration">
+      <item name="Package">valueObjects</item>
+    </annotation>
+    <property name="autoid" type="integer" required="true"/>
+    <property name="name" type="string" required="true"/>
+    <property name="samhsaCenter" type="integer" required="true"/>
+    <property name="programType" type="integer" required="true"/>
+    <property name="grantCode" type="string" required="true"/>
   </entity>
 </model>

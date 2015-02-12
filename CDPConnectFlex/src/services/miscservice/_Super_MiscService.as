@@ -32,12 +32,13 @@ internal class _Super_MiscService extends com.adobe.fiber.services.wrapper.Remot
         var operation:mx.rpc.remoting.Operation;
 
         operation = new mx.rpc.remoting.Operation(null, "getFacilities");
-         operation.resultElementType = String;
+         operation.resultElementType = Object;
         operations["getFacilities"] = operation;
         operation = new mx.rpc.remoting.Operation(null, "getGrant");
          operation.resultType = valueObjects.GrantVO;
         operations["getGrant"] = operation;
         operation = new mx.rpc.remoting.Operation(null, "updateGrant");
+         operation.resultType = Object;
         operations["updateGrant"] = operation;
 
         _serviceControl.operations = operations;

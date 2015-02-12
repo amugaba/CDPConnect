@@ -5,12 +5,13 @@
 			 labelWidth="370">
 	<fx:Script>
 		<![CDATA[
-			import components.DropDownValidator;
-			import components.QuestionClass;
-			import components.QuestionList;
-			import components.QuestionText;
-			import components.SkipMultipleHandler;
-			import components.SkipPattern;
+			import components.questions.QuestionClass;
+			import components.questions.QuestionList;
+			import components.questions.QuestionText;
+			import components.skips.SkipMultipleHandler;
+			import components.skips.SkipPattern;
+			import components.validators.DropDownValidator;
+			import components.validators.Valid;
 			
 			import mx.collections.ArrayCollection;
 			import mx.collections.ArrayList;
@@ -48,7 +49,7 @@
 				setElementIndex(military2Group,numElements-1);
 				
 				//Validators
-				addDropDownValidator(qFamilyActiveDuty,["No","Refused","Don't Know","Missing Data"]);
+				Valid.addDropDownValidator(qFamilyActiveDuty,["No","Refused","Don't Know","Missing Data"]);
 				
 				//Control Logic
 				addSkipDropDown(qServiceMemRelationship,["Self","Mother","Father","Brother","Sister","Spouse","Partner","Daughter","Son","Missing Data"],[qServiceMemExpOther]);
@@ -79,7 +80,7 @@
 			
 			public function updateFamilyValidator():void
 			{
-				var dv:DropDownValidator = qFamilyActiveDuty.validator as DropDownValidator;
+				var dv:DropDownValidator = qFamilyActiveDuty.validators[0] as DropDownValidator;
 				if(familyVeterans.length == 0)
 				{
 					dv.validAnswers = ["No","Refused","Don't Know","Missing Data"];

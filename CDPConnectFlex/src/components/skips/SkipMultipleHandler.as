@@ -1,5 +1,7 @@
-package components
+package components.skips
 {
+	import components.questions.QuestionClass;
+
 	public class SkipMultipleHandler
 	{
 		public var targetQuestions:Array; //list of Questions that will be skipped

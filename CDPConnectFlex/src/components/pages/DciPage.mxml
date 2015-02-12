@@ -9,12 +9,14 @@
 		 width="400" height="300" xmlns:dci="components.dci.*">
 	<fx:Script>
 		<![CDATA[
+			import components.validators.DateAgeValidator;
+			import components.skips.SkipPattern;
 			import com.adobe.serializers.utility.TypeUtility;
 			
-			import components.QuestionClass;
-			import components.QuestionList;
-			import components.QuestionText;
-			import components.QuestionTextRefusable;
+			import components.questions.QuestionClass;
+			import components.questions.QuestionList;
+			import components.questions.QuestionText;
+			import components.questions.QuestionTextRefusable;
 			import components.dci.DCIForm;
 			import components.dci.InterviewType;
 			
@@ -476,32 +478,6 @@
 				return results;
 			}
 			
-			protected function saveGpraResult_resultHandler(event:ResultEvent):void
-			{
-				global.pageClient.populateClientForm();
-				var g:GpraVO = new GpraVO();
-				if(saveGpraResult.lastResult > 0)
-				{
-					g.autoid = saveGpraResult.lastResult;
-					Alert.show("New GPRA created.");
-				}
-				else if(saveGpraResult.lastResult == 0)
-				{
-					g.autoid = global.activeGPRA.autoid;
-					Alert.show("Existing GPRA updated.");
-				}
-				
-				/*g.status = global.activeGPRA.data.source["gpra_status"];
-				if(g.status == 1)
-				{
-					viewStack.selectedChild = recordTab;
-					viewStack.removeChild(saveTab);
-				}*/
-				g.type = global.activeGPRA.data.source["InterviewTypeCode"];
-				g.date = global.activeGPRA.data.source["InterviewCreateDate"];
-				global.activeGPRA = g;
-			}
-			
 			protected function headerButton_clickHandler(event:MouseEvent):void
 			{
 				var output:String = "";
@@ -522,7 +498,7 @@
 				var g:GpraVO = new GpraVO();
 				if(saveDCIResult.lastResult > 0)
 				{
-					g.autoid = saveGpraResult.lastResult;
+					g.autoid = saveDCIResult.lastResult;
 					Alert.show("New GPRA created.");
 				}
 				else if(saveDCIResult.lastResult == 0)
@@ -548,7 +524,6 @@
 		<gpraservice:GpraService id="gpraService"
 								 fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
 								 showBusyCursor="true"/>
-		<s:CallResponder id="saveGpraResult" result="saveGpraResult_resultHandler(event)"/>
 		<s:CallResponder id="saveDCIResult" result="saveDCIResult_resultHandler(event)"/>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 		

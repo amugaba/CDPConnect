@@ -1,7 +1,11 @@
-package components
+package components.skips
 {
-	import mx.events.ValidationResultEvent;
+	import components.questions.QuestionClass;
+	
 	import flash.events.Event;
+	
+	import mx.events.ValidationResultEvent;
+	import mx.validators.Validator;
 	
 	public class SkipPatternRange extends SkipPattern
 	{
@@ -19,9 +23,9 @@ package components
 		
 		public override function skipHandler(event:Event):void
 		{
-			if(sourceQuestion.validator != null)
+			for each(var val:Validator in sourceQuestion.validators)
 			{
-				var ev:ValidationResultEvent = sourceQuestion.validator.validate();
+				var ev:ValidationResultEvent = val.validate();
 				if(ev.results != null)
 					return;
 			}

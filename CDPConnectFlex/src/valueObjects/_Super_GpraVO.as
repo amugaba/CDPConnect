@@ -6,10 +6,15 @@
 package valueObjects
 {
 import com.adobe.fiber.services.IFiberManagingService;
+import com.adobe.fiber.util.FiberUtils;
 import com.adobe.fiber.valueobjects.IValueObject;
+import flash.events.Event;
 import flash.events.EventDispatcher;
+import mx.binding.utils.ChangeWatcher;
 import mx.collections.ArrayCollection;
+import mx.events.CollectionEvent;
 import mx.events.PropertyChangeEvent;
+import mx.validators.ValidationResult;
 
 import flash.net.registerClassAlias;
 import flash.net.getClassByAlias;
@@ -80,6 +85,8 @@ public class _Super_GpraVO extends flash.events.EventDispatcher implements com.a
         _model = new _GpraVOEntityMetadata(this);
 
         // Bind to own data or source properties for cache invalidation triggering
+        model_internal::_changeWatcherArray.push(mx.binding.utils.ChangeWatcher.watch(this, "date", model_internal::setterListenerDate));
+        model_internal::_changeWatcherArray.push(mx.binding.utils.ChangeWatcher.watch(this, "data", model_internal::setterListenerData));
 
     }
 
@@ -218,6 +225,23 @@ public class _Super_GpraVO extends flash.events.EventDispatcher implements com.a
      *  - the validity of the property (and the containing entity) if the given data property is required.
      */
 
+    model_internal function setterListenerDate(value:flash.events.Event):void
+    {
+        _model.invalidateDependentOnDate();
+    }
+
+    model_internal function setterListenerData(value:flash.events.Event):void
+    {
+        if (value is mx.events.PropertyChangeEvent)
+        {
+            if (mx.events.PropertyChangeEvent(value).newValue)
+            {
+                mx.events.PropertyChangeEvent(value).newValue.addEventListener(mx.events.CollectionEvent.COLLECTION_CHANGE, model_internal::setterListenerData);
+            }
+        }
+        _model.invalidateDependentOnData();
+    }
+
 
     /**
      * valid related derived properties
@@ -239,6 +263,16 @@ public class _Super_GpraVO extends flash.events.EventDispatcher implements com.a
         var validationFailureMessages:Array = new Array();
 
         var propertyValidity:Boolean = true;
+        if (!_model.dateIsValid)
+        {
+            propertyValidity = false;
+            com.adobe.fiber.util.FiberUtils.arrayAdd(validationFailureMessages, _model.model_internal::_dateValidationFailureMessages);
+        }
+        if (!_model.dataIsValid)
+        {
+            propertyValidity = false;
+            com.adobe.fiber.util.FiberUtils.arrayAdd(validationFailureMessages, _model.model_internal::_dataValidationFailureMessages);
+        }
 
         model_internal::_cacheInitialized_isValid = true;
         model_internal::invalidConstraints_der = violatedConsts;
@@ -318,6 +352,60 @@ public class _Super_GpraVO extends flash.events.EventDispatcher implements com.a
         }
     }
 
+    model_internal var _doValidationCacheOfDate : Array = null;
+    model_internal var _doValidationLastValOfDate : String;
+
+    model_internal function _doValidationForDate(valueIn:Object):Array
+    {
+        var value : String = valueIn as String;
+
+        if (model_internal::_doValidationCacheOfDate != null && model_internal::_doValidationLastValOfDate == value)
+           return model_internal::_doValidationCacheOfDate ;
+
+        _model.model_internal::_dateIsValidCacheInitialized = true;
+        var validationFailures:Array = new Array();
+        var errorMessage:String;
+        var failure:Boolean;
+
+        var valRes:ValidationResult;
+        if (_model.isDateAvailable && _internal_date == null)
+        {
+            validationFailures.push(new ValidationResult(true, "", "", "date is required"));
+        }
+
+        model_internal::_doValidationCacheOfDate = validationFailures;
+        model_internal::_doValidationLastValOfDate = value;
+
+        return validationFailures;
+    }
+    
+    model_internal var _doValidationCacheOfData : Array = null;
+    model_internal var _doValidationLastValOfData : ArrayCollection;
+
+    model_internal function _doValidationForData(valueIn:Object):Array
+    {
+        var value : ArrayCollection = valueIn as ArrayCollection;
+
+        if (model_internal::_doValidationCacheOfData != null && model_internal::_doValidationLastValOfData == value)
+           return model_internal::_doValidationCacheOfData ;
+
+        _model.model_internal::_dataIsValidCacheInitialized = true;
+        var validationFailures:Array = new Array();
+        var errorMessage:String;
+        var failure:Boolean;
+
+        var valRes:ValidationResult;
+        if (_model.isDataAvailable && _internal_data == null)
+        {
+            validationFailures.push(new ValidationResult(true, "", "", "data is required"));
+        }
+
+        model_internal::_doValidationCacheOfData = validationFailures;
+        model_internal::_doValidationLastValOfData = value;
+
+        return validationFailures;
+    }
+    
 
 }
 

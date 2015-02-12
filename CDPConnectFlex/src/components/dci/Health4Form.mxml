@@ -4,9 +4,10 @@
 			 xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:dci="components.dci.*" width="100%" height="100%">
 	<fx:Script>
 		<![CDATA[
-			import components.QuestionList;
-			import components.QuestionText;
-			import components.QuestionTextRefusable;
+			import components.questions.QuestionList;
+			import components.questions.QuestionText;
+			import components.questions.QuestionTextRefusable;
+			import components.validators.Valid;
 			
 			import mx.binding.utils.BindingUtils;
 			import mx.collections.ArrayList;
@@ -50,7 +51,7 @@
 				socialQ.addElement(daysQ.refuseInput);
 				daysQ.inline = true;
 				
-				addNumberValidator(daysQ,1,30,true);
+				Valid.addNumberValidator(daysQ,1,30,true);
 				addSkipDropDown(socialQ,["Yes"],[daysQ],true);
 			}
 		]]>

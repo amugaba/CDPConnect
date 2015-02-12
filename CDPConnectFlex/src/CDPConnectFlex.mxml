@@ -16,7 +16,7 @@ By David Tidd
 			   xmlns:miscservice="services.miscservice.*"
 			   width="715" height="800" minWidth="955" minHeight="620"
 			   backgroundColor="#E2E2E8" currentState="Login"
-			   pageTitle="CDP Connect">
+			   pageTitle="CDP Connect" xmlns:pages="components.pages.*">
 	<fx:Script>
 		<![CDATA[
 			import mx.collections.ArrayCollection;
@@ -45,6 +45,7 @@ By David Tidd
 			public var adminMode:Boolean = false;
 			private var creationComplete:Boolean = false;
 			public static var DEBUG_MODE:int = 2;//0 = release, 1 = remote debug, 2 = local debug
+			public var preparationStepsLeft:int = 3;
 			
 			protected function loginCompleteHandler(event:FlexEvent):void
 			{
@@ -61,7 +62,12 @@ By David Tidd
 			
 			protected function loginHelper():void
 			{
+				//Get staff list, facilities list, and grant details
 				getUsers.token = userService.getUsers();
+				getFacilities.token = miscService.getFacilities();
+				getGrantResult.token = miscService.getGrant(activeUser.grantid);
+				
+				//Set up button bar
 				pageHomeButton = pageButtonBar.getChildAt(0) as ButtonBarButton;
 				pageClientButton = pageButtonBar.getChildAt(1) as ButtonBarButton;
 				pageGpraButton = pageButtonBar.getChildAt(2) as ButtonBarButton;
@@ -69,11 +75,9 @@ By David Tidd
 				pageHomeButton.enabled = true;
 				pageClientButton.enabled = false;
 				pageGpraButton.enabled = false;
-				pageViewstack.selectedChild = pageHome;
-				getFacilities.token = miscService.getFacilities();
-				getGrantResult.token = miscService.getGrant(activeUser.grantid);
 				adminButton.visible = adminMode;
 				pageAdminButton.visible = adminMode;
+				
 				creationComplete = true;
 			}
 			
@@ -110,17 +114,27 @@ By David Tidd
 			protected function getFacilities_resultHandler(event:ResultEvent):void
 			{
 				facilityList = getFacilities.lastResult;
+				attemptHomePage();
 			}
 			
 			protected function getUsers_resultHandler(event:ResultEvent):void
 			{
 				//initialize BHS name and intials arrays
 				for each(var user:UserVO in getUsers.lastResult)
-				{
 					userList.addItem(user.name);
+					
+				attemptHomePage();				
+			}
+			
+			protected function attemptHomePage():void
+			{
+				preparationStepsLeft--;
+				if(preparationStepsLeft == 0)
+				{
+					pageHome.creationCompleteHandler();
+					pageClient.creationCompleteHandler();
+					pageViewstack.selectedChild = pageHome;
 				}
-				pageHome.creationCompleteHandler();
-				pageClient.creationCompleteHandler();
 			}
 
 			protected function logoutButton_clickHandler(event:MouseEvent):void
@@ -146,6 +160,7 @@ By David Tidd
 			protected function getGrantResult_resultHandler(event:ResultEvent):void
 			{
 				activeGrant = getGrantResult.lastResult;
+				attemptHomePage();
 			}
 			
 		]]>
@@ -176,10 +191,10 @@ By David Tidd
 	<mx:ViewStack id="pageViewstack" x="0" y="100" width="100%" height="100%"  includeIn="State1"
 				  backgroundColor="#E2E2E8" chromeColor="#6376A5" color="#000000"
 				  contentBackgroundColor="#FFFFFF" creationPolicy="all" creationComplete="pageViewstack_creationCompleteHandler(event)">
-		<custom:HomePage id="pageHome" width="100%" height="100%" label="Home" />
-		<custom:ClientPage id="pageClient" width="100%" height="100%" label="Client" />
-		<custom:GpraPage id="pageGPRA" width="100%" height="100%" label="GPRA"/>
-		<custom:AdminPage id="pageAdmin" width="100%" height="100%" label="Admin"/>
+		<pages:HomePage id="pageHome" width="100%" height="100%" label="Home" />
+		<pages:ClientPage id="pageClient" width="100%" height="100%" label="Client" />
+		<pages:DciPage id="pageGPRA" width="100%" height="100%" label="GPRA"/>
+		<pages:AdminPage id="pageAdmin" width="100%" height="100%" label="Admin"/>
 	</mx:ViewStack>
 	<s:Image x="0" y="0" source="assets/ConnectBanner.png"/>
 	<s:Group includeIn="State1" x="10" y="3" width="695" height="90"
@@ -200,5 +215,5 @@ By David Tidd
 	</s:Group>
 	<mx:ToggleButtonBar id="pageButtonBar" x="171" y="10" dataProvider="{pageViewstack}" includeIn="State1"/>
 	
-	<custom:LoginPage id="pageLogin" width="100%" height="100%" label="Login" includeIn="Login"/>
+	<pages:LoginPage id="pageLogin" width="100%" height="100%" label="Login" includeIn="Login"/>
 </s:Application>

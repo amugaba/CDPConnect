@@ -33,7 +33,7 @@
 			<location>C:/wamp/www/CDPConnect/CDPConnect/services/ClientService.php</location>
 		</link>
 		<link>
-			<name>services/GpraService.php</name>
+			<name>services/GpraService_GpraService.php</name>
 			<type>1</type>
 			<location>C:/wamp/www/CDPConnect/CDPConnect/services/GpraService.php</location>
 		</link>

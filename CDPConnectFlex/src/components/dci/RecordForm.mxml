@@ -4,10 +4,11 @@
 			 xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:dci="components.dci.*" width="100%" height="100%">
 	<fx:Script>
 		<![CDATA[
-			import components.DateAgeValidator;
-			import components.QuestionClass;
-			import components.QuestionList;
-			import components.QuestionText;
+			import components.questions.QuestionClass;
+			import components.questions.QuestionList;
+			import components.questions.QuestionText;
+			import components.validators.DateAgeValidator;
+			import components.validators.Valid;
 			
 			import flash.globalization.DateTimeFormatter;
 			import flash.globalization.LocaleID;
@@ -35,7 +36,7 @@
 				addQuestion(qCooccurringScreenStatus);
 				
 				//Validators
-				addDateAgeValidator(qInterviewDate,0,DateAgeValidator.DAY,365,DateAgeValidator.DAY);
+				Valid.addDateAgeValidator(qInterviewDate,0,DateAgeValidator.DAY,365,DateAgeValidator.DAY);
 				qInterviewDate.answerType = String;
 				
 				//Control Logic

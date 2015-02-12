@@ -5,9 +5,10 @@
 			 labelWidth="315">
 	<fx:Script>
 		<![CDATA[
-			import components.QuestionList;
-			import components.QuestionText;
-			import components.QuestionTextRefusable;
+			import components.questions.QuestionList;
+			import components.questions.QuestionText;
+			import components.questions.QuestionTextRefusable;
+			import components.validators.Valid;
 			
 			import mx.binding.utils.BindingUtils;
 			import mx.collections.ArrayList;
@@ -49,7 +50,7 @@
 				addQuestion(qPhysicallyHurt,130);
 				
 				//Validators
-				addRequiredValidator(qViolenceOtherSpec);
+				Valid.addRequiredValidator(qViolenceOtherSpec);
 				qViolenceOtherSpec.answerType = String;
 				
 				//Control Logic

@@ -5,12 +5,13 @@
 			 labelWidth="305">
 	<fx:Script>
 		<![CDATA[
-			import components.DateAgeValidator;
-			import components.DropDownValidator;
-			import components.QuestionClass;
-			import components.QuestionList;
-			import components.QuestionText;
-			import components.SkipPattern;
+			import components.questions.QuestionClass;
+			import components.questions.QuestionList;
+			import components.questions.QuestionText;
+			import components.skips.SkipPattern;
+			import components.validators.DateAgeValidator;
+			import components.validators.DropDownValidator;
+			import components.validators.Valid;
 			
 			import mx.binding.utils.BindingUtils;
 			import mx.collections.ArrayList;
@@ -52,10 +53,10 @@
 				addQuestion(qThinkingDifficult);
 				addQuestion(qStairsDifficult);
 				addQuestion(qDressingDifficult);
-				
+
 				//Validators
-				addRequiredValidator(qForeignLanguageOtherSpec);
-				addRequiredValidator(qGenderOtherSpecify);
+				Valid.addRequiredValidator(qForeignLanguageOtherSpec);
+				Valid.addRequiredValidator(qGenderOtherSpecify);
 				qForeignLanguageOtherSpec.answerType = String;
 				qGenderOtherSpecify.answerType = String;
 				

@@ -1,4 +1,4 @@
-package components
+package components.validators
 {
 	import mx.controls.DateField;
 	import mx.validators.DateValidator;

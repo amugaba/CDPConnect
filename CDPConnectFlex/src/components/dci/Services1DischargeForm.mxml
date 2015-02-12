@@ -5,8 +5,9 @@
 			 labelWidth="200">
 	<fx:Script>
 		<![CDATA[
-			import components.QuestionClass;
-			import components.QuestionText;
+			import components.questions.QuestionClass;
+			import components.questions.QuestionText;
+			import components.validators.Valid;
 			
 			import mx.collections.ArrayList;
 			import mx.containers.FormItem;
@@ -120,8 +121,8 @@
 				qSvcOtherClinicalSpec.answerType = String;
 				
 				//Validators
-				addRequiredValidator(qSvcModOtherSpec);
-				addRequiredValidator(qSvcOtherClinicalSpec);
+				Valid.addRequiredValidator(qSvcModOtherSpec);
+				Valid.addRequiredValidator(qSvcOtherClinicalSpec);
 				
 				//Control Logic
 				addSkipDropDown(qSvcModOther,["0"],[qSvcModOtherSpec]);
@@ -133,7 +134,7 @@
 				questions.push(q);
 				q.inputControl.width = 60;
 				g.addElement(q);
-				addNumberValidator(q,0,999,true);
+				Valid.addNumberValidator(q,0,999,true);
 			}
 			
 			protected function addHeader(text:String, g:TileGroup):void

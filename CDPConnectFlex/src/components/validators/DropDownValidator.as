@@ -1,4 +1,4 @@
-package components
+package components.validators
 {
 	import mx.validators.ValidationResult;
 	import mx.validators.Validator;

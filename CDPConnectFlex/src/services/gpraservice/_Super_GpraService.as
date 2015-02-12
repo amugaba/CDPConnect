@@ -11,7 +11,6 @@ import mx.rpc.AbstractOperation;
 import mx.rpc.AsyncToken;
 import mx.rpc.remoting.Operation;
 import mx.rpc.remoting.RemoteObject;
-import valueObjects.GpraVO;
 
 import mx.collections.ItemResponder;
 import com.adobe.fiber.valueobjects.AvailablePropertyIterator;
@@ -52,9 +51,6 @@ internal class _Super_GpraService extends com.adobe.fiber.services.wrapper.Remot
         operation = new mx.rpc.remoting.Operation(null, "getGpraSummaryByClientID");
          operation.resultElementType = Object;
         operations["getGpraSummaryByClientID"] = operation;
-        operation = new mx.rpc.remoting.Operation(null, "saveGpra");
-         operation.resultType = int;
-        operations["saveGpra"] = operation;
         operation = new mx.rpc.remoting.Operation(null, "saveDCI");
          operation.resultType = int;
         operations["saveDCI"] = operation;
@@ -200,24 +196,6 @@ internal class _Super_GpraService extends com.adobe.fiber.services.wrapper.Remot
     {
         var _internal_operation:mx.rpc.AbstractOperation = _serviceControl.getOperation("getGpraSummaryByClientID");
 		var _internal_token:mx.rpc.AsyncToken = _internal_operation.send(clientID) ;
-        return _internal_token;
-    }
-     
-    /**
-      * This method is a generated wrapper used to call the 'saveGpra' operation. It returns an mx.rpc.AsyncToken whose 
-      * result property will be populated with the result of the operation when the server response is received. 
-      * To use this result from MXML code, define a CallResponder component and assign its token property to this method's return value. 
-      * You can then bind to CallResponder.lastResult or listen for the CallResponder.result or fault events.
-      *
-      * @see mx.rpc.AsyncToken
-      * @see mx.rpc.CallResponder 
-      *
-      * @return an mx.rpc.AsyncToken whose result property will be populated with the result of the operation when the server response is received.
-      */
-    public function saveGpra(gpra:valueObjects.GpraVO) : mx.rpc.AsyncToken
-    {
-        var _internal_operation:mx.rpc.AbstractOperation = _serviceControl.getOperation("saveGpra");
-		var _internal_token:mx.rpc.AsyncToken = _internal_operation.send(gpra) ;
         return _internal_token;
     }
      

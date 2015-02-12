@@ -5,9 +5,10 @@
 			 labelWidth="200">
 	<fx:Script>
 		<![CDATA[
-			import components.QuestionClass;
-			import components.QuestionList;
-			import components.QuestionText;
+			import components.questions.QuestionClass;
+			import components.questions.QuestionList;
+			import components.questions.QuestionText;
+			import components.validators.Valid;
 			
 			import mx.collections.ArrayList;
 			import mx.containers.FormItem;
@@ -123,8 +124,8 @@
 				qSvcOtherClinicalSpec.answerType = String;
 				
 				//Validators
-				addRequiredValidator(qSvcModOtherSpec);
-				addRequiredValidator(qSvcOtherClinicalSpec);
+				Valid.addRequiredValidator(qSvcModOtherSpec);
+				Valid.addRequiredValidator(qSvcOtherClinicalSpec);
 				
 				//Control Logic
 				addSkipDropDown(qSvcModOther,["No"],[qSvcModOtherSpec]);

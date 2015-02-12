@@ -1,4 +1,4 @@
-package components
+package components.questions
 {
 	import flash.display.InteractiveObject;
 	
@@ -14,7 +14,7 @@ package components
 		public var skipQuestions:Array = new Array();
 		public var skipAnswers:Array = new Array();
 		public var skipPatterns:Array = new Array();
-		public var validator:Validator = null;
+		public var validators:Vector.<Validator> = new Vector.<Validator>();
 		public var inline:Boolean = false;
 		public var isSkipped:Boolean = false;
 		public var answerType:Class = int;
@@ -35,6 +35,11 @@ package components
 		public function set answer(value:String):void
 		{
 			//to be overidden
+		}
+		
+		public function get validator():Validator
+		{
+			return validators[0];
 		}
 		
 		public function restoreDefault():void

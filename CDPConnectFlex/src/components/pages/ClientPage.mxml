@@ -6,10 +6,14 @@
 					xmlns:gpraservice="services.gpraservice.*"
 					xmlns:styles="com.adobe.fiber.styles.*"
 					xmlns:clientservice="services.clientservice.*"
-					width="400" height="300">
+					width="715" height="800" xmlns:questions="components.questions.*">
 	<fx:Script>
 		<![CDATA[
 			import components.dci.InterviewType;
+			import components.questions.QuestionList;
+			import components.questions.QuestionText;
+			import components.validators.DateAgeValidator;
+			import components.validators.Valid;
 			
 			import flash.globalization.DateTimeFormatter;
 			import flash.globalization.LocaleID;
@@ -20,6 +24,7 @@
 			import mx.controls.DateField;
 			import mx.controls.Text;
 			import mx.core.FlexGlobals;
+			import mx.effects.effectClasses.AddRemoveEffectTargetFilter;
 			import mx.events.CloseEvent;
 			import mx.events.ValidationResultEvent;
 			import mx.rpc.events.ResultEvent;
@@ -34,59 +39,50 @@
 			protected var dateFormatter:DateTimeFormatter = new DateTimeFormatter(LocaleID.DEFAULT);
 			[Bindable] protected var clientGPRAs:ArrayCollection = new ArrayCollection();
 			[Bindable] protected var staffList:ArrayList = new ArrayList();
+			[Bindable] protected var facilityList:ArrayList = new ArrayList();
 			protected var global:CDPConnectFlex = FlexGlobals.topLevelApplication as CDPConnectFlex;
 			protected var validators:Array = new Array();
+			
+			public var qClientID:QuestionText = new QuestionText("","Client ID","");
+			public var qFirstName:QuestionText = new QuestionText("","First Name","");
+			public var qLastName:QuestionText = new QuestionText("","Last Name","");
+			public var qDOB:QuestionText = new QuestionText("","Date of Birth","");
+			public var qSSN:QuestionText = new QuestionText("","SSN","");
+			public var qCreationDate:QuestionText = new QuestionText("","Created Date","",false);
+			
+			public var qEpID:QuestionText = new QuestionText("","Episode #","");
+			public var qEpDate:QuestionText = new QuestionText("","Date","");
+			public var qEpStaff:QuestionList = new QuestionList("","Intake Staff",staffList,0);
+			public var qEpFacility:QuestionList = new QuestionList("","Facility",facilityList,0);
+			public var qEpComplete:QuestionList = new QuestionList("","Complete?",new ArrayList(["Yes","No"]),1);
 			
 			public function creationCompleteHandler():void
 			{
 				staffList.addAll(global.userList);
+				facilityList.addAll(global.facilityList);
 				dateFormatter.setDateTimePattern("MM/dd/yyyy");
 				
-				var dv:DateAgeValidator = new DateAgeValidator();
-				dv.required = true;
-				dv.source = cfDOB;
-				dv.property = "text";
-				dv.minType = DateAgeValidator.YEAR;
-				dv.min = 3;
-				dv.maxType = DateAgeValidator.YEAR;
-				dv.max = 100;
-				validators.push(dv);
+				clientForm.addElement(qClientID);
+				clientForm.addElement(qFirstName);
+				clientForm.addElement(qLastName);
+				clientForm.addElement(qDOB);
+				clientForm.addElement(qSSN);
+				clientForm.addElement(qCreationDate);
 				
-				dv = new DateAgeValidator();
-				dv.required = true;
-				dv.source = cfCreationDate;
-				dv.property = "text";
-				dv.minType = DateAgeValidator.DAY;
-				dv.min = 0;
-				dv.maxType = DateAgeValidator.YEAR;
-				dv.max = 1;
-				validators.push(dv);
+				episodeForm.addElement(qEpID);
+				episodeForm.addElement(qEpDate);
+				episodeForm.addElement(qEpStaff);
+				episodeForm.addElement(qEpFacility);
+				episodeForm.addElement(qEpComplete);
+				qEpStaff.inputControl.width = 130;
+				qEpFacility.inputControl.width = 130;
 				
-				var v:Validator = new Validator();
-				v.required = true;
-				v.source = cfFirstName;
-				v.property = "text";
-				v = new Validator();
-				v.required = true;
-				v.source = cfLastName;
-				v.property = "text";
-				validators.push(v);
-				
-				var nv:NumberValidator = new NumberValidator();
-				nv.required = true;
-				nv.source = cfSSN;
-				nv.property = "text";
-				nv.allowNegative = false;
-				nv.domain = "int";
-				validators.push(nv);
-				
-				var sv:StringValidator = new StringValidator();
-				sv.required = true;
-				sv.source = cfSSN;
-				sv.property = "text";
-				sv.minLength = 4;
-				sv.maxLength = 4;
-				validators.push(sv);
+				Valid.addDateAgeValidator(qDOB, 3, DateAgeValidator.YEAR, 100, DateAgeValidator.YEAR);
+				//Valid.addDateAgeValidator(qCreationDate, 0, DateAgeValidator.DAY, 1, DateAgeValidator.YEAR);
+				Valid.addRequiredValidator(qFirstName);
+				Valid.addRequiredValidator(qLastName);
+				Valid.addNumberValidator(qSSN, Number.NaN, Number.NaN, true);
+				Valid.addStringValidator(qSSN, 4, 11);//Make this flexible
 			}	
 			
 			public function populateClientForm():void
@@ -94,28 +90,27 @@
 				resetClientForm();
 				if(global.activeClient != null)
 				{
-					cfFirstName.text = global.activeClient.firstname;
-					cfLastName.text = global.activeClient.lastname;
-					cfDOB.text = global.activeClient.dob;
-					cfSSN.text = global.activeClient.ssn;
+					qFirstName.answer = global.activeClient.firstname;
+					qLastName.answer = global.activeClient.lastname;
+					qDOB.answer = global.activeClient.dob;
+					qSSN.answer = global.activeClient.ssn;
 					if(global.activeClient.createddate != null)
-						cfCreationDate.text = global.activeClient.createddate;
+						qCreationDate.answer = global.activeClient.createddate;
 					else
-						cfCreationDate.text = dateFormatter.format(new Date());
-					cfStaff.selectedItem = global.activeClient.intakestaff;
+						qCreationDate.answer = dateFormatter.format(new Date());
+					//qIntakeStaff.answer = global.activeClient.intakestaff;
 					getGpraSummaryByClientIDResult.token = gpraService.getGpraSummaryByClientID(global.activeClient.autoid);
 				}
 			}
 			
 			public function resetClientForm():void
 			{
-				cfFirstName.text = "";
-				cfLastName.text = "";
-				cfDOB.text = "";
-				cfSSN.text = "";
-				cfCreationDate.text = "";
-				cfCreationDate.text = dateFormatter.format(new Date());
-				cfStaff.selectedItem = global.activeUser.name;
+				qFirstName.answer = "";
+				qLastName.answer = "";
+				qDOB.answer = "";
+				qSSN.answer = "";
+				qCreationDate.answer = dateFormatter.format(new Date());
+				//qIntakeStaff.answer = global.activeUser.name;
 				clientGPRAs = null;
 			}
 			
@@ -124,12 +119,12 @@
 				if(validateClient())
 				{
 					var c:ClientVO = new ClientVO();
-					c.firstname = cfFirstName.text;
-					c.lastname = cfLastName.text;
-					c.ssn = cfSSN.text;
-					c.intakestaff = cfStaff.selectedItem;
-					c.dob = cfDOB.text;
-					c.createddate = cfCreationDate.text;
+					c.firstname = qFirstName.answer;
+					c.lastname = qLastName.answer;
+					c.ssn = qSSN.answer;
+					//c.intakestaff = qIntakeStaff.answer;
+					c.dob = qDOB.answer;
+					c.createddate = qCreationDate.answer;
 					
 					if(global.activeClient != null)
 					{
@@ -341,35 +336,28 @@
 									 showBusyCursor="true"/>
 		<s:CallResponder id="getGpraSummaryByClientIDResult" result="getGpraSummaryByClientIDResult_resultHandler(event)"/>
 	</fx:Declarations>
-	<s:Form id="clientForm" x="10" y="5" width="695" height="200" defaultButton="{cfSaveButton}" creationPolicy="all" fontWeight="bold">
-		<s:layout>
-			<s:TileLayout columnWidth="250" horizontalAlign="right" orientation="columns" verticalGap="30"
-						  requestedColumnCount="2" requestedRowCount="4"/>
-		</s:layout>
-		<mx:FormItem label="First Name">
-			<s:TextInput id="cfFirstName" fontWeight="normal"/>
-		</mx:FormItem>
-		<mx:FormItem label="Last name">
-			<s:TextInput id="cfLastName" fontWeight="normal"/>
-		</mx:FormItem>
-		<mx:FormItem label="Last 4 SSN">
-			<s:TextInput id="cfSSN" fontWeight="normal"/>
-		</mx:FormItem>
-		<mx:FormItem label="Date of Birth">
-			<s:TextInput id="cfDOB" fontWeight="normal"/>
-		</mx:FormItem>
-		<mx:FormItem label="Intake Staff">
-			<s:DropDownList id="cfStaff" fontWeight="normal" width="128" dataProvider="{staffList}"></s:DropDownList>
-		</mx:FormItem>
-		<mx:FormItem label="Creation Date">
-			<s:TextInput id="cfCreationDate" fontWeight="normal"/>
-		</mx:FormItem>
-		<mx:FormItem>
-			<s:Button id="cfSaveButton" label="Save"  fontWeight="normal"
-					  click="cfSaveButton_clickHandler(event)"/>
-		</mx:FormItem>
-	</s:Form>
-	<s:DataGrid id="gpraGrid" x="50" y="225" width="220" height="150"
+	<mx:Form id="clientForm" x="72" y="29" width="251" height="176" fontWeight="bold" labelWidth="90"
+			 paddingBottom="0" paddingLeft="0" paddingRight="0" paddingTop="0"/>
+	
+	<s:Button id="cfSaveButton" x="150" y="200" label="Save Client Profile" click="cfSaveButton_clickHandler(event)"
+			  fontWeight="normal"/>
+	
+	<!-- Episode Area -->
+	<mx:Form id="episodeForm" x="198" y="269" width="220" height="143" fontWeight="bold"
+			 labelWidth="70" paddingBottom="0" paddingLeft="0" paddingRight="0" paddingTop="0">
+	</mx:Form>
+	<s:DataGrid id="episodeGrid" x="34" y="265" width="146" height="158"
+				requestedRowCount="3" resizableColumns="false">
+		<s:columns>
+			<s:ArrayList>
+				<s:GridColumn dataField="number" headerText="#" width="40"></s:GridColumn>
+				<s:GridColumn dataField="date" headerText="Date" width="100"></s:GridColumn>
+			</s:ArrayList>
+		</s:columns>
+	</s:DataGrid>
+	
+	<!-- Assessments Area -->
+	<s:DataGrid id="gpraGrid" x="50" y="485" width="220" height="150"
 				dataProvider="{clientGPRAs}" itemRenderer="components.gpraGridRenderer"
 				requestedRowCount="3" resizableColumns="false">
 		<s:columns>
@@ -382,15 +370,33 @@
 			<fx:Object type="Intake" date="5/22/2013"></fx:Object>
 		</s:typicalItem>
 	</s:DataGrid>
-	<s:Button id="createIntakeNegativeButton" x="290" y="296"
+	<s:Button id="createIntakeNegativeButton" x="420" y="541"
 			  label="Create Negative Intake" click="createNegativeIntakeButton_clickHandler(event)"/>
-	<s:Button id="createIntakeBIButton" x="290" y="296"
+	<s:Button id="createIntakeBIButton" x="290" y="546"
 			  label="Create BI Intake" click="createBIIntakeButton_clickHandler(event)"/>
-	<s:Button id="createDischargeButton" x="290" y="325"
+	<s:Button id="createDischargeButton" x="290" y="575"
 			  label="Create GPRA Discharge" click="createDischargeButton_clickHandler(event)"/>
-	<s:Button id="createFollowupButton" x="290" y="354"
+	<s:Button id="createFollowupButton" x="290" y="604"
 			  label="Create GPRA Followup" click="createFollowupButton_clickHandler(event)"/>
-	<s:Button id="loadGpraButton" x="290" y="232" width="146" label="Load Selected GPRA"
+	<s:Button id="loadGpraButton" x="290" y="482" width="146" label="Load Selected GPRA"
 			  click="loadGpraButton_clickHandler(event)"/>
-	<s:Button id="deleteGpraButton" x="290" y="261" width="147" label="Delete Selected GPRA"/>
+	<s:Button id="deleteGpraButton" x="290" y="511" width="147" label="Delete Selected GPRA"/>
+	<mx:VRule x="331" y="6" width="14" height="227"/>
+	<s:Label x="449" y="8" fontWeight="bold" text="Client Notes"/>
+	<s:TextArea x="345" y="28" width="270" height="178"/>
+	<s:Button id="saveNotesClientButton" x="531" y="185" label="Save Notes"/>
+	<mx:HRule x="10" y="223" width="695" height="20"/>
+	<mx:HRule x="10" y="454" width="695" height="20"/>
+	<mx:VRule x="185" y="233" width="14" height="231"/>
+	<s:Label x="523" y="249" fontWeight="bold" text="Episode Notes"/>
+	<s:TextArea x="435" y="269" width="270" height="173"/>
+	<s:Button id="saveNotesEpisodeButton" x="621" y="421" label="Save Notes"/>
+	<s:Label x="72" y="248" fontWeight="bold" text="Episode List"/>
+	<s:Button id="episodeNewButton" x="49" y="428" label="Add New Episode" fontWeight="normal"/>
+	<s:Label x="266" y="250" fontWeight="bold" text="Episode Profile"/>
+	<s:Button id="cfSaveButton0" x="251" y="416" label="Save Client Profile" click="cfSaveButton_clickHandler(event)"
+			  fontWeight="normal"/>
+	<mx:VRule x="419" y="233" width="14" height="231"/>
+	<s:Label x="161" y="9" fontWeight="bold" text="Client Profile"/>
+
 </s:NavigatorContent>

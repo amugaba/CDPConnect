@@ -5,9 +5,10 @@
 			 labelWidth="280">
 	<fx:Script>
 		<![CDATA[
-			import components.QuestionList;
-			import components.QuestionText;
-			import components.QuestionTextRefusable;
+			import components.questions.QuestionList;
+			import components.questions.QuestionText;
+			import components.questions.QuestionTextRefusable;
+			import components.validators.Valid;
 			
 			import mx.binding.utils.BindingUtils;
 			import mx.collections.ArrayList;
@@ -68,7 +69,7 @@
 				treatmentQ.addElement(daysQ.refuseInput);
 				daysQ.inline = true;
 				
-				addNumberValidator(daysQ,1,maxValue,true);
+				Valid.addNumberValidator(daysQ,1,maxValue,true);
 				addSkipDropDown(treatmentQ,["No","Refused","Don't Know","Missing Data"],[daysQ]);
 			}
 		]]>

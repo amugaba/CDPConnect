@@ -27,7 +27,6 @@ internal class _Super_ClientService extends com.adobe.fiber.services.wrapper.Rem
         _serviceControl = new mx.rpc.remoting.RemoteObject();
 
         // initialize RemoteClass alias for all entities returned by functions of this service
-        valueObjects.ClientVO._initRemoteClassAlias();
 
         var operations:Object = new Object();
         var operation:mx.rpc.remoting.Operation;
@@ -45,7 +44,7 @@ internal class _Super_ClientService extends com.adobe.fiber.services.wrapper.Rem
          operation.resultType = valueObjects.ClientVO;
         operations["updateClient"] = operation;
         operation = new mx.rpc.remoting.Operation(null, "searchClients");
-         operation.resultElementType = valueObjects.ClientVO;
+         operation.resultElementType = Object;
         operations["searchClients"] = operation;
 
         _serviceControl.operations = operations;

@@ -4,12 +4,13 @@
 			 xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:dci="components.dci.*" width="100%" height="100%">
 	<fx:Script>
 		<![CDATA[
-			import components.QuestionClass;
-			import components.QuestionList;
-			import components.QuestionText;
-			import components.QuestionTextRefusable;
-			import components.SkipMultipleHandler;
-			import components.SkipPattern;
+			import components.questions.QuestionClass;
+			import components.questions.QuestionList;
+			import components.questions.QuestionText;
+			import components.questions.QuestionTextRefusable;
+			import components.skips.SkipMultipleHandler;
+			import components.skips.SkipPattern;
+			import components.validators.Valid;
 			
 			import mx.binding.utils.BindingUtils;
 			import mx.collections.ArrayList;
@@ -35,12 +36,12 @@
 				addQuestion(qOtherTobaccoSpec);
 				
 				//Validators
-				addNumberValidator(qCigarettesDays,0,30,true);
-				addNumberValidator(qChewingTobaccoDays,0,30,true);
-				addNumberValidator(qCigarsDays,0,30,true);
-				addNumberValidator(qECigarettesDays,0,30,true);
-				addNumberValidator(qOtherTobaccoDays,0,30,true);
-				addRequiredValidator(qOtherTobaccoSpec);
+				Valid.addNumberValidator(qCigarettesDays,0,30,true);
+				Valid.addNumberValidator(qChewingTobaccoDays,0,30,true);
+				Valid.addNumberValidator(qCigarsDays,0,30,true);
+				Valid.addNumberValidator(qECigarettesDays,0,30,true);
+				Valid.addNumberValidator(qOtherTobaccoDays,0,30,true);
+				Valid.addRequiredValidator(qOtherTobaccoSpec);
 				qOtherTobaccoSpec.answerType = String;
 				
 				//Control Logic

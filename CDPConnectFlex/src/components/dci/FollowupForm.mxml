@@ -5,11 +5,11 @@
 			 labelWidth="305">
 	<fx:Script>
 		<![CDATA[
-			import components.DropDownValidator;
-			import components.QuestionList;
-			import components.QuestionText;
-			import components.QuestionTextRefusable;
-			import components.SkipPattern;
+			import components.validators.DropDownValidator;
+			import components.questions.QuestionList;
+			import components.questions.QuestionText;
+			import components.questions.QuestionTextRefusable;
+			import components.skips.SkipPattern;
 			
 			import mx.binding.utils.BindingUtils;
 			import mx.collections.ArrayList;

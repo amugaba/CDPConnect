@@ -5,9 +5,10 @@
 			 labelWidth="200">
 	<fx:Script>
 		<![CDATA[
-			import components.QuestionClass;
-			import components.QuestionList;
-			import components.QuestionText;
+			import components.questions.QuestionClass;
+			import components.questions.QuestionList;
+			import components.questions.QuestionText;
+			import components.validators.Valid;
 			
 			import mx.collections.ArrayList;
 			import mx.containers.FormItem;
@@ -127,11 +128,11 @@
 				addGroupedQuestion(qSvcOtherPeerSpec,g);
 				
 				//Validators
-				addRequiredValidator(qSvcOtherMedSpec);
-				addRequiredValidator(qSvcOtherCaseMgmtSpec);
-				addRequiredValidator(qSvcOtherAfterCareSpec);
-				addRequiredValidator(qSvcOtherEducSpec);
-				addRequiredValidator(qSvcOtherPeerSpec);
+				Valid.addRequiredValidator(qSvcOtherMedSpec);
+				Valid.addRequiredValidator(qSvcOtherCaseMgmtSpec);
+				Valid.addRequiredValidator(qSvcOtherAfterCareSpec);
+				Valid.addRequiredValidator(qSvcOtherEducSpec);
+				Valid.addRequiredValidator(qSvcOtherPeerSpec);
 				qSvcOtherMedSpec.answerType = String;
 				qSvcOtherCaseMgmtSpec.answerType = String;
 				qSvcOtherAfterCareSpec.answerType = String;

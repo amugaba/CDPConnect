@@ -6,9 +6,11 @@ package valueObjects
 {
 import com.adobe.fiber.styles.IStyle;
 import com.adobe.fiber.styles.Style;
+import com.adobe.fiber.styles.StyleValidator;
 import com.adobe.fiber.valueobjects.AbstractEntityMetadata;
 import com.adobe.fiber.valueobjects.AvailablePropertyIterator;
 import com.adobe.fiber.valueobjects.IPropertyIterator;
+import mx.events.ValidationResultEvent;
 import com.adobe.fiber.core.model_internal;
 import com.adobe.fiber.valueobjects.IModelType;
 import mx.events.PropertyChangeEvent;
@@ -22,7 +24,7 @@ internal class _GrantVOEntityMetadata extends com.adobe.fiber.valueobjects.Abstr
 
     model_internal static var allProperties:Array = new Array("autoid", "name", "samhsaCenter", "programType", "grantCode");
     model_internal static var allAssociationProperties:Array = new Array();
-    model_internal static var allRequiredProperties:Array = new Array();
+    model_internal static var allRequiredProperties:Array = new Array("autoid", "name", "samhsaCenter", "programType", "grantCode");
     model_internal static var allAlwaysAvailableProperties:Array = new Array("autoid", "name", "samhsaCenter", "programType", "grantCode");
     model_internal static var guardedProperties:Array = new Array();
     model_internal static var dataProperties:Array = new Array("autoid", "name", "samhsaCenter", "programType", "grantCode");
@@ -36,6 +38,16 @@ internal class _GrantVOEntityMetadata extends com.adobe.fiber.valueobjects.Abstr
     model_internal static var dependedOnServices:Array = new Array();
     model_internal static var propertyTypeMap:Object;
 
+    
+    model_internal var _nameIsValid:Boolean;
+    model_internal var _nameValidator:com.adobe.fiber.styles.StyleValidator;
+    model_internal var _nameIsValidCacheInitialized:Boolean = false;
+    model_internal var _nameValidationFailureMessages:Array;
+    
+    model_internal var _grantCodeIsValid:Boolean;
+    model_internal var _grantCodeValidator:com.adobe.fiber.styles.StyleValidator;
+    model_internal var _grantCodeIsValidCacheInitialized:Boolean = false;
+    model_internal var _grantCodeValidationFailureMessages:Array;
 
     model_internal var _instance:_Super_GrantVO;
     model_internal static var _nullStyle:com.adobe.fiber.styles.Style = new com.adobe.fiber.styles.Style();
@@ -66,6 +78,16 @@ internal class _GrantVOEntityMetadata extends com.adobe.fiber.valueobjects.Abstr
         model_internal::propertyTypeMap["grantCode"] = "String";
 
         model_internal::_instance = value;
+        model_internal::_nameValidator = new StyleValidator(model_internal::_instance.model_internal::_doValidationForName);
+        model_internal::_nameValidator.required = true;
+        model_internal::_nameValidator.requiredFieldError = "name is required";
+        //model_internal::_nameValidator.source = model_internal::_instance;
+        //model_internal::_nameValidator.property = "name";
+        model_internal::_grantCodeValidator = new StyleValidator(model_internal::_instance.model_internal::_doValidationForGrantCode);
+        model_internal::_grantCodeValidator.required = true;
+        model_internal::_grantCodeValidator.requiredFieldError = "grantCode is required";
+        //model_internal::_grantCodeValidator.source = model_internal::_instance;
+        //model_internal::_grantCodeValidator.property = "grantCode";
     }
 
     override public function getEntityName():String
@@ -326,6 +348,22 @@ internal class _GrantVOEntityMetadata extends com.adobe.fiber.valueobjects.Abstr
     /**
      * derived property recalculation
      */
+    public function invalidateDependentOnName():void
+    {
+        if (model_internal::_nameIsValidCacheInitialized )
+        {
+            model_internal::_instance.model_internal::_doValidationCacheOfName = null;
+            model_internal::calculateNameIsValid();
+        }
+    }
+    public function invalidateDependentOnGrantCode():void
+    {
+        if (model_internal::_grantCodeIsValidCacheInitialized )
+        {
+            model_internal::_instance.model_internal::_doValidationCacheOfGrantCode = null;
+            model_internal::calculateGrantCodeIsValid();
+        }
+    }
 
     model_internal function fireChangeEvent(propertyName:String, oldValue:Object, newValue:Object):void
     {
@@ -344,6 +382,100 @@ internal class _GrantVOEntityMetadata extends com.adobe.fiber.valueobjects.Abstr
         return model_internal::_nullStyle;
     }
 
+    public function get nameValidator() : StyleValidator
+    {
+        return model_internal::_nameValidator;
+    }
+
+    model_internal function set _nameIsValid_der(value:Boolean):void 
+    {
+        var oldValue:Boolean = model_internal::_nameIsValid;         
+        if (oldValue !== value)
+        {
+            model_internal::_nameIsValid = value;
+            this.dispatchEvent(mx.events.PropertyChangeEvent.createUpdateEvent(this, "nameIsValid", oldValue, value));
+        }                             
+    }
+
+    [Bindable(event="propertyChange")]
+    public function get nameIsValid():Boolean
+    {
+        if (!model_internal::_nameIsValidCacheInitialized)
+        {
+            model_internal::calculateNameIsValid();
+        }
+
+        return model_internal::_nameIsValid;
+    }
+
+    model_internal function calculateNameIsValid():void
+    {
+        var valRes:ValidationResultEvent = model_internal::_nameValidator.validate(model_internal::_instance.name)
+        model_internal::_nameIsValid_der = (valRes.results == null);
+        model_internal::_nameIsValidCacheInitialized = true;
+        if (valRes.results == null)
+             model_internal::nameValidationFailureMessages_der = emptyArray;
+        else
+        {
+            var _valFailures:Array = new Array();
+            for (var a:int = 0 ; a<valRes.results.length ; a++)
+            {
+                _valFailures.push(valRes.results[a].errorMessage);
+            }
+            model_internal::nameValidationFailureMessages_der = _valFailures;
+        }
+    }
+
+    [Bindable(event="propertyChange")]
+    public function get nameValidationFailureMessages():Array
+    {
+        if (model_internal::_nameValidationFailureMessages == null)
+            model_internal::calculateNameIsValid();
+
+        return _nameValidationFailureMessages;
+    }
+
+    model_internal function set nameValidationFailureMessages_der(value:Array) : void
+    {
+        var oldValue:Array = model_internal::_nameValidationFailureMessages;
+
+        var needUpdate : Boolean = false;
+        if (oldValue == null)
+            needUpdate = true;
+    
+        // avoid firing the event when old and new value are different empty arrays
+        if (!needUpdate && (oldValue !== value && (oldValue.length > 0 || value.length > 0)))
+        {
+            if (oldValue.length == value.length)
+            {
+                for (var a:int=0; a < oldValue.length; a++)
+                {
+                    if (oldValue[a] !== value[a])
+                    {
+                        needUpdate = true;
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                needUpdate = true;
+            }
+        }
+
+        if (needUpdate)
+        {
+            model_internal::_nameValidationFailureMessages = value;   
+            this.dispatchEvent(mx.events.PropertyChangeEvent.createUpdateEvent(this, "nameValidationFailureMessages", oldValue, value));
+            // Only execute calculateIsValid if it has been called before, to update the validationFailureMessages for
+            // the entire entity.
+            if (model_internal::_instance.model_internal::_cacheInitialized_isValid)
+            {
+                model_internal::_instance.model_internal::isValid_der = model_internal::_instance.model_internal::calculateIsValid();
+            }
+        }
+    }
+
     [Bindable(event="propertyChange")]   
     public function get samhsaCenterStyle():com.adobe.fiber.styles.Style
     {
@@ -360,6 +492,100 @@ internal class _GrantVOEntityMetadata extends com.adobe.fiber.valueobjects.Abstr
     public function get grantCodeStyle():com.adobe.fiber.styles.Style
     {
         return model_internal::_nullStyle;
+    }
+
+    public function get grantCodeValidator() : StyleValidator
+    {
+        return model_internal::_grantCodeValidator;
+    }
+
+    model_internal function set _grantCodeIsValid_der(value:Boolean):void 
+    {
+        var oldValue:Boolean = model_internal::_grantCodeIsValid;         
+        if (oldValue !== value)
+        {
+            model_internal::_grantCodeIsValid = value;
+            this.dispatchEvent(mx.events.PropertyChangeEvent.createUpdateEvent(this, "grantCodeIsValid", oldValue, value));
+        }                             
+    }
+
+    [Bindable(event="propertyChange")]
+    public function get grantCodeIsValid():Boolean
+    {
+        if (!model_internal::_grantCodeIsValidCacheInitialized)
+        {
+            model_internal::calculateGrantCodeIsValid();
+        }
+
+        return model_internal::_grantCodeIsValid;
+    }
+
+    model_internal function calculateGrantCodeIsValid():void
+    {
+        var valRes:ValidationResultEvent = model_internal::_grantCodeValidator.validate(model_internal::_instance.grantCode)
+        model_internal::_grantCodeIsValid_der = (valRes.results == null);
+        model_internal::_grantCodeIsValidCacheInitialized = true;
+        if (valRes.results == null)
+             model_internal::grantCodeValidationFailureMessages_der = emptyArray;
+        else
+        {
+            var _valFailures:Array = new Array();
+            for (var a:int = 0 ; a<valRes.results.length ; a++)
+            {
+                _valFailures.push(valRes.results[a].errorMessage);
+            }
+            model_internal::grantCodeValidationFailureMessages_der = _valFailures;
+        }
+    }
+
+    [Bindable(event="propertyChange")]
+    public function get grantCodeValidationFailureMessages():Array
+    {
+        if (model_internal::_grantCodeValidationFailureMessages == null)
+            model_internal::calculateGrantCodeIsValid();
+
+        return _grantCodeValidationFailureMessages;
+    }
+
+    model_internal function set grantCodeValidationFailureMessages_der(value:Array) : void
+    {
+        var oldValue:Array = model_internal::_grantCodeValidationFailureMessages;
+
+        var needUpdate : Boolean = false;
+        if (oldValue == null)
+            needUpdate = true;
+    
+        // avoid firing the event when old and new value are different empty arrays
+        if (!needUpdate && (oldValue !== value && (oldValue.length > 0 || value.length > 0)))
+        {
+            if (oldValue.length == value.length)
+            {
+                for (var a:int=0; a < oldValue.length; a++)
+                {
+                    if (oldValue[a] !== value[a])
+                    {
+                        needUpdate = true;
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                needUpdate = true;
+            }
+        }
+
+        if (needUpdate)
+        {
+            model_internal::_grantCodeValidationFailureMessages = value;   
+            this.dispatchEvent(mx.events.PropertyChangeEvent.createUpdateEvent(this, "grantCodeValidationFailureMessages", oldValue, value));
+            // Only execute calculateIsValid if it has been called before, to update the validationFailureMessages for
+            // the entire entity.
+            if (model_internal::_instance.model_internal::_cacheInitialized_isValid)
+            {
+                model_internal::_instance.model_internal::isValid_der = model_internal::_instance.model_internal::calculateIsValid();
+            }
+        }
     }
 
 
@@ -387,6 +613,14 @@ internal class _GrantVOEntityMetadata extends com.adobe.fiber.valueobjects.Abstr
      {
          switch(propertyName)
          {
+            case("name"):
+            {
+                return nameValidationFailureMessages;
+            }
+            case("grantCode"):
+            {
+                return grantCodeValidationFailureMessages;
+            }
             default:
             {
                 return emptyArray;

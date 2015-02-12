@@ -145,59 +145,6 @@ class GpraService
 	 *
 	 * Add authorization or any logical checks for secure access to your data 
 	 *
-	 * @param GpraVO $gpra
-	 * @return int
-	 */
-	public function saveGpra($gpra)
-	{
-		$rs = mysqli_query($this->connection, "SELECT uploaded, upload_action FROM $this->tablename WHERE autoid = $gpra->autoid");
-        $this->throwExceptionOnError();
-        $res = mysqli_fetch_object($rs);
-		$gpra->data["uploaded"] = 0;
-		$gpra->data["upload_action"] = 1;
-		
-        //Gpra already exists, update it
-        if(mysqli_num_rows($rs) > 0 )
-        {
-        	if($res->uploaded != 0 || $res->upload_action == 2)
-        	   	$gpra->data["upload_action"] = 2;
-        	$pairs = array();
-        	foreach($gpra->data as $key => &$value)
-        	{
-        		if(is_string($value))
-        			$value = "'".mysqli_real_escape_string($this->connection,$value)."'";
-        		array_push($pairs, $key."=".$value);
-        	}
-        	$query = join(",", $pairs);
-        	$autoid = mysqli_query($this->connection, "UPDATE $this->tablename SET $query WHERE autoid = $gpra->autoid");
-        	$this->throwExceptionOnError();
-        	$autoid = 0;
-        }
-        else //Insert new GPRA
-        {
-        	$gpra->data["upload_action"] = 1;
-        	foreach($gpra->data as &$value)
-        	{
-        		if(is_string($value))
-        			$value = "'".mysqli_real_escape_string($this->connection,$value)."'";
-        	}
-        	$keys = array_keys($gpra->data);
-			$columns = join(",", $keys);
-			$values = join(",", $gpra->data);
-			$rs = mysqli_query($this->connection, "INSERT INTO $this->tablename ($columns) VALUES ($values)");
-	        $this->throwExceptionOnError();
-	        $autoid = mysqli_insert_id($this->connection);
-        }
-        	
-		mysqli_close($this->connection);
-		return $autoid;
-	}
-	
-	/**
-	 * Returns the item corresponding to the value specified for the primary key.
-	 *
-	 * Add authorization or any logical checks for secure access to your data 
-	 *
 	 * @param int $autoid
 	 * @param Object $data
 	 * @return int

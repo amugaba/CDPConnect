@@ -5,12 +5,13 @@
 			 labelWidth="148">
 	<fx:Script>
 		<![CDATA[
-			import components.DateAgeValidator;
-			import components.DropDownValidator;
-			import components.QuestionClass;
-			import components.QuestionList;
-			import components.QuestionText;
-			import components.SkipPattern;
+			import components.questions.QuestionClass;
+			import components.questions.QuestionList;
+			import components.questions.QuestionText;
+			import components.skips.SkipPattern;
+			import components.validators.DateAgeValidator;
+			import components.validators.DropDownValidator;
+			import components.validators.Valid;
 			
 			import mx.binding.utils.BindingUtils;
 			import mx.collections.ArrayList;
@@ -92,9 +93,9 @@
 				addGroupedQuestion(qRacePacificIslander,g);				
 				
 				//Validators
-				addDateAgeValidator(qDateOfBirth,3,DateAgeValidator.YEAR,100,DateAgeValidator.YEAR);
-				addDropDownValidator(qHispanicLatino,["No","Refused","Missing Data"]);
-				addRequiredValidator(qEthnicOtherSpecify);
+				Valid.addDateAgeValidator(qDateOfBirth,3,DateAgeValidator.YEAR,100,DateAgeValidator.YEAR);
+				Valid.addDropDownValidator(qHispanicLatino,["No","Refused","Missing Data"]);
+				Valid.addRequiredValidator(qEthnicOtherSpecify);
 				qDateOfBirth.answerType = String;
 				qEthnicOtherSpecify.answerType = String;
 				

@@ -5,8 +5,9 @@
 			 labelWidth="200">
 	<fx:Script>
 		<![CDATA[
-			import components.QuestionClass;
-			import components.QuestionText;
+			import components.questions.QuestionClass;
+			import components.questions.QuestionText;
+			import components.validators.Valid;
 			
 			import mx.collections.ArrayList;
 			import mx.containers.FormItem;
@@ -124,11 +125,11 @@
 				addGroupedQuestion(qSvcOtherPeerSpec,g);
 				
 				//Validators
-				addRequiredValidator(qSvcOtherMedSpec);
-				addRequiredValidator(qSvcOtherCaseMgmtSpec);
-				addRequiredValidator(qSvcOtherAfterCareSpec);
-				addRequiredValidator(qSvcOtherEducSpec);
-				addRequiredValidator(qSvcOtherPeerSpec);
+				Valid.addRequiredValidator(qSvcOtherMedSpec);
+				Valid.addRequiredValidator(qSvcOtherCaseMgmtSpec);
+				Valid.addRequiredValidator(qSvcOtherAfterCareSpec);
+				Valid.addRequiredValidator(qSvcOtherEducSpec);
+				Valid.addRequiredValidator(qSvcOtherPeerSpec);
 				qSvcOtherMedSpec.answerType = String;
 				qSvcOtherMedSpec.answerType = String;
 				qSvcOtherMedSpec.answerType = String;
@@ -148,7 +149,7 @@
 				questions.push(q);
 				q.inputControl.width = 60;
 				g.addElement(q);
-				addNumberValidator(q,0,999,true);
+				Valid.addNumberValidator(q,0,999,true);
 			}
 			
 			protected function addHeader(text:String, g:TileGroup):void

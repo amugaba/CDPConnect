@@ -4,9 +4,10 @@
 			 xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:dci="components.dci.*" width="100%" height="100%">
 	<fx:Script>
 		<![CDATA[
-			import components.QuestionList;
-			import components.QuestionText;
-			import components.QuestionTextRefusable;
+			import components.questions.QuestionList;
+			import components.questions.QuestionText;
+			import components.questions.QuestionTextRefusable;
+			import components.validators.Valid;
 			
 			import mx.binding.utils.BindingUtils;
 			import mx.collections.ArrayList;
@@ -35,10 +36,10 @@
 				//Validators
 				//qIncomeOther").inputControl.addEventListener(FocusEvent.FOCUS_OUT,incomeOtherHandler);
 				
-				addNumberValidator(qArrestedDays,0,99);
-				addNumberValidator(qArrestedDrugDays,0,0);
-				addNumberValidator(qArrestedConfineDays,0,15);
-				addNumberValidator(qNrCrimes,0,999);
+				Valid.addNumberValidator(qArrestedDays,0,99);
+				Valid.addNumberValidator(qArrestedDrugDays,0,0);
+				Valid.addNumberValidator(qArrestedConfineDays,0,15);
+				Valid.addNumberValidator(qNrCrimes,0,999);
 				BindingUtils.bindSetter(function():void{(qArrestedDrugDays.validator as NumberValidator).maxValue = Number(qArrestedDays.answer)}, qArrestedDays.inputControl, "text");
 				BindingUtils.bindSetter(function():void{(qArrestedConfineDays.validator as NumberValidator).minValue = global.pageGPRA.livingForm.qLivingWhere.getAnswerIndex() == 15 ? 16 : 0;
 					(qArrestedConfineDays.validator as NumberValidator).maxValue = global.pageGPRA.livingForm.qLivingWhere.getAnswerIndex() == 15 ? 30 : 15}, global.pageGPRA.livingForm.qLivingWhere.inputControl, "selectedIndex");

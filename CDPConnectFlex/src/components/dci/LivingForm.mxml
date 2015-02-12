@@ -5,9 +5,10 @@
 			 labelWidth="270">
 	<fx:Script>
 		<![CDATA[
-			import components.QuestionList;
-			import components.QuestionText;
-			import components.QuestionTextRefusable;
+			import components.questions.QuestionList;
+			import components.questions.QuestionText;
+			import components.questions.QuestionTextRefusable;
+			import components.validators.Valid;
 			
 			import mx.binding.utils.BindingUtils;
 			import mx.collections.ArrayList;
@@ -43,13 +44,13 @@
 				addQuestion(qChildrenCustodyLost);
 				
 				//Validators
-				addRequiredValidator(qLivingOtherSpec);
-				addNumberValidator(qHomelessNights,0,30,true);
-				addNumberValidator(qChildrenNr,1,99,true);
-				addNumberValidator(qChildrenCustodyNr,0,1,true);
-				addNumberValidator(qChildrenCustodyLost,0,1,true);
-				BindingUtils.bindSetter(function():void{(qChildrenCustodyNr.validator as NumberValidator).maxValue = Number(qChildrenNr.answer)}, qChildrenNr.inputControl, "text");
-				BindingUtils.bindSetter(function():void{(qChildrenCustodyLost.validator as NumberValidator).maxValue = Number(qChildrenNr.answer)}, qChildrenNr.inputControl, "text");
+				Valid.addRequiredValidator(qLivingOtherSpec);
+				Valid.addNumberValidator(qHomelessNights,0,30,true);
+				Valid.addNumberValidator(qChildrenNr,1,99,true);
+				Valid.addNumberValidator(qChildrenCustodyNr,0,1,true);
+				Valid.addNumberValidator(qChildrenCustodyLost,0,1,true);
+				BindingUtils.bindSetter(function():void{(qChildrenCustodyNr.validators[0] as NumberValidator).maxValue = Number(qChildrenNr.answer)}, qChildrenNr.inputControl, "text");
+				BindingUtils.bindSetter(function():void{(qChildrenCustodyLost.validators[0] as NumberValidator).maxValue = Number(qChildrenNr.answer)}, qChildrenNr.inputControl, "text");
 				qLivingOtherSpec.answerType = String;
 				
 				//Control Logic

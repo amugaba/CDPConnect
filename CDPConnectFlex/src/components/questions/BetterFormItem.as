@@ -1,4 +1,4 @@
-package components
+package components.questions
 {
 	import mx.containers.FormItem;
 	import mx.controls.Text;
