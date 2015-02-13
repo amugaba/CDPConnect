@@ -28,24 +28,14 @@
 			public function creationCompleteHandler():void
 			{
 				staffList.addAll(global.userList);
-				
-				var nv:NumberValidator = new NumberValidator();
-				nv.required = false;
-				nv.source = sfClientID;
-				nv.property = "text";
-				nv.minValue = 0;
-				nv.domain = "int";
 			}
 			
 			protected function addClientButton_clickHandler(event:MouseEvent):void
 			{
-				//global.activeClient = new ClientVO();
 				global.activeClient = null;
 				global.activeGPRA = null;
-				global.pageClient.populateClientForm();
+				global.pageClient.initializePage();
 				global.pageViewstack.selectedChild = global.pageClient;
-				global.pageClientButton.enabled = false;
-				global.pageGpraButton.enabled = false;
 			}
 			
 			protected function loadClientButton_clickHandler(event:MouseEvent):void
@@ -53,7 +43,7 @@
 				if(clientGrid.selectedItem != null)
 				{
 					global.activeClient = clientGrid.selectedItem as ClientVO;
-					global.pageClient.populateClientForm();
+					global.pageClient.initializePage();
 					global.pageViewstack.selectedChild = global.pageClient;
 					global.pageClientButton.enabled = true;
 					global.pageGpraButton.enabled = false;
@@ -62,7 +52,7 @@
 			
 			protected function sfSearchButton_clickHandler(event:MouseEvent):void
 			{
-				searchClientsResult.token = clientService.searchClients(Number(sfClientID.text), sfFirstName.text, sfLastName.text, sfDOB.text, sfSSN.text, sfStaff.selectedItem);
+				searchClientsResult.token = clientService.searchClients(sfClientID.text, sfFirstName.text, sfLastName.text, sfDOB.text, sfSSN.text, sfStaff.selectedItem);
 			}
 			
 			protected function searchClientsResult_resultHandler(event:ResultEvent):void
@@ -140,10 +130,10 @@
 				requestedRowCount="5" resizableColumns="false" width="530" height="150">
 		<s:columns>
 			<s:ArrayList>
-				<s:GridColumn dataField="autoid" headerText="ClientID" width="100"></s:GridColumn>
+				<s:GridColumn dataField="clientid" headerText="ClientID" width="120"></s:GridColumn>
 				<s:GridColumn dataField="lastname" headerText="Last Name" width="100"></s:GridColumn>
 				<s:GridColumn dataField="firstname" headerText="First Name" width="100"></s:GridColumn>
-				<s:GridColumn dataField="dob" headerText="DOB" width="100"></s:GridColumn>
+				<s:GridColumn dataField="dob" headerText="DOB" width="80"></s:GridColumn>
 				<s:GridColumn dataField="ssn" headerText="SSN" width="100"></s:GridColumn>
 			</s:ArrayList>
 		</s:columns>

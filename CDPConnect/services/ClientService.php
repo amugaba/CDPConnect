@@ -43,7 +43,7 @@ class ClientService
     public function getClientByID ($autoid)
     {
 
-        $stmt = mysqli_prepare($this->connection, "SELECT autoid, firstname, lastname,
+        $stmt = mysqli_prepare($this->connection, "SELECT autoid, clientid, firstname, lastname,
         	dob, ssn, intakestaff, createddate FROM client_tbl where autoid=?");
         $this->throwExceptionOnError();
 
@@ -54,7 +54,7 @@ class ClientService
         $this->throwExceptionOnError();
 
         $client = new ClientVO();
-        $stmt->bind_result($client->autoid, $client->firstname, $client->lastname, $client->dob,
+        $stmt->bind_result($client->autoid, $client->clientid, $client->firstname, $client->lastname, $client->dob,
         	$client->ssn, $client->intakestaff, $client->createddate);
 
         if ($stmt->fetch())
@@ -115,10 +115,10 @@ class ClientService
     public function createClient ($client)
     {        
         $stmt = $this->connection->prepare("INSERT IGNORE INTO client_tbl 
-        (firstname, lastname, dob, ssn, intakestaff, createddate) VALUES (?,?,?,?,?,?)");
+        (clientid, firstname, lastname, dob, ssn, intakestaff, createddate) VALUES (?,?,?,?,?,?,?)");
         $this->throwExceptionOnError();
 
-        $stmt->bind_param('ssssss', $client->firstname, $client->lastname, $client->dob,
+        $stmt->bind_param('sssssss', $client->clientid, $client->firstname, $client->lastname, $client->dob,
         	$client->ssn, $client->intakestaff, $client->createddate);
         $this->throwExceptionOnError();
 
@@ -143,11 +143,11 @@ class ClientService
     public function updateClient ($client)
     {        
         $stmt = $this->connection->prepare("UPDATE client_tbl SET
-        firstname=?, lastname=?, dob=?, ssn=?, intakestaff=?, createddate=?
+        clientid=?, firstname=?, lastname=?, dob=?, ssn=?, intakestaff=?, createddate=?
         WHERE autoid=?");
         $this->throwExceptionOnError();
 
-        $stmt->bind_param('ssssssi', $client->firstname, $client->lastname, $client->dob,
+        $stmt->bind_param('sssssssi', $client->clientid, $client->firstname, $client->lastname, $client->dob,
         	$client->ssn, $client->intakestaff, $client->createddate, $client->autoid);
         $this->throwExceptionOnError();
 
@@ -164,7 +164,7 @@ class ClientService
 	 * 
 	 * Get all clients matching the search criteria
 	 * 
-	 * @param int $clientid
+	 * @param string $clientid
 	 * @param string $firstname
 	 * @param string $lastname
 	 * @param string $dob
@@ -175,12 +175,12 @@ class ClientService
     
     public function searchClients ($clientid, $firstname, $lastname, $dob, $ssn, $intakestaff)
     {    	
-    	$stmt = $this->connection->prepare("SELECT autoid, firstname, lastname, dob, ssn, intakestaff, createddate FROM client_tbl WHERE
-        	autoid LIKE ? and firstname LIKE ? and lastname LIKE ? and dob LIKE ? and ssn LIKE ? and intakestaff LIKE ?");
+    	$stmt = $this->connection->prepare("SELECT autoid, clientid, firstname, lastname, dob, ssn, intakestaff, createddate FROM client_tbl WHERE
+        	clientid LIKE ? and firstname LIKE ? and lastname LIKE ? and dob LIKE ? and ssn LIKE ? and intakestaff LIKE ?");
         $this->throwExceptionOnError();
         
         $clientid = str_replace("*", "%", $clientid);
-        if($clientid == 0)
+        if(strlen($clientid) == 0)
         	$clientid = "%";
         $firstname = str_replace("*", "%", $firstname);
         if(strlen($firstname) == 0)
@@ -206,14 +206,14 @@ class ClientService
         
         $clients = array();
     	$client = new ClientVO();
-        $stmt->bind_result($client->autoid, $client->firstname, $client->lastname, $client->dob,
+        $stmt->bind_result($client->autoid, $client->clientid, $client->firstname, $client->lastname, $client->dob,
         	$client->ssn, $client->intakestaff, $client->createddate);
 		
         while($stmt->fetch())
         {
 	        array_push($clients, $client);
 	        $client = new ClientVO();
-	        $stmt->bind_result($client->autoid, $client->firstname, $client->lastname, $client->dob,
+	        $stmt->bind_result($client->autoid, $client->clientid, $client->firstname, $client->lastname, $client->dob,
         		$client->ssn, $client->intakestaff, $client->createddate);
 	    }
         

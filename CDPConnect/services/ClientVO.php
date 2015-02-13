@@ -8,6 +8,11 @@ class ClientVO
 	public $autoid;
 	
 	/**
+	 * @var string
+	 */
+	public $clientid;
+	
+	/**
 	 * @var GpraVO[]
 	 */
 	public $gpras;
@@ -60,6 +65,7 @@ class ClientVO
 	public function __construct()
 	{
 		$this->autoid = -1;
+		$this->clientid = "";
 		$this->gpras = array();
 		$this->intake = null;
 		$this->discharge = null;

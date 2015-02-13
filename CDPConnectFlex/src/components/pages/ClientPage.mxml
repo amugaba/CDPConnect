@@ -6,7 +6,7 @@
 					xmlns:gpraservice="services.gpraservice.*"
 					xmlns:styles="com.adobe.fiber.styles.*"
 					xmlns:clientservice="services.clientservice.*"
-					width="715" height="800" xmlns:questions="components.questions.*">
+					width="715" height="800" xmlns:questions="components.questions.*" xmlns:client="components.client.*">
 	<fx:Script>
 		<![CDATA[
 			import components.dci.InterviewType;
@@ -28,164 +28,29 @@
 			import mx.events.CloseEvent;
 			import mx.events.ValidationResultEvent;
 			import mx.rpc.events.ResultEvent;
-			import mx.validators.NumberValidator;
-			import mx.validators.StringValidator;
 			import mx.validators.ValidationResult;
 			import mx.validators.Validator;
 			
 			import valueObjects.ClientVO;
 			import valueObjects.GpraVO;
 			
-			protected var dateFormatter:DateTimeFormatter = new DateTimeFormatter(LocaleID.DEFAULT);
 			[Bindable] protected var clientGPRAs:ArrayCollection = new ArrayCollection();
-			[Bindable] protected var staffList:ArrayList = new ArrayList();
-			[Bindable] protected var facilityList:ArrayList = new ArrayList();
 			protected var global:CDPConnectFlex = FlexGlobals.topLevelApplication as CDPConnectFlex;
-			protected var validators:Array = new Array();
 			
-			public var qClientID:QuestionText = new QuestionText("","Client ID","");
-			public var qFirstName:QuestionText = new QuestionText("","First Name","");
-			public var qLastName:QuestionText = new QuestionText("","Last Name","");
-			public var qDOB:QuestionText = new QuestionText("","Date of Birth","");
-			public var qSSN:QuestionText = new QuestionText("","SSN","");
-			public var qCreationDate:QuestionText = new QuestionText("","Created Date","",false);
-			
-			public var qEpID:QuestionText = new QuestionText("","Episode #","");
-			public var qEpDate:QuestionText = new QuestionText("","Date","");
-			public var qEpStaff:QuestionList = new QuestionList("","Intake Staff",staffList,0);
-			public var qEpFacility:QuestionList = new QuestionList("","Facility",facilityList,0);
-			public var qEpComplete:QuestionList = new QuestionList("","Complete?",new ArrayList(["Yes","No"]),1);
-			
-			public function creationCompleteHandler():void
+			public function initializePage():void
 			{
-				staffList.addAll(global.userList);
-				facilityList.addAll(global.facilityList);
-				dateFormatter.setDateTimePattern("MM/dd/yyyy");
-				
-				clientForm.addElement(qClientID);
-				clientForm.addElement(qFirstName);
-				clientForm.addElement(qLastName);
-				clientForm.addElement(qDOB);
-				clientForm.addElement(qSSN);
-				clientForm.addElement(qCreationDate);
-				
-				episodeForm.addElement(qEpID);
-				episodeForm.addElement(qEpDate);
-				episodeForm.addElement(qEpStaff);
-				episodeForm.addElement(qEpFacility);
-				episodeForm.addElement(qEpComplete);
-				qEpStaff.inputControl.width = 130;
-				qEpFacility.inputControl.width = 130;
-				
-				Valid.addDateAgeValidator(qDOB, 3, DateAgeValidator.YEAR, 100, DateAgeValidator.YEAR);
-				//Valid.addDateAgeValidator(qCreationDate, 0, DateAgeValidator.DAY, 1, DateAgeValidator.YEAR);
-				Valid.addRequiredValidator(qFirstName);
-				Valid.addRequiredValidator(qLastName);
-				Valid.addNumberValidator(qSSN, Number.NaN, Number.NaN, true);
-				Valid.addStringValidator(qSSN, 4, 11);//Make this flexible
-			}	
+				clientGroup.initializeGroup();
+				episodeGroup.initializeGroup();
+			}		
 			
-			public function populateClientForm():void
-			{
-				resetClientForm();
-				if(global.activeClient != null)
-				{
-					qFirstName.answer = global.activeClient.firstname;
-					qLastName.answer = global.activeClient.lastname;
-					qDOB.answer = global.activeClient.dob;
-					qSSN.answer = global.activeClient.ssn;
-					if(global.activeClient.createddate != null)
-						qCreationDate.answer = global.activeClient.createddate;
-					else
-						qCreationDate.answer = dateFormatter.format(new Date());
-					//qIntakeStaff.answer = global.activeClient.intakestaff;
-					getGpraSummaryByClientIDResult.token = gpraService.getGpraSummaryByClientID(global.activeClient.autoid);
-				}
-			}
 			
-			public function resetClientForm():void
-			{
-				qFirstName.answer = "";
-				qLastName.answer = "";
-				qDOB.answer = "";
-				qSSN.answer = "";
-				qCreationDate.answer = dateFormatter.format(new Date());
-				//qIntakeStaff.answer = global.activeUser.name;
-				clientGPRAs = null;
-			}
-			
-			protected function cfSaveButton_clickHandler(event:MouseEvent):void
-			{
-				if(validateClient())
-				{
-					var c:ClientVO = new ClientVO();
-					c.firstname = qFirstName.answer;
-					c.lastname = qLastName.answer;
-					c.ssn = qSSN.answer;
-					//c.intakestaff = qIntakeStaff.answer;
-					c.dob = qDOB.answer;
-					c.createddate = qCreationDate.answer;
-					
-					if(global.activeClient != null)
-					{
-						c.autoid = global.activeClient.autoid;
-						c.gpras = global.activeClient.gpras;
-						updateClientResult.token = clientService.updateClient(c);
-					}
-					else
-					{
-						createClientResult.token = clientService.createClient(c);
-					}
-				}
-				else
-					Alert.show("There are errors in the client form.","Client not saved.");
-			}
-			
-			protected function validateClient():Boolean
-			{
-				var results:Array = new Array();
-				var ev:ValidationResultEvent;
-				for each(var v:Validator in validators)
-				{
-					ev = v.validate();
-					if(ev.results != null)
-					{
-						return false;
-					}
-				}
-				return true;
-			}
-			
-			protected function createClientResult_resultHandler(event:ResultEvent):void
-			{
-				if(createClientResult.lastResult != null)
-				{
-					Alert.show("Client created.");
-					global.activeClient = createClientResult.lastResult;
-					clientGPRAs = global.activeClient.gpras;
-					global.pageClientButton.enabled = true;
-				}
-				else
-					Alert.show("Client not created.");
-			}
-			
-			protected function updateClientResult_resultHandler(event:ResultEvent):void
-			{
-				if(updateClientResult.lastResult != null)
-				{
-					Alert.show("Client updated.");
-					global.activeClient = updateClientResult.lastResult;
-					clientGPRAs = global.activeClient.gpras;
-				}
-				else
-					Alert.show("Client not updated.");
-			}
+			/*
 			
 			protected function loadGpraButton_clickHandler(event:MouseEvent):void
 			{
-				if(gpraGrid.selectedIndex > -1)
+				if(assessmentGrid.selectedIndex > -1)
 				{
-					global.activeGPRA = gpraGrid.selectedItem as GpraVO;
+					global.activeGPRA = assessmentGrid.selectedItem as GpraVO;
 					getGpraByIDResult.token = gpraService.getGpraByID(global.activeGPRA.autoid);
 				}
 			}
@@ -193,9 +58,9 @@
 			{
 				if(getGpraByIDResult.lastResult != null)
 				{
-					global.pageGPRA.initializeGPRA();
+					//global.pageGPRA.initializeGPRA();
 					global.activeGPRA.data = getGpraByIDResult.lastResult;
-					global.pageGPRA.populateForm(global.activeGPRA.data);
+					//global.pageGPRA.populateForm(global.activeGPRA.data);
 					global.pageViewstack.selectedChild = global.pageGPRA;
 					global.pageGpraButton.enabled = true;
 				}
@@ -217,9 +82,9 @@
 					g.status = 0;
 					g.clientid = global.activeClient.autoid;
 					global.activeGPRA = g;
-					global.pageViewstack.selectedChild = global.pageGPRA;
+					//global.pageViewstack.selectedChild = global.pageGPRA;
 					global.pageGpraButton.enabled = true;
-					global.pageGPRA.initializeGPRA();
+					//global.pageGPRA.initializeGPRA();
 				}	
 			}
 			
@@ -237,9 +102,9 @@
 					g.status = 0;
 					g.clientid = global.activeClient.autoid;
 					global.activeGPRA = g;
-					global.pageViewstack.selectedChild = global.pageGPRA;
+					//global.pageViewstack.selectedChild = global.pageGPRA;
 					global.pageGpraButton.enabled = true;
-					global.pageGPRA.initializeGPRA();
+					//global.pageGPRA.initializeGPRA();
 				}	
 			}
 			
@@ -281,9 +146,9 @@
 					g.status = 0;
 					g.clientid = global.activeClient.autoid;
 					global.activeGPRA = g;
-					global.pageViewstack.selectedChild = global.pageGPRA;
+					//global.pageViewstack.selectedChild = global.pageGPRA;
 					global.pageGpraButton.enabled = true;
-					global.pageGPRA.initializeGPRA();
+					//global.pageGPRA.initializeGPRA();
 				}	
 			}
 			
@@ -303,12 +168,12 @@
 					g.status = 0;
 					g.clientid = global.activeClient.autoid;
 					global.activeGPRA = g;
-					global.pageViewstack.selectedChild = global.pageGPRA;
+					//global.pageViewstack.selectedChild = global.pageGPRA;
 					global.pageGpraButton.enabled = true;
-					global.pageGPRA.initializeGPRA();
+					//global.pageGPRA.initializeGPRA();
 				}
 			}
-			
+			*/
 			protected function getIntakeData_resultHandler(event:ResultEvent):void
 			{
 				global.activeClient.intake.data = getIntakeData.lastResult;
@@ -324,79 +189,63 @@
 	</fx:Style>
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
-		<s:CallResponder id="getGpraByIDResult" result="getGpraByIDResult_resultHandler(event)"/>
+		<!--<s:CallResponder id="getGpraByIDResult" result="getGpraByIDResult_resultHandler(event)"/>
+		<s:CallResponder id="getGpraSummaryByClientIDResult" result="getGpraSummaryByClientIDResult_resultHandler(event)"/>-->
 		<s:CallResponder id="getIntakeData" result="getIntakeData_resultHandler(event)"/>
 		<gpraservice:GpraService id="gpraService"
 								 fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
 								 showBusyCursor="true"/>
-		<s:CallResponder id="createClientResult" result="createClientResult_resultHandler(event)"/>
-		<s:CallResponder id="updateClientResult" result="updateClientResult_resultHandler(event)"/>
-		<clientservice:ClientService id="clientService"
-									 fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
-									 showBusyCursor="true"/>
-		<s:CallResponder id="getGpraSummaryByClientIDResult" result="getGpraSummaryByClientIDResult_resultHandler(event)"/>
+
+		
 	</fx:Declarations>
-	<mx:Form id="clientForm" x="72" y="29" width="251" height="176" fontWeight="bold" labelWidth="90"
-			 paddingBottom="0" paddingLeft="0" paddingRight="0" paddingTop="0"/>
-	
-	<s:Button id="cfSaveButton" x="150" y="200" label="Save Client Profile" click="cfSaveButton_clickHandler(event)"
-			  fontWeight="normal"/>
-	
-	<!-- Episode Area -->
-	<mx:Form id="episodeForm" x="198" y="269" width="220" height="143" fontWeight="bold"
-			 labelWidth="70" paddingBottom="0" paddingLeft="0" paddingRight="0" paddingTop="0">
-	</mx:Form>
-	<s:DataGrid id="episodeGrid" x="34" y="265" width="146" height="158"
-				requestedRowCount="3" resizableColumns="false">
-		<s:columns>
-			<s:ArrayList>
-				<s:GridColumn dataField="number" headerText="#" width="40"></s:GridColumn>
-				<s:GridColumn dataField="date" headerText="Date" width="100"></s:GridColumn>
-			</s:ArrayList>
-		</s:columns>
-	</s:DataGrid>
-	
+	<client:ClientGroup id="clientGroup" x="0" y="0" />
+	<mx:HRule x="10" y="223" width="695" height="20"/>
+	<client:EpisodeGroup id="episodeGroup" x="0" y="240" />
+	<mx:HRule x="10" y="454" width="695" height="20"/>
 	<!-- Assessments Area -->
-	<s:DataGrid id="gpraGrid" x="50" y="485" width="220" height="150"
+	<s:DataGrid id="assessmentGrid" x="9" y="506" width="289" height="194"
 				dataProvider="{clientGPRAs}" itemRenderer="components.gpraGridRenderer"
 				requestedRowCount="3" resizableColumns="false">
 		<s:columns>
 			<s:ArrayList>
 				<s:GridColumn dataField="type" headerText="Type" width="100"></s:GridColumn>
-				<s:GridColumn dataField="date" headerText="Date" width="100"></s:GridColumn>
+				<s:GridColumn dataField="date" headerText="Date" width="70"></s:GridColumn>
+				<s:GridColumn dataField="status" headerText="Done" width="50"></s:GridColumn>
+				<s:GridColumn dataField="load" headerText="Load" width="60"></s:GridColumn>
 			</s:ArrayList>
 		</s:columns>
 		<s:typicalItem>
 			<fx:Object type="Intake" date="5/22/2013"></fx:Object>
 		</s:typicalItem>
 	</s:DataGrid>
-	<s:Button id="createIntakeNegativeButton" x="420" y="541"
-			  label="Create Negative Intake" click="createNegativeIntakeButton_clickHandler(event)"/>
-	<s:Button id="createIntakeBIButton" x="290" y="546"
-			  label="Create BI Intake" click="createBIIntakeButton_clickHandler(event)"/>
-	<s:Button id="createDischargeButton" x="290" y="575"
-			  label="Create GPRA Discharge" click="createDischargeButton_clickHandler(event)"/>
-	<s:Button id="createFollowupButton" x="290" y="604"
-			  label="Create GPRA Followup" click="createFollowupButton_clickHandler(event)"/>
-	<s:Button id="loadGpraButton" x="290" y="482" width="146" label="Load Selected GPRA"
-			  click="loadGpraButton_clickHandler(event)"/>
-	<s:Button id="deleteGpraButton" x="290" y="511" width="147" label="Delete Selected GPRA"/>
-	<mx:VRule x="331" y="6" width="14" height="227"/>
-	<s:Label x="449" y="8" fontWeight="bold" text="Client Notes"/>
-	<s:TextArea x="345" y="28" width="270" height="178"/>
-	<s:Button id="saveNotesClientButton" x="531" y="185" label="Save Notes"/>
-	<mx:HRule x="10" y="223" width="695" height="20"/>
-	<mx:HRule x="10" y="454" width="695" height="20"/>
-	<mx:VRule x="185" y="233" width="14" height="231"/>
-	<s:Label x="523" y="249" fontWeight="bold" text="Episode Notes"/>
-	<s:TextArea x="435" y="269" width="270" height="173"/>
-	<s:Button id="saveNotesEpisodeButton" x="621" y="421" label="Save Notes"/>
-	<s:Label x="72" y="248" fontWeight="bold" text="Episode List"/>
-	<s:Button id="episodeNewButton" x="49" y="428" label="Add New Episode" fontWeight="normal"/>
-	<s:Label x="266" y="250" fontWeight="bold" text="Episode Profile"/>
-	<s:Button id="cfSaveButton0" x="251" y="416" label="Save Client Profile" click="cfSaveButton_clickHandler(event)"
-			  fontWeight="normal"/>
-	<mx:VRule x="419" y="233" width="14" height="231"/>
-	<s:Label x="161" y="9" fontWeight="bold" text="Client Profile"/>
+	<s:Button id="sbirtIntakeNegativeButton" x="418" y="540"
+			  label="SBIRT - Neg"/>
+	<s:Button id="sbirtIntakeBIButton" x="423" y="580"
+			  label="SBIRT - BI" />
+	<s:Button id="dischargeGeneralButton" x="536" y="505"
+			  label="General"/>
+	<s:Button id="followupGeneralButton" x="633" y="505"
+			  label="General" />
+
+	
+	
+	<s:Label x="102" y="480" fontWeight="bold" text="Assessments List"/>
+	<mx:VRule x="302" y="464" width="14" height="231"/>
+	<mx:VRule x="398" y="463" width="14" height="231"/>
+	<s:Label x="328" y="481" fontWeight="bold" text="Screening"/>
+	<s:Label x="433" y="478" fontWeight="bold" text="DCI Intake"/>
+	<s:Label x="533" y="477" fontWeight="bold" text="DCI Discharge"/>
+	<s:Label x="634" y="478" fontWeight="bold" text="DCI Followup"/>
+	<s:Button id="prescreenButton" x="318" y="503" label="Prescreen"/>
+	<s:Button id="auditButton" x="320" y="542" label="AUDIT"/>
+	<s:Button id="dast10Button" x="320" y="581" label="DAST-10"/>
+	<s:Button id="phq9Button" x="320" y="621" label="PHQ9"/>
+	<s:Button id="intakeGeneralButton" x="426" y="503" label="General"/>
+	<s:Button id="sbirtIntakeRTButton" x="412" y="621" label="SBIRT - BT/RT"/>
+	<mx:VRule x="513" y="463" width="14" height="231"/>
+	<s:Button id="dischargeNoInterviewButton" x="528" y="541" label="No Interview"/>
+	<s:Button id="sbirtFollowupButton" x="631" y="541"
+			  label="SBIRT - BI" />
+	<mx:VRule x="617" y="463" width="14" height="231"/>
 
 </s:NavigatorContent>

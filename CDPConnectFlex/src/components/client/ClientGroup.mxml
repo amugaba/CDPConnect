@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
+		 xmlns:s="library://ns.adobe.com/flex/spark"
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 xmlns:clientservice="services.clientservice.*"
+		 width="715" height="236">
+	<fx:Script>
+		<![CDATA[
+			import components.questions.QuestionClass;
+			import components.questions.QuestionText;
+			import components.validators.DateAgeValidator;
+			import components.validators.Valid;
+			
+			import mx.collections.ArrayList;
+			import mx.controls.Alert;
+			import mx.core.FlexGlobals;
+			import mx.events.ValidationResultEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.validators.Validator;
+			
+			import valueObjects.ClientVO;
+			
+			protected var global:CDPConnectFlex = FlexGlobals.topLevelApplication as CDPConnectFlex;
+			
+			public var qClientID:QuestionText = new QuestionText("","Client ID","");
+			public var qFirstName:QuestionText = new QuestionText("","First Name","");
+			public var qLastName:QuestionText = new QuestionText("","Last Name","");
+			public var qDOB:QuestionText = new QuestionText("","Date of Birth","");
+			public var qSSN:QuestionText = new QuestionText("","SSN","");
+			public var qCreationDate:QuestionText = new QuestionText("","Created Date","",false);
+			
+			private var questions:Array = new Array(qClientID,qFirstName,qLastName,qDOB,qSSN,qCreationDate);
+			
+			private var created:Boolean = false;
+			
+			public function initializeGroup():void
+			{
+				if(!created)
+				{
+					clientForm.addElement(qClientID);
+					clientForm.addElement(qFirstName);
+					clientForm.addElement(qLastName);
+					clientForm.addElement(qDOB);
+					clientForm.addElement(qSSN);
+					clientForm.addElement(qCreationDate);
+					
+					Valid.addDateAgeValidator(qDOB, 3, DateAgeValidator.YEAR, 100, DateAgeValidator.YEAR);
+					//Valid.addDateAgeValidator(qCreationDate, 0, DateAgeValidator.DAY, 1, DateAgeValidator.YEAR);
+					Valid.addRequiredValidator(qFirstName);
+					Valid.addRequiredValidator(qLastName);
+					Valid.addNumberValidator(qSSN, Number.NaN, Number.NaN, true);
+					Valid.addStringValidator(qSSN, 4, 11);//Make this flexible
+				}
+
+				//Loading client
+				if(global.activeClient != null)
+				{
+					setIsCreatingClient(false);
+					qClientID.answer = global.activeClient.clientid;
+					qClientID.disable();
+					qFirstName.answer = global.activeClient.firstname;
+					qLastName.answer = global.activeClient.lastname;
+					qDOB.answer = global.activeClient.dob;
+					qSSN.answer = global.activeClient.ssn;
+					qCreationDate.answer = global.activeClient.createddate;
+				}
+				else //Create new client
+				{
+					resetGroup();
+					setIsCreatingClient(true);
+					qClientID.enable();
+					qCreationDate.answer = global.dateFormatter.format(new Date());
+				}
+			}
+			
+			public function resetGroup():void
+			{
+				for each(var q:QuestionClass in questions)
+					q.restoreDefault();
+				notesArea.text = "";
+			}
+			
+			protected function saveButton_clickHandler(event:MouseEvent):void
+			{
+				if(validate())
+				{		
+					var c:ClientVO = createValueObject();
+					c.autoid = global.activeClient.autoid;
+					updateClientResult.token = clientService.updateClient(c);
+				}
+				else
+					Alert.show("There are errors in the client profile.","Client not saved.");
+			}
+			
+			protected function validate():Boolean
+			{
+				var results:Array = new Array();
+				var ev:ValidationResultEvent;
+				for each(var q:QuestionClass in questions)
+				{
+					for each(var v:Validator in q.validators)
+					{
+						ev = v.validate();
+						if(ev.results != null)
+							return false;
+					}
+				}
+				return true;
+			}
+			
+			private function createValueObject():ClientVO
+			{
+				var c:ClientVO = new ClientVO();
+				c.clientid = qClientID.answer;
+				c.firstname = qFirstName.answer;
+				c.lastname = qLastName.answer;
+				c.ssn = qSSN.answer;
+				c.dob = qDOB.answer;
+				c.createddate = qCreationDate.answer;
+				return c;
+			}
+			
+			protected function updateClientResult_resultHandler(event:ResultEvent):void
+			{
+				if(updateClientResult.lastResult != null)
+				{
+					Alert.show("Client updated.");
+					global.activeClient = updateClientResult.lastResult;
+				}
+				else
+					Alert.show("ERROR: Client not updated.");
+			}
+			
+			protected function setIsCreatingClient(enabled:Boolean):void
+			{
+				createClientButton.visible = enabled;
+				cancelClientButton.visible = enabled;
+				saveClientProfileButton.visible = !enabled;
+				notesArea.enabled = !enabled;
+				saveNotesButton.enabled = !enabled;
+				
+				//enable assessment and client areas
+				global.pageButtonBar.enabled = !enabled;
+				global.pageClient.episodeGroup.enabled = !enabled;
+			}
+			
+			protected function createClientButton_clickHandler(event:MouseEvent):void
+			{
+				if(validate())
+				{		
+					var c:ClientVO = createValueObject();
+					createClientResult.token = clientService.createClient(c);
+				}
+				else
+					Alert.show("There are errors in the client profile.","Client not created.");
+			}
+			
+			protected function createClientResult_resultHandler(event:ResultEvent):void
+			{
+				Alert.show("Client created.");
+				global.activeClient = createClientResult.lastResult;
+				setIsCreatingClient(false);
+			}
+			
+			protected function cancelClientButton_clickHandler(event:MouseEvent):void
+			{
+				setIsCreatingClient(false);
+				global.pageViewstack.selectedChild = global.pageHome;
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<s:CallResponder id="createClientResult" result="createClientResult_resultHandler(event)"/>
+		<s:CallResponder id="updateClientResult" result="updateClientResult_resultHandler(event)"/>
+		<clientservice:ClientService id="clientService"
+									 fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
+									 showBusyCursor="true"/>
+		
+	</fx:Declarations>
+	<s:Label x="161" y="9" fontWeight="bold" text="Client Profile"/>
+	<mx:Form id="clientForm" x="72" y="29" width="251" height="176" fontWeight="bold" labelWidth="90"
+			 paddingBottom="0" paddingLeft="0" paddingRight="0" paddingTop="0"/>
+	<s:Button id="saveClientProfileButton" x="150" y="200" label="Save Client Profile" click="saveButton_clickHandler(event)"
+			  fontWeight="normal"/>
+	<s:Button id="createClientButton" x="106" y="200" label="Create Client" click="createClientButton_clickHandler(event)"
+			  fontWeight="normal"/>
+	<s:Button id="cancelClientButton" x="241" y="200" label="Cancel" click="cancelClientButton_clickHandler(event)"
+			  fontWeight="normal"/>
+	<mx:VRule x="357" y="6" width="1" height="227"/>
+	<s:Label x="493" y="8" fontWeight="bold" text="Client Notes"/>
+	<s:TextArea id="notesArea" x="390" y="28" width="270" height="178"/>
+	<s:Button id="saveNotesButton" x="576" y="185" label="Save Notes"/>
+</s:Group>

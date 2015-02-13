@@ -19,6 +19,9 @@ By David Tidd
 			   pageTitle="CDP Connect" xmlns:pages="components.pages.*">
 	<fx:Script>
 		<![CDATA[
+			import flash.globalization.DateTimeFormatter;
+			import flash.globalization.LocaleID;
+			
 			import mx.collections.ArrayCollection;
 			import mx.collections.ArrayList;
 			import mx.controls.Alert;
@@ -28,6 +31,7 @@ By David Tidd
 			import mx.rpc.events.ResultEvent;
 			
 			import valueObjects.ClientVO;
+			import valueObjects.EpisodeVO;
 			import valueObjects.GpraVO;
 			import valueObjects.GrantVO;
 			import valueObjects.UserVO;			
@@ -35,13 +39,19 @@ By David Tidd
 			[Bindable] public var activeClient:ClientVO = null;
 			[Bindable] public var activeGPRA:GpraVO = null;
 			[Bindable] public var activeUser:UserVO = null;
+			[Bindable] public var activeEpisode:EpisodeVO = null;
 			[Bindable] public var activeGrant:GrantVO = null;
+			
 			public var pageHomeButton:ButtonBarButton;
 			public var pageClientButton:ButtonBarButton;
 			public var pageGpraButton:ButtonBarButton;
 			public var pageAdminButton:ButtonBarButton;
+			
 			public var userList:ArrayList = new ArrayList();
-			public var facilityList:ArrayCollection;
+			[Bindable] public var staffList:ArrayList = new ArrayList();
+			[Bindable] public var facilityList:ArrayList = new ArrayList(); //maybe BIndable
+			
+			public var dateFormatter:DateTimeFormatter = new DateTimeFormatter(LocaleID.DEFAULT);
 			public var adminMode:Boolean = false;
 			private var creationComplete:Boolean = false;
 			public static var DEBUG_MODE:int = 2;//0 = release, 1 = remote debug, 2 = local debug
@@ -78,6 +88,8 @@ By David Tidd
 				adminButton.visible = adminMode;
 				pageAdminButton.visible = adminMode;
 				
+				//Misc
+				dateFormatter.setDateTimePattern("MM/dd/yyyy");
 				creationComplete = true;
 			}
 			
@@ -113,7 +125,8 @@ By David Tidd
 			}
 			protected function getFacilities_resultHandler(event:ResultEvent):void
 			{
-				facilityList = getFacilities.lastResult;
+				for each(var f:String in getFacilities.lastResult)
+					facilityList.addItem(f);
 				attemptHomePage();
 			}
 			
@@ -121,7 +134,10 @@ By David Tidd
 			{
 				//initialize BHS name and intials arrays
 				for each(var user:UserVO in getUsers.lastResult)
+				{
 					userList.addItem(user.name);
+					staffList.addItem(user.name);
+				}
 					
 				attemptHomePage();				
 			}
@@ -132,7 +148,7 @@ By David Tidd
 				if(preparationStepsLeft == 0)
 				{
 					pageHome.creationCompleteHandler();
-					pageClient.creationCompleteHandler();
+					//pageClient.initializePage();
 					pageViewstack.selectedChild = pageHome;
 				}
 			}
@@ -193,8 +209,8 @@ By David Tidd
 				  contentBackgroundColor="#FFFFFF" creationPolicy="all" creationComplete="pageViewstack_creationCompleteHandler(event)">
 		<pages:HomePage id="pageHome" width="100%" height="100%" label="Home" />
 		<pages:ClientPage id="pageClient" width="100%" height="100%" label="Client" />
-		<pages:DciPage id="pageGPRA" width="100%" height="100%" label="GPRA"/>
 		<pages:AdminPage id="pageAdmin" width="100%" height="100%" label="Admin"/>
+		<pages:DciPage id="pageGPRA" width="100%" height="100%" label="GPRA"/>
 	</mx:ViewStack>
 	<s:Image x="0" y="0" source="assets/ConnectBanner.png"/>
 	<s:Group includeIn="State1" x="10" y="3" width="695" height="90"

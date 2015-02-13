@@ -66,6 +66,7 @@ public class _Super_ClientVO extends flash.events.EventDispatcher implements com
      * properties
      */
     private var _internal_autoid : int;
+    private var _internal_clientid : String;
     private var _internal_gpras : ArrayCollection;
     private var _internal_intake : valueObjects.GpraVO;
     private var _internal_discharge : valueObjects.GpraVO;
@@ -92,6 +93,7 @@ public class _Super_ClientVO extends flash.events.EventDispatcher implements com
         _model = new _ClientVOEntityMetadata(this);
 
         // Bind to own data or source properties for cache invalidation triggering
+        model_internal::_changeWatcherArray.push(mx.binding.utils.ChangeWatcher.watch(this, "clientid", model_internal::setterListenerClientid));
         model_internal::_changeWatcherArray.push(mx.binding.utils.ChangeWatcher.watch(this, "gpras", model_internal::setterListenerGpras));
         model_internal::_changeWatcherArray.push(mx.binding.utils.ChangeWatcher.watch(this, "intake", model_internal::setterListenerIntake));
         model_internal::_changeWatcherArray.push(mx.binding.utils.ChangeWatcher.watch(this, "discharge", model_internal::setterListenerDischarge));
@@ -113,6 +115,12 @@ public class _Super_ClientVO extends flash.events.EventDispatcher implements com
     public function get autoid() : int
     {
         return _internal_autoid;
+    }
+
+    [Bindable(event="propertyChange")]
+    public function get clientid() : String
+    {
+        return _internal_clientid;
     }
 
     [Bindable(event="propertyChange")]
@@ -190,6 +198,16 @@ public class _Super_ClientVO extends flash.events.EventDispatcher implements com
         {
             _internal_autoid = value;
             this.dispatchEvent(mx.events.PropertyChangeEvent.createUpdateEvent(this, "autoid", oldValue, _internal_autoid));
+        }
+    }
+
+    public function set clientid(value:String) : void
+    {
+        var oldValue:String = _internal_clientid;
+        if (oldValue !== value)
+        {
+            _internal_clientid = value;
+            this.dispatchEvent(mx.events.PropertyChangeEvent.createUpdateEvent(this, "clientid", oldValue, _internal_clientid));
         }
     }
 
@@ -320,6 +338,11 @@ public class _Super_ClientVO extends flash.events.EventDispatcher implements com
      *  - the validity of the property (and the containing entity) if the given data property is required.
      */
 
+    model_internal function setterListenerClientid(value:flash.events.Event):void
+    {
+        _model.invalidateDependentOnClientid();
+    }
+
     model_internal function setterListenerGpras(value:flash.events.Event):void
     {
         if (value is mx.events.PropertyChangeEvent)
@@ -398,6 +421,11 @@ public class _Super_ClientVO extends flash.events.EventDispatcher implements com
         var validationFailureMessages:Array = new Array();
 
         var propertyValidity:Boolean = true;
+        if (!_model.clientidIsValid)
+        {
+            propertyValidity = false;
+            com.adobe.fiber.util.FiberUtils.arrayAdd(validationFailureMessages, _model.model_internal::_clientidValidationFailureMessages);
+        }
         if (!_model.gprasIsValid)
         {
             propertyValidity = false;
@@ -527,6 +555,33 @@ public class _Super_ClientVO extends flash.events.EventDispatcher implements com
         }
     }
 
+    model_internal var _doValidationCacheOfClientid : Array = null;
+    model_internal var _doValidationLastValOfClientid : String;
+
+    model_internal function _doValidationForClientid(valueIn:Object):Array
+    {
+        var value : String = valueIn as String;
+
+        if (model_internal::_doValidationCacheOfClientid != null && model_internal::_doValidationLastValOfClientid == value)
+           return model_internal::_doValidationCacheOfClientid ;
+
+        _model.model_internal::_clientidIsValidCacheInitialized = true;
+        var validationFailures:Array = new Array();
+        var errorMessage:String;
+        var failure:Boolean;
+
+        var valRes:ValidationResult;
+        if (_model.isClientidAvailable && _internal_clientid == null)
+        {
+            validationFailures.push(new ValidationResult(true, "", "", "clientid is required"));
+        }
+
+        model_internal::_doValidationCacheOfClientid = validationFailures;
+        model_internal::_doValidationLastValOfClientid = value;
+
+        return validationFailures;
+    }
+    
     model_internal var _doValidationCacheOfGpras : Array = null;
     model_internal var _doValidationLastValOfGpras : ArrayCollection;
 

@@ -5,8 +5,6 @@
 		 labelWidth="260">
 	<fx:Script>
 		<![CDATA[
-			import components.validators.DateAgeValidator;
-			import components.validators.DropDownValidator;
 			import components.pages.DciPage;
 			import components.questions.QuestionClass;
 			import components.questions.QuestionList;
@@ -16,6 +14,8 @@
 			import components.skips.SkipPattern;
 			import components.skips.SkipPatternMultiple;
 			import components.skips.SkipPatternRange;
+			import components.validators.DateAgeValidator;
+			import components.validators.DropDownValidator;
 			
 			import mx.collections.ArrayList;
 			import mx.controls.HRule;
@@ -47,6 +47,7 @@
 			public static var MISSING_VALUE:String = "Missing Data";
 			
 			public var viewstackIndex:int = 0;
+			protected var created:Boolean = false;
 			
 			public function addQuestion(q:QuestionClass, width:int = -1):void
 			{
@@ -54,6 +55,14 @@
 				addElement(q);
 				if(width != -1)
 					q.inputControl.width = width;
+			}
+			
+			public function initializeForm():void
+			{
+				if(!created)
+					createForm();
+				else
+					reset();
 			}
 			
 			public function createForm():void

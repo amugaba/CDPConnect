@@ -9,16 +9,16 @@
 		 width="400" height="300" xmlns:dci="components.dci.*">
 	<fx:Script>
 		<![CDATA[
-			import components.validators.DateAgeValidator;
-			import components.skips.SkipPattern;
 			import com.adobe.serializers.utility.TypeUtility;
 			
+			import components.dci.DCIForm;
+			import components.dci.InterviewType;
 			import components.questions.QuestionClass;
 			import components.questions.QuestionList;
 			import components.questions.QuestionText;
 			import components.questions.QuestionTextRefusable;
-			import components.dci.DCIForm;
-			import components.dci.InterviewType;
+			import components.skips.SkipPattern;
+			import components.validators.DateAgeValidator;
 			
 			import mx.collections.ArrayCollection;
 			import mx.collections.ArrayList;
@@ -34,63 +34,14 @@
 			
 			protected var questionDict:Dictionary = new Dictionary();
 			
-			protected var gpraConstructed:Boolean = false;
 			protected var global:CDPConnectFlex = FlexGlobals.topLevelApplication as CDPConnectFlex;
-			protected var dciForms:Array;
-			protected var dciTabs:Array;
-			
-			protected function resetGPRA():void
-			{
-				for each(var form:DCIForm in dciForms)
-				{
-					form.reset();
-				}
-			}
+			protected var dciForms:Array = new Array(recordForm,sbirtForm,services1Form,services2Form,demoForm,demo2Form,military1Form,military2Form,drugForm,drug2Form,livingForm,employmentForm,
+				crimeForm,health1Form,health2Form,health3Form,health4Form,health5Form,socialForm,followupForm,dischargeForm,dischargeServices1Form,dischargeServices2Form);
+			protected var dciTabs:Array = new Array(recordTab,sbirtTab,services1Tab,services2Tab,demoTab,demo2Tab,military1Tab,military2Tab,drugTab,drug2Tab,livingTab,employmentTab,
+				crimeTab,health1Tab,health2Tab,health3Tab,health4Tab,health5Tab,socialTab,followupTab,dischargeTab,dischargeServices1Tab,dischargeServices2Tab);
 			
 			public function initializeGPRA():void
-			{
-				if(!gpraConstructed)
-				{
-					gpraConstructed = true;
-					
-					/*recordForm.createForm();
-					sbirtForm.createForm();
-					services1Form.createForm();
-					services2Form.createForm();
-					demoForm.createForm();
-					demo2Form.createForm();
-					military1Form.createForm();
-					military2Form.createForm();
-					drugForm.createForm();
-					drug2Form.createForm();
-					livingForm.createForm();
-					employmentForm.createForm();
-					crimeForm.createForm();
-					health1Form.createForm();
-					health2Form.createForm();
-					health3Form.createForm();
-					health4Form.createForm();
-					health5Form.createForm();
-					socialForm.createForm();
-					followupForm.createForm();
-					dischargeForm.createForm();
-					dischargeServices1Form.createForm();
-					dischargeServices2Form.createForm();*/
-					
-					dciForms = new Array(recordForm,sbirtForm,services1Form,services2Form,demoForm,demo2Form,military1Form,military2Form,drugForm,drug2Form,livingForm,employmentForm,
-						crimeForm,health1Form,health2Form,health3Form,health4Form,health5Form,socialForm,followupForm,dischargeForm,dischargeServices1Form,dischargeServices2Form);
-					
-					dciTabs = new Array(recordTab,sbirtTab,services1Tab,services2Tab,demoTab,demo2Tab,military1Tab,military2Tab,drugTab,drug2Tab,livingTab,employmentTab,
-						crimeTab,health1Tab,health2Tab,health3Tab,health4Tab,health5Tab,socialTab,followupTab,dischargeTab,dischargeServices1Tab,dischargeServices2Tab);
-					
-					for each(var f:DCIForm in dciForms)
-						f.createForm();
-				}
-				else
-				{
-					resetGPRA();
-				}
-				
+			{				
 				if(global.activeGPRA.type == InterviewType.INTAKE_SBIRT_NEG)
 				{
 					enableSectionSBIRT(true);
@@ -172,14 +123,15 @@
 					enableSectionK(true);
 				}
 				
+				for(var i:int = 0; i < dciForms.length; i++)
+				{
+					//if this form is active
+					if(viewStack.contains(dciTabs[i]))
+						dciForms[i].initializeForm();
+				}
+				
 				//validateGPRA();
 				viewStack.selectedChild = recordTab;
-			}
-			
-			protected function enableSectionSBIRT(enabled:Boolean):void
-			{
-				sbirtForm.enableForm(enabled);
-				enableTab(sbirtTab,enabled);
 			}
 			
 			protected function enableTab(tab:NavigatorContent, enabled:Boolean):void
@@ -193,6 +145,12 @@
 					if(viewStack.contains(tab))
 						viewStack.removeChild(tab);
 				}
+			}
+			
+			protected function enableSectionSBIRT(enabled:Boolean):void
+			{
+				sbirtForm.enableForm(enabled);
+				enableTab(sbirtTab,enabled);
 			}
 			
 			protected function enableSectionB(enabled:Boolean):void

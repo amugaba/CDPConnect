@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
+		 xmlns:s="library://ns.adobe.com/flex/spark"
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 xmlns:episodeservice="services.episodeservice.*"
+		 width="715" height="300">
+	<fx:Script>
+		<![CDATA[
+			import components.questions.QuestionClass;
+			import components.questions.QuestionList;
+			import components.questions.QuestionText;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.core.FlexGlobals;
+			import mx.events.ValidationResultEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.validators.Validator;
+			
+			import valueObjects.EpisodeVO;
+			
+			protected var global:CDPConnectFlex = FlexGlobals.topLevelApplication as CDPConnectFlex;
+			
+			public var qNumber:QuestionText = new QuestionText("","Episode #","",false);
+			public var qDate:QuestionText = new QuestionText("","Date","",false);
+			public var qStaff:QuestionList = new QuestionList("","Intake Staff",global.staffList,0);
+			public var qFacility:QuestionList = new QuestionList("","Facility",global.facilityList,0);
+			public var qComplete:QuestionList = new QuestionList("","Complete?",new ArrayList(["Yes","No"]),1);
+			
+			private var questions:Array = new Array(qNumber,qNumber,qStaff,qStaff,qStaff);
+			private var created:Boolean = false;
+			
+			[Bindable] private var episodeList:ArrayCollection = new ArrayCollection();
+			
+			public function initializeGroup():void
+			{
+				if(!created)
+				{
+					episodeForm.addElement(qNumber);
+					episodeForm.addElement(qDate);
+					episodeForm.addElement(qStaff);
+					episodeForm.addElement(qFacility);
+					episodeForm.addElement(qComplete);
+					qStaff.inputControl.width = 130;
+					qFacility.inputControl.width = 130;
+				}
+				setIsCreatingEpisode(false);
+				//If client loaded, find all episodes
+				if(global.activeClient != null)
+				{
+					getEpisodesByClientIDResult.token = episodeService.getEpisodesByClientID(global.activeClient.autoid);
+				}
+				else //episode list is empty
+				{
+					episodeList.removeAll();
+				}
+			}
+			
+			public function resetGroup():void
+			{
+				for each(var q:QuestionClass in questions)
+					q.restoreDefault();
+				qDate.answer = global.dateFormatter.format(new Date());
+				notesArea.text = "";
+				episodeGrid.selectedItem = null;					
+			}
+			
+			//Loading episodes list for client
+			protected function getEpisodesByClientIDResult_resultHandler(event:ResultEvent):void
+			{
+				episodeList = getEpisodesByClientIDResult.lastResult;
+			}
+			
+			protected function saveEpisodeProfileButton_clickHandler(event:MouseEvent):void
+			{
+				if(validate())
+				{					
+					//createEpisodeResult.token = episodeService.createEpisode(createValueObject());//this should be update
+				}
+				else
+					Alert.show("There are errors in the episode profile.","Episode not saved.");
+			}
+			
+			protected function validate():Boolean
+			{
+				var results:Array = new Array();
+				var ev:ValidationResultEvent;
+				for each(var q:QuestionClass in questions)
+				{
+					for each(var v:Validator in q.validators)
+					{
+						ev = v.validate();
+						if(ev.results != null)
+							return false;
+					}
+				}
+				return true;
+			}
+			
+			private function createValueObject():EpisodeVO
+			{
+				var c:EpisodeVO = new EpisodeVO();
+				c.number = parseInt(qNumber.answer);
+				c.date = qDate.answer;
+				c.staff = qStaff.answer;
+				c.facility = qFacility.answer;
+				c.complete = qComplete.input.selectedIndex;
+				c.client_autoid = global.activeClient.autoid;
+				return c;
+			}
+			
+			protected function createEpisodeButton_clickHandler(event:MouseEvent):void
+			{
+				if(validate())
+					createEpisodeResult.token = episodeService.createEpisode(createValueObject());
+				else
+					Alert.show("There are errors in the episode profile.","Episode not created.");
+			}
+			
+			protected function createEpisodeResult_resultHandler(event:ResultEvent):void
+			{
+				Alert.show("Episode created.");
+				global.activeEpisode = createEpisodeResult.lastResult;
+				setIsCreatingEpisode(false);
+				episodeList.addItem(global.activeEpisode);
+			}
+			
+			protected function setIsCreatingEpisode(enabled:Boolean):void
+			{
+				createEpisodeButton.visible = enabled;
+				cancelEpisodeButton.visible = enabled;
+				saveEpisodeProfileButton.visible = !enabled;
+				notesArea.enabled = !enabled;
+				saveNotesButton.enabled = !enabled;
+				episodeGrid.enabled = !enabled;
+				episodeNewButton.enabled = !enabled;
+				
+				//enable assessment and client areas
+				global.pageButtonBar.enabled = !enabled;
+				global.pageClient.clientGroup.enabled = !enabled;
+			}
+			
+			protected function episodeNewButton_clickHandler(event:MouseEvent):void
+			{
+				setIsCreatingEpisode(true);
+				resetGroup();
+				
+				//load new number into episode #
+				var max:int = 0;
+				for each(var ep:EpisodeVO in episodeList)
+					max = Math.max(max, ep.number);
+				qNumber.answer = (max+1).toString();
+			}
+			
+			protected function cancelEpisodeButton_clickHandler(event:MouseEvent):void
+			{
+				setIsCreatingEpisode(false);
+				resetGroup();
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<s:CallResponder id="getEpisodesByClientIDResult" result="getEpisodesByClientIDResult_resultHandler(event)"/>
+		<episodeservice:EpisodeService id="episodeService"
+									   fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
+									   showBusyCursor="true"/>
+		<s:CallResponder id="createEpisodeResult" result="createEpisodeResult_resultHandler(event)"/>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<s:Label x="72" y="15" fontWeight="bold" text="Episode List"/>
+	<s:DataGrid id="episodeGrid" x="34" y="32" width="146" height="158"
+				requestedRowCount="3" resizableColumns="false" dataProvider="{episodeList}">
+		<s:columns>
+			<s:ArrayList>
+				<s:GridColumn dataField="number" headerText="#" width="40"></s:GridColumn>
+				<s:GridColumn dataField="date" headerText="Date" width="100"></s:GridColumn>
+			</s:ArrayList>
+		</s:columns>
+	</s:DataGrid>
+	<s:Button id="episodeNewButton" x="49" y="195" label="Add New Episode" fontWeight="normal" click="episodeNewButton_clickHandler(event)"/>
+	<mx:VRule x="185" y="0" width="14" height="231"/>
+	<s:Label x="266" y="17" fontWeight="bold" text="Episode Profile"/>
+	<mx:Form id="episodeForm" x="198" y="36" width="220" height="143" fontWeight="bold"
+			 labelWidth="70" paddingBottom="0" paddingLeft="0" paddingRight="0" paddingTop="0">
+	</mx:Form>
+	<s:Button id="saveEpisodeProfileButton" x="251" y="183" label="Save Episode Profile" 
+			  fontWeight="normal" click="saveEpisodeProfileButton_clickHandler(event)"/>
+	<s:Button id="createEpisodeButton" x="206" y="183" label="Create Episode" 
+			  fontWeight="normal" click="createEpisodeButton_clickHandler(event)"/>
+	<s:Button id="cancelEpisodeButton" x="338" y="183" label="Cancel" 
+			  fontWeight="normal" click="cancelEpisodeButton_clickHandler(event)"/>
+	<mx:VRule x="419" y="0" width="14" height="231"/>	
+	<s:Label x="523" y="16" fontWeight="bold" text="Episode Notes"/>
+	<s:TextArea id="notesArea" x="435" y="36" width="270" height="173"/>
+	<s:Button id="saveNotesButton" x="621" y="188" label="Save Notes"/>
+</s:Group>

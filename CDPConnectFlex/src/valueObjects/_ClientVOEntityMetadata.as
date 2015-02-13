@@ -24,14 +24,14 @@ internal class _ClientVOEntityMetadata extends com.adobe.fiber.valueobjects.Abst
 {
     private static var emptyArray:Array = new Array();
 
-    model_internal static var allProperties:Array = new Array("autoid", "gpras", "intake", "discharge", "followup", "firstname", "lastname", "dob", "ssn", "intakestaff", "createddate");
+    model_internal static var allProperties:Array = new Array("autoid", "clientid", "gpras", "intake", "discharge", "followup", "firstname", "lastname", "dob", "ssn", "intakestaff", "createddate");
     model_internal static var allAssociationProperties:Array = new Array();
-    model_internal static var allRequiredProperties:Array = new Array("autoid", "gpras", "intake", "discharge", "followup", "firstname", "lastname", "dob", "ssn", "intakestaff", "createddate");
-    model_internal static var allAlwaysAvailableProperties:Array = new Array("autoid", "gpras", "intake", "discharge", "followup", "firstname", "lastname", "dob", "ssn", "intakestaff", "createddate");
+    model_internal static var allRequiredProperties:Array = new Array("autoid", "clientid", "gpras", "intake", "discharge", "followup", "firstname", "lastname", "dob", "ssn", "intakestaff", "createddate");
+    model_internal static var allAlwaysAvailableProperties:Array = new Array("autoid", "clientid", "gpras", "intake", "discharge", "followup", "firstname", "lastname", "dob", "ssn", "intakestaff", "createddate");
     model_internal static var guardedProperties:Array = new Array();
-    model_internal static var dataProperties:Array = new Array("autoid", "gpras", "intake", "discharge", "followup", "firstname", "lastname", "dob", "ssn", "intakestaff", "createddate");
+    model_internal static var dataProperties:Array = new Array("autoid", "clientid", "gpras", "intake", "discharge", "followup", "firstname", "lastname", "dob", "ssn", "intakestaff", "createddate");
     model_internal static var sourceProperties:Array = emptyArray
-    model_internal static var nonDerivedProperties:Array = new Array("autoid", "gpras", "intake", "discharge", "followup", "firstname", "lastname", "dob", "ssn", "intakestaff", "createddate");
+    model_internal static var nonDerivedProperties:Array = new Array("autoid", "clientid", "gpras", "intake", "discharge", "followup", "firstname", "lastname", "dob", "ssn", "intakestaff", "createddate");
     model_internal static var derivedProperties:Array = new Array();
     model_internal static var collectionProperties:Array = new Array("gpras");
     model_internal static var collectionBaseMap:Object;
@@ -40,6 +40,11 @@ internal class _ClientVOEntityMetadata extends com.adobe.fiber.valueobjects.Abst
     model_internal static var dependedOnServices:Array = new Array();
     model_internal static var propertyTypeMap:Object;
 
+    
+    model_internal var _clientidIsValid:Boolean;
+    model_internal var _clientidValidator:com.adobe.fiber.styles.StyleValidator;
+    model_internal var _clientidIsValidCacheInitialized:Boolean = false;
+    model_internal var _clientidValidationFailureMessages:Array;
     
     model_internal var _gprasIsValid:Boolean;
     model_internal var _gprasValidator:com.adobe.fiber.styles.StyleValidator;
@@ -102,6 +107,7 @@ internal class _ClientVOEntityMetadata extends com.adobe.fiber.valueobjects.Abst
             // dependents map
             model_internal::dependentsOnMap = new Object();
             model_internal::dependentsOnMap["autoid"] = new Array();
+            model_internal::dependentsOnMap["clientid"] = new Array();
             model_internal::dependentsOnMap["gpras"] = new Array();
             model_internal::dependentsOnMap["intake"] = new Array();
             model_internal::dependentsOnMap["discharge"] = new Array();
@@ -121,6 +127,7 @@ internal class _ClientVOEntityMetadata extends com.adobe.fiber.valueobjects.Abst
         // Property type Map
         model_internal::propertyTypeMap = new Object();
         model_internal::propertyTypeMap["autoid"] = "int";
+        model_internal::propertyTypeMap["clientid"] = "String";
         model_internal::propertyTypeMap["gpras"] = "ArrayCollection";
         model_internal::propertyTypeMap["intake"] = "valueObjects.GpraVO";
         model_internal::propertyTypeMap["discharge"] = "valueObjects.GpraVO";
@@ -133,6 +140,11 @@ internal class _ClientVOEntityMetadata extends com.adobe.fiber.valueobjects.Abst
         model_internal::propertyTypeMap["createddate"] = "String";
 
         model_internal::_instance = value;
+        model_internal::_clientidValidator = new StyleValidator(model_internal::_instance.model_internal::_doValidationForClientid);
+        model_internal::_clientidValidator.required = true;
+        model_internal::_clientidValidator.requiredFieldError = "clientid is required";
+        //model_internal::_clientidValidator.source = model_internal::_instance;
+        //model_internal::_clientidValidator.property = "clientid";
         model_internal::_gprasValidator = new StyleValidator(model_internal::_instance.model_internal::_doValidationForGpras);
         model_internal::_gprasValidator.required = true;
         model_internal::_gprasValidator.requiredFieldError = "gpras is required";
@@ -416,6 +428,12 @@ internal class _ClientVOEntityMetadata extends com.adobe.fiber.valueobjects.Abst
     }
 
     [Bindable(event="propertyChange")]
+    public function get isClientidAvailable():Boolean
+    {
+        return true;
+    }
+
+    [Bindable(event="propertyChange")]
     public function get isGprasAvailable():Boolean
     {
         return true;
@@ -479,6 +497,14 @@ internal class _ClientVOEntityMetadata extends com.adobe.fiber.valueobjects.Abst
     /**
      * derived property recalculation
      */
+    public function invalidateDependentOnClientid():void
+    {
+        if (model_internal::_clientidIsValidCacheInitialized )
+        {
+            model_internal::_instance.model_internal::_doValidationCacheOfClientid = null;
+            model_internal::calculateClientidIsValid();
+        }
+    }
     public function invalidateDependentOnGpras():void
     {
         if (model_internal::_gprasIsValidCacheInitialized )
@@ -569,6 +595,106 @@ internal class _ClientVOEntityMetadata extends com.adobe.fiber.valueobjects.Abst
     public function get autoidStyle():com.adobe.fiber.styles.Style
     {
         return model_internal::_nullStyle;
+    }
+
+    [Bindable(event="propertyChange")]   
+    public function get clientidStyle():com.adobe.fiber.styles.Style
+    {
+        return model_internal::_nullStyle;
+    }
+
+    public function get clientidValidator() : StyleValidator
+    {
+        return model_internal::_clientidValidator;
+    }
+
+    model_internal function set _clientidIsValid_der(value:Boolean):void 
+    {
+        var oldValue:Boolean = model_internal::_clientidIsValid;         
+        if (oldValue !== value)
+        {
+            model_internal::_clientidIsValid = value;
+            this.dispatchEvent(mx.events.PropertyChangeEvent.createUpdateEvent(this, "clientidIsValid", oldValue, value));
+        }                             
+    }
+
+    [Bindable(event="propertyChange")]
+    public function get clientidIsValid():Boolean
+    {
+        if (!model_internal::_clientidIsValidCacheInitialized)
+        {
+            model_internal::calculateClientidIsValid();
+        }
+
+        return model_internal::_clientidIsValid;
+    }
+
+    model_internal function calculateClientidIsValid():void
+    {
+        var valRes:ValidationResultEvent = model_internal::_clientidValidator.validate(model_internal::_instance.clientid)
+        model_internal::_clientidIsValid_der = (valRes.results == null);
+        model_internal::_clientidIsValidCacheInitialized = true;
+        if (valRes.results == null)
+             model_internal::clientidValidationFailureMessages_der = emptyArray;
+        else
+        {
+            var _valFailures:Array = new Array();
+            for (var a:int = 0 ; a<valRes.results.length ; a++)
+            {
+                _valFailures.push(valRes.results[a].errorMessage);
+            }
+            model_internal::clientidValidationFailureMessages_der = _valFailures;
+        }
+    }
+
+    [Bindable(event="propertyChange")]
+    public function get clientidValidationFailureMessages():Array
+    {
+        if (model_internal::_clientidValidationFailureMessages == null)
+            model_internal::calculateClientidIsValid();
+
+        return _clientidValidationFailureMessages;
+    }
+
+    model_internal function set clientidValidationFailureMessages_der(value:Array) : void
+    {
+        var oldValue:Array = model_internal::_clientidValidationFailureMessages;
+
+        var needUpdate : Boolean = false;
+        if (oldValue == null)
+            needUpdate = true;
+    
+        // avoid firing the event when old and new value are different empty arrays
+        if (!needUpdate && (oldValue !== value && (oldValue.length > 0 || value.length > 0)))
+        {
+            if (oldValue.length == value.length)
+            {
+                for (var a:int=0; a < oldValue.length; a++)
+                {
+                    if (oldValue[a] !== value[a])
+                    {
+                        needUpdate = true;
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                needUpdate = true;
+            }
+        }
+
+        if (needUpdate)
+        {
+            model_internal::_clientidValidationFailureMessages = value;   
+            this.dispatchEvent(mx.events.PropertyChangeEvent.createUpdateEvent(this, "clientidValidationFailureMessages", oldValue, value));
+            // Only execute calculateIsValid if it has been called before, to update the validationFailureMessages for
+            // the entire entity.
+            if (model_internal::_instance.model_internal::_cacheInitialized_isValid)
+            {
+                model_internal::_instance.model_internal::isValid_der = model_internal::_instance.model_internal::calculateIsValid();
+            }
+        }
     }
 
     [Bindable(event="propertyChange")]   
@@ -1596,6 +1722,10 @@ internal class _ClientVOEntityMetadata extends com.adobe.fiber.valueobjects.Abst
      {
          switch(propertyName)
          {
+            case("clientid"):
+            {
+                return clientidValidationFailureMessages;
+            }
             case("gpras"):
             {
                 return gprasValidationFailureMessages;

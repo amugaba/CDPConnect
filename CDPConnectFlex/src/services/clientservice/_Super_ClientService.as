@@ -27,6 +27,7 @@ internal class _Super_ClientService extends com.adobe.fiber.services.wrapper.Rem
         _serviceControl = new mx.rpc.remoting.RemoteObject();
 
         // initialize RemoteClass alias for all entities returned by functions of this service
+        valueObjects.ClientVO._initRemoteClassAlias();
 
         var operations:Object = new Object();
         var operation:mx.rpc.remoting.Operation;
@@ -44,7 +45,7 @@ internal class _Super_ClientService extends com.adobe.fiber.services.wrapper.Rem
          operation.resultType = valueObjects.ClientVO;
         operations["updateClient"] = operation;
         operation = new mx.rpc.remoting.Operation(null, "searchClients");
-         operation.resultElementType = Object;
+         operation.resultElementType = valueObjects.ClientVO;
         operations["searchClients"] = operation;
 
         _serviceControl.operations = operations;
@@ -148,7 +149,7 @@ internal class _Super_ClientService extends com.adobe.fiber.services.wrapper.Rem
       *
       * @return an mx.rpc.AsyncToken whose result property will be populated with the result of the operation when the server response is received.
       */
-    public function searchClients(clientid:int, firstname:String, lastname:String, dob:String, ssn:String, intakestaff:String) : mx.rpc.AsyncToken
+    public function searchClients(clientid:String, firstname:String, lastname:String, dob:String, ssn:String, intakestaff:String) : mx.rpc.AsyncToken
     {
         var _internal_operation:mx.rpc.AbstractOperation = _serviceControl.getOperation("searchClients");
 		var _internal_token:mx.rpc.AsyncToken = _internal_operation.send(clientid,firstname,lastname,dob,ssn,intakestaff) ;
