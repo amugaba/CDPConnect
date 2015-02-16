@@ -20,14 +20,14 @@ internal class _EpisodeVOEntityMetadata extends com.adobe.fiber.valueobjects.Abs
 {
     private static var emptyArray:Array = new Array();
 
-    model_internal static var allProperties:Array = new Array("autoid", "client_autoid", "number", "date", "staff", "facility", "complete");
+    model_internal static var allProperties:Array = new Array("autoid", "client_autoid", "number", "date", "staff", "facility", "complete", "notes");
     model_internal static var allAssociationProperties:Array = new Array();
     model_internal static var allRequiredProperties:Array = new Array();
-    model_internal static var allAlwaysAvailableProperties:Array = new Array("autoid", "client_autoid", "number", "date", "staff", "facility", "complete");
+    model_internal static var allAlwaysAvailableProperties:Array = new Array("autoid", "client_autoid", "number", "date", "staff", "facility", "complete", "notes");
     model_internal static var guardedProperties:Array = new Array();
-    model_internal static var dataProperties:Array = new Array("autoid", "client_autoid", "number", "date", "staff", "facility", "complete");
+    model_internal static var dataProperties:Array = new Array("autoid", "client_autoid", "number", "date", "staff", "facility", "complete", "notes");
     model_internal static var sourceProperties:Array = emptyArray
-    model_internal static var nonDerivedProperties:Array = new Array("autoid", "client_autoid", "number", "date", "staff", "facility", "complete");
+    model_internal static var nonDerivedProperties:Array = new Array("autoid", "client_autoid", "number", "date", "staff", "facility", "complete", "notes");
     model_internal static var derivedProperties:Array = new Array();
     model_internal static var collectionProperties:Array = new Array();
     model_internal static var collectionBaseMap:Object;
@@ -54,6 +54,7 @@ internal class _EpisodeVOEntityMetadata extends com.adobe.fiber.valueobjects.Abs
             model_internal::dependentsOnMap["staff"] = new Array();
             model_internal::dependentsOnMap["facility"] = new Array();
             model_internal::dependentsOnMap["complete"] = new Array();
+            model_internal::dependentsOnMap["notes"] = new Array();
 
             // collection base map
             model_internal::collectionBaseMap = new Object();
@@ -68,6 +69,7 @@ internal class _EpisodeVOEntityMetadata extends com.adobe.fiber.valueobjects.Abs
         model_internal::propertyTypeMap["staff"] = "String";
         model_internal::propertyTypeMap["facility"] = "String";
         model_internal::propertyTypeMap["complete"] = "int";
+        model_internal::propertyTypeMap["notes"] = "String";
 
         model_internal::_instance = value;
     }
@@ -338,6 +340,12 @@ internal class _EpisodeVOEntityMetadata extends com.adobe.fiber.valueobjects.Abs
         return true;
     }
 
+    [Bindable(event="propertyChange")]
+    public function get isNotesAvailable():Boolean
+    {
+        return true;
+    }
+
 
     /**
      * derived property recalculation
@@ -386,6 +394,12 @@ internal class _EpisodeVOEntityMetadata extends com.adobe.fiber.valueobjects.Abs
 
     [Bindable(event="propertyChange")]   
     public function get completeStyle():com.adobe.fiber.styles.Style
+    {
+        return model_internal::_nullStyle;
+    }
+
+    [Bindable(event="propertyChange")]   
+    public function get notesStyle():com.adobe.fiber.styles.Style
     {
         return model_internal::_nullStyle;
     }

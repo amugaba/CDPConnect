@@ -56,19 +56,14 @@
 				if(global.activeClient != null)
 				{
 					setIsCreatingClient(false);
-					qClientID.answer = global.activeClient.clientid;
-					qClientID.disable();
-					qFirstName.answer = global.activeClient.firstname;
-					qLastName.answer = global.activeClient.lastname;
-					qDOB.answer = global.activeClient.dob;
-					qSSN.answer = global.activeClient.ssn;
-					qCreationDate.answer = global.activeClient.createddate;
+					qClientID.input.editable = false;
+					sendGlobalObjectToFormData();
 				}
 				else //Create new client
 				{
 					resetGroup();
 					setIsCreatingClient(true);
-					qClientID.enable();
+					qClientID.input.editable = true;
 					qCreationDate.answer = global.dateFormatter.format(new Date());
 				}
 			}
@@ -80,13 +75,42 @@
 				notesArea.text = "";
 			}
 			
+			private function sendFormDataToGlobalObject():void
+			{
+				if(global.activeClient == null)
+					global.activeClient = new ClientVO();
+				
+				global.activeClient.clientid = qClientID.answer;
+				global.activeClient.firstname = qFirstName.answer;
+				global.activeClient.lastname = qLastName.answer;
+				global.activeClient.ssn = qSSN.answer;
+				global.activeClient.dob = qDOB.answer;
+				global.activeClient.createddate = qCreationDate.answer;
+				//global.activeClient.notes = notesArea.text;
+			}
+			
+			private function sendGlobalObjectToFormData():void
+			{
+				if(global.activeClient == null)
+					resetGroup();
+				else
+				{
+					qClientID.answer = global.activeClient.clientid;
+					qFirstName.answer = global.activeClient.firstname;
+					qLastName.answer = global.activeClient.lastname;
+					qDOB.answer = global.activeClient.dob;
+					qSSN.answer = global.activeClient.ssn;
+					qCreationDate.answer = global.activeClient.createddate;
+					notesArea.text = global.activeClient.notes;
+				}
+			}
+			
 			protected function saveButton_clickHandler(event:MouseEvent):void
 			{
 				if(validate())
 				{		
-					var c:ClientVO = createValueObject();
-					c.autoid = global.activeClient.autoid;
-					updateClientResult.token = clientService.updateClient(c);
+					sendFormDataToGlobalObject();
+					updateClientResult.token = clientService.updateClient(global.activeClient);
 				}
 				else
 					Alert.show("There are errors in the client profile.","Client not saved.");
@@ -106,18 +130,6 @@
 					}
 				}
 				return true;
-			}
-			
-			private function createValueObject():ClientVO
-			{
-				var c:ClientVO = new ClientVO();
-				c.clientid = qClientID.answer;
-				c.firstname = qFirstName.answer;
-				c.lastname = qLastName.answer;
-				c.ssn = qSSN.answer;
-				c.dob = qDOB.answer;
-				c.createddate = qCreationDate.answer;
-				return c;
 			}
 			
 			protected function updateClientResult_resultHandler(event:ResultEvent):void
@@ -148,8 +160,8 @@
 			{
 				if(validate())
 				{		
-					var c:ClientVO = createValueObject();
-					createClientResult.token = clientService.createClient(c);
+					sendFormDataToGlobalObject();
+					createClientResult.token = clientService.createClient(global.activeClient);
 				}
 				else
 					Alert.show("There are errors in the client profile.","Client not created.");
@@ -158,7 +170,7 @@
 			protected function createClientResult_resultHandler(event:ResultEvent):void
 			{
 				Alert.show("Client created.");
-				global.activeClient = createClientResult.lastResult;
+				global.activeClient = createClientResult.lastResult;//getting autoid
 				setIsCreatingClient(false);
 			}
 			
@@ -166,6 +178,23 @@
 			{
 				setIsCreatingClient(false);
 				global.pageViewstack.selectedChild = global.pageHome;
+			}
+			
+			
+			protected function saveNotes(item:ClientVO):void
+			{
+				saveNotesResult.token = clientService.saveNotes(item);
+			}
+			
+			protected function saveNotesButton_clickHandler(event:MouseEvent):void
+			{
+				global.activeClient.notes = notesArea.text;
+				saveNotesResult.token = clientService.saveNotes(global.activeClient);
+			}
+			
+			protected function saveNotesResult_resultHandler(event:ResultEvent):void
+			{
+				Alert.show("Notes saved.");
 			}
 			
 		]]>
@@ -177,6 +206,7 @@
 		<clientservice:ClientService id="clientService"
 									 fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
 									 showBusyCursor="true"/>
+		<s:CallResponder id="saveNotesResult" result="saveNotesResult_resultHandler(event)"/>
 		
 	</fx:Declarations>
 	<s:Label x="161" y="9" fontWeight="bold" text="Client Profile"/>
@@ -190,6 +220,6 @@
 			  fontWeight="normal"/>
 	<mx:VRule x="357" y="6" width="1" height="227"/>
 	<s:Label x="493" y="8" fontWeight="bold" text="Client Notes"/>
-	<s:TextArea id="notesArea" x="390" y="28" width="270" height="178"/>
-	<s:Button id="saveNotesButton" x="576" y="185" label="Save Notes"/>
+	<s:TextArea id="notesArea" x="390" y="28" width="270" height="178" maxChars="3000"/>
+	<s:Button id="saveNotesButton" x="576" y="205" label="Save Notes" click="saveNotesButton_clickHandler(event)"/>
 </s:Group>

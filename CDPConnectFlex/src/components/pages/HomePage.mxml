@@ -33,6 +33,7 @@
 			protected function addClientButton_clickHandler(event:MouseEvent):void
 			{
 				global.activeClient = null;
+				global.activeEpisode = null;
 				global.activeGPRA = null;
 				global.pageClient.initializePage();
 				global.pageViewstack.selectedChild = global.pageClient;
@@ -43,6 +44,8 @@
 				if(clientGrid.selectedItem != null)
 				{
 					global.activeClient = clientGrid.selectedItem as ClientVO;
+					global.activeEpisode = null;
+					global.activeGPRA = null;
 					global.pageClient.initializePage();
 					global.pageViewstack.selectedChild = global.pageClient;
 					global.pageClientButton.enabled = true;

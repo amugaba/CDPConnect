@@ -373,7 +373,7 @@
 						continue;
 					
 					var form:DCIForm = dciForms[i];					
-					form.saveData(gpraData);
+					gpraData = form.saveData(gpraData);
 				}
 				
 				//Add in other fields

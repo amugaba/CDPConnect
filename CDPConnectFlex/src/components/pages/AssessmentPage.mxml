@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:NavigatorContent xmlns:fx="http://ns.adobe.com/mxml/2009" 
+					xmlns:s="library://ns.adobe.com/flex/spark" 
+					xmlns:mx="library://ns.adobe.com/flex/mx" width="400" height="300" xmlns:assessment="components.assessment.*">
+	<fx:Script>
+		<![CDATA[
+			import components.assessment.AssessType;
+			import components.assessment.PrescreenForm;
+			import components.assessment.QuestionForm;
+			
+			import mx.collections.ArrayCollection;
+			import mx.collections.ArrayList;
+			
+			private var activeForm:QuestionForm;
+			private var constructedForms:ArrayCollection = new ArrayCollection([null,null,null,null,null]);
+			
+			public function createAssessment(type:int):void
+			{
+				//If there's already a form displayed, remove it
+				if(activeForm != null)
+					removeElement(activeForm);
+				
+				if(type == AssessType.PRESCREEN)
+				{
+					if(constructedForms.getItemAt(AssessType.PRESCREEN) == null)
+					{
+						activeForm = new PrescreenForm();
+						constructedForms.addItemAt(activeForm, AssessType.PRESCREEN);
+						activeForm.createForm();
+					}
+					else //If this form was constructed before, reuse it
+					{
+						activeForm = constructedForms.getItemAt(AssessType.PRESCREEN) as QuestionForm;
+						activeForm.reset();
+					}
+					
+					addElement(activeForm);
+				}
+			}
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+</s:NavigatorContent>

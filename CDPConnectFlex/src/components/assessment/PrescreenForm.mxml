@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<assessment:QuestionForm xmlns:fx="http://ns.adobe.com/mxml/2009"
+						 xmlns:s="library://ns.adobe.com/flex/spark"
+						 xmlns:mx="library://ns.adobe.com/flex/mx"
+						 xmlns:assessment="components.assessment.*"
+						 xmlns:assessmentservice="services.assessmentservice.*"
+						 width="100%" height="100%">
+	<fx:Script>
+		<![CDATA[
+			import components.questions.QuestionList;
+			
+			import mx.collections.ArrayList;
+			import mx.controls.Alert;
+			import mx.rpc.events.ResultEvent;
+			
+			import valueObjects.AssessmentVO;
+			
+			public var qAlcohol:QuestionList = new QuestionList("Alcohol","Did the client prescreen positive for ALCOHOL?",new ArrayList(["No","Yes"]),0);
+			public var qDrugs:QuestionList = new QuestionList("Drug","Did the client prescreen positive for DRUGS?",new ArrayList(["No","Yes"]),0);
+			public var qDepression:QuestionList = new QuestionList("Depression","Did the client prescreen positive for DEPRESSION?",new ArrayList(["No","Yes"]),0);
+			
+			public override function createForm():void
+			{
+				if(!created)
+				{
+					addQuestion(qAlcohol);
+					addQuestion(qDrugs);
+					addQuestion(qDepression);
+				}
+				else
+					reset();
+			}
+			
+			protected function saveButton_clickHandler(event:MouseEvent):void
+			{
+				if(global.activeAssessment == null)
+				{
+					global.activeAssessment = new AssessmentVO();
+					global.activeAssessment.episode_autoid = global.activeEpisode.autoid;
+					global.activeAssessment.type = AssessType.PRESCREEN;
+					global.activeAssessment.date = global.dateFormatter.format(new Date());
+					global.activeAssessment.complete = 1;
+					global.activeAssessment.data = saveData(new Array());
+					createAssessmentResult.token = assessmentService.createAssessment(global.activeAssessment);
+				}
+				else
+				{
+					global.activeAssessment.data = saveData(global.activeAssessment.data.source);
+					updateAssessmentResult.token = assessmentService.updateAssessment(global.activeAssessment);
+				}
+			}
+			
+			protected function createAssessmentResult_resultHandler(event:ResultEvent):void
+			{
+				Alert.show("Prescreen saved.");
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<s:CallResponder id="createAssessmentResult" result="createAssessmentResult_resultHandler(event)"/>
+		<assessmentservice:AssessmentService id="assessmentService"
+											 fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
+											 showBusyCursor="true"/>
+		<s:CallResponder id="updateAssessmentResult"/>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<s:Button id="saveButton" label="Save" x="150" y="300" click="saveButton_clickHandler(event)"/>
+</assessment:QuestionForm>

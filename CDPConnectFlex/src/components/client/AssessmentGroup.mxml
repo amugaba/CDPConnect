@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
+		 xmlns:s="library://ns.adobe.com/flex/spark"
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 xmlns:assessmentservice="services.assessmentservice.*"
+		 width="715" height="300">
+	<fx:Script>
+		<![CDATA[
+			import components.assessment.AssessType;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.core.FlexGlobals;
+			import mx.rpc.events.ResultEvent;
+			
+			[Bindable] protected var clientGPRAs:ArrayCollection = new ArrayCollection();
+			protected var global:CDPConnectFlex = FlexGlobals.topLevelApplication as CDPConnectFlex;
+			private var created:Boolean = false;
+			
+			[Bindable] private var assessmentList:ArrayCollection = new ArrayCollection();
+			
+			public function initializeGroup():void
+			{
+				if(!created)
+				{
+
+				}
+				//setIsCreatingEpisode(false);
+				//If client loaded, find all episodes
+				if(global.activeEpisode != null)
+				{
+					//getEpisodesByClientIDResult.token = episodeService.getEpisodesByClientID(global.activeClient.autoid);
+					getAssessmentsByEpisodeIDResult.token = assessmentService.getAssessmentsByEpisodeID(global.activeEpisode.autoid);
+					enabled = true;
+				}
+				else //episode list is empty
+				{
+					assessmentList.removeAll();
+					enabled = false;
+				}
+			}
+			
+			protected function getAssessmentsByEpisodeIDResult_resultHandler(event:ResultEvent):void
+			{
+				assessmentList = getAssessmentsByEpisodeIDResult.lastResult;
+			}
+			
+			protected function prescreenButton_clickHandler(event:MouseEvent):void
+			{
+				global.pageAssessment.createAssessment(AssessType.PRESCREEN);
+				global.pageViewstack.selectedChild = global.pageAssessment;
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<s:CallResponder id="getAssessmentsByEpisodeIDResult" result="getAssessmentsByEpisodeIDResult_resultHandler(event)"/>
+		<assessmentservice:AssessmentService id="assessmentService"
+											 fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
+											 showBusyCursor="true"/>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<s:Label x="102" y="17" fontWeight="bold" text="Assessments List"/>
+	<s:DataGrid id="assessmentGrid" x="9" y="40" width="289" height="189"
+				dataProvider="{assessmentList}"
+				requestedRowCount="3" resizableColumns="false">
+		<s:columns>
+			<s:ArrayList>
+				<s:GridColumn dataField="type" headerText="Type" width="100"></s:GridColumn>
+				<s:GridColumn dataField="date" headerText="Date" width="70"></s:GridColumn>
+				<s:GridColumn dataField="complete" headerText="Done" width="50"></s:GridColumn>
+				<s:GridColumn dataField="load" headerText="Load" width="60"></s:GridColumn>
+			</s:ArrayList>
+		</s:columns>
+	</s:DataGrid>
+	
+	<mx:VRule x="302" y="1" width="14" height="231"/>
+	<s:Label x="328" y="18" fontWeight="bold" text="Screening"/>
+	<s:Button id="prescreenButton" x="318" y="40" label="Prescreen" click="prescreenButton_clickHandler(event)"/>
+	<s:Button id="auditButton" x="320" y="79" label="AUDIT"/>
+	<s:Button id="dast10Button" x="320" y="118" label="DAST-10"/>
+	<s:Button id="phq9Button" x="320" y="158" label="PHQ9"/>
+	
+	<mx:VRule x="398" y="0" width="14" height="231"/>
+	<s:Label x="433" y="15" fontWeight="bold" text="DCI Intake"/>
+	<s:Button id="intakeGeneralButton" x="426" y="40" label="General"/>
+	<s:Button id="sbirtIntakeRTButton" x="412" y="158" label="SBIRT - BT/RT"/>
+	<s:Button id="sbirtIntakeNegativeButton" x="418" y="77"
+			  label="SBIRT - Neg"/>
+	<s:Button id="sbirtIntakeBIButton" x="423" y="117"
+			  label="SBIRT - BI" />
+	
+	<mx:VRule x="513" y="0" width="14" height="231"/>
+	<s:Label x="533" y="14" fontWeight="bold" text="DCI Discharge"/>
+	<s:Button id="dischargeGeneralButton" x="536" y="42"
+			  label="General"/>
+	<s:Button id="dischargeNoInterviewButton" x="528" y="78" label="No Interview"/>
+	
+	<mx:VRule x="617" y="0" width="14" height="231"/>
+	<s:Label x="634" y="15" fontWeight="bold" text="DCI Followup"/>
+	<s:Button id="followupGeneralButton" x="633" y="42"
+			  label="General" />
+	<s:Button id="sbirtFollowupButton" x="631" y="78"
+			  label="SBIRT - BI" />
+</s:Group>

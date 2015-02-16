@@ -44,7 +44,7 @@ class ClientService
     {
 
         $stmt = mysqli_prepare($this->connection, "SELECT autoid, clientid, firstname, lastname,
-        	dob, ssn, intakestaff, createddate FROM client_tbl where autoid=?");
+        	dob, ssn, intakestaff, createddate, notes FROM client_tbl where autoid=?");
         $this->throwExceptionOnError();
 
         $stmt->bind_param('i', $autoid);
@@ -55,7 +55,7 @@ class ClientService
 
         $client = new ClientVO();
         $stmt->bind_result($client->autoid, $client->clientid, $client->firstname, $client->lastname, $client->dob,
-        	$client->ssn, $client->intakestaff, $client->createddate);
+        	$client->ssn, $client->intakestaff, $client->createddate, $client->notes);
 
         if ($stmt->fetch())
         {
@@ -134,7 +134,6 @@ class ClientService
     }
     
 	/**
-	 * 
 	 * Update a client
 	 * 
 	 * @param ClientVO $item
@@ -149,6 +148,31 @@ class ClientService
 
         $stmt->bind_param('sssssssi', $client->clientid, $client->firstname, $client->lastname, $client->dob,
         	$client->ssn, $client->intakestaff, $client->createddate, $client->autoid);
+        $this->throwExceptionOnError();
+
+        $rs = $stmt->execute();
+        $this->throwExceptionOnError();
+        
+        $stmt->free_result();
+        $this->connection->close();
+        
+        return $client; 
+    }
+    
+	/**
+	 * Save notes
+	 * 
+	 * @param ClientVO $item
+	 * @return ClientVO
+	 */
+    public function saveNotes ($client)
+    {        
+        $stmt = $this->connection->prepare("UPDATE client_tbl SET
+        notes=?
+        WHERE autoid=?");
+        $this->throwExceptionOnError();
+
+        $stmt->bind_param('si', $client->notes, $client->autoid);
         $this->throwExceptionOnError();
 
         $rs = $stmt->execute();

@@ -1,15 +1,20 @@
 /**
  * This is a generated class and is not intended for modification.  To customize behavior
- * of this value object you may modify the generated sub-class of this class - EpisodeVO.as.
+ * of this value object you may modify the generated sub-class of this class - AssessmentVO.as.
  */
 
 package valueObjects
 {
 import com.adobe.fiber.services.IFiberManagingService;
+import com.adobe.fiber.util.FiberUtils;
 import com.adobe.fiber.valueobjects.IValueObject;
+import flash.events.Event;
 import flash.events.EventDispatcher;
+import mx.binding.utils.ChangeWatcher;
 import mx.collections.ArrayCollection;
+import mx.events.CollectionEvent;
 import mx.events.PropertyChangeEvent;
+import mx.validators.ValidationResult;
 
 import flash.net.registerClassAlias;
 import flash.net.getClassByAlias;
@@ -20,20 +25,20 @@ import com.adobe.fiber.valueobjects.AvailablePropertyIterator;
 use namespace model_internal;
 
 [ExcludeClass]
-public class _Super_EpisodeVO extends flash.events.EventDispatcher implements com.adobe.fiber.valueobjects.IValueObject
+public class _Super_AssessmentVO extends flash.events.EventDispatcher implements com.adobe.fiber.valueobjects.IValueObject
 {
     model_internal static function initRemoteClassAliasSingle(cz:Class) : void
     {
         try
         {
-            if (flash.net.getClassByAlias("EpisodeVO") == null)
+            if (flash.net.getClassByAlias("AssessmentVO") == null)
             {
-                flash.net.registerClassAlias("EpisodeVO", cz);
+                flash.net.registerClassAlias("AssessmentVO", cz);
             }
         }
         catch (e:Error)
         {
-            flash.net.registerClassAlias("EpisodeVO", cz);
+            flash.net.registerClassAlias("AssessmentVO", cz);
         }
     }
 
@@ -41,7 +46,7 @@ public class _Super_EpisodeVO extends flash.events.EventDispatcher implements co
     {
     }
 
-    model_internal var _dminternal_model : _EpisodeVOEntityMetadata;
+    model_internal var _dminternal_model : _AssessmentVOEntityMetadata;
     model_internal var _changedObjects:mx.collections.ArrayCollection = new ArrayCollection();
 
     public function getChangedObjects() : Array
@@ -59,13 +64,11 @@ public class _Super_EpisodeVO extends flash.events.EventDispatcher implements co
      * properties
      */
     private var _internal_autoid : int;
-    private var _internal_client_autoid : int;
-    private var _internal_number : int;
+    private var _internal_episode_autoid : int;
+    private var _internal_type : int;
     private var _internal_date : String;
-    private var _internal_staff : String;
-    private var _internal_facility : String;
     private var _internal_complete : int;
-    private var _internal_notes : String;
+    private var _internal_data : ArrayCollection;
 
     private static var emptyArray:Array = new Array();
 
@@ -77,11 +80,12 @@ public class _Super_EpisodeVO extends flash.events.EventDispatcher implements co
 
     model_internal var _changeWatcherArray:Array = new Array();
 
-    public function _Super_EpisodeVO()
+    public function _Super_AssessmentVO()
     {
-        _model = new _EpisodeVOEntityMetadata(this);
+        _model = new _AssessmentVOEntityMetadata(this);
 
         // Bind to own data or source properties for cache invalidation triggering
+        model_internal::_changeWatcherArray.push(mx.binding.utils.ChangeWatcher.watch(this, "data", model_internal::setterListenerData));
 
     }
 
@@ -96,15 +100,15 @@ public class _Super_EpisodeVO extends flash.events.EventDispatcher implements co
     }
 
     [Bindable(event="propertyChange")]
-    public function get client_autoid() : int
+    public function get episode_autoid() : int
     {
-        return _internal_client_autoid;
+        return _internal_episode_autoid;
     }
 
     [Bindable(event="propertyChange")]
-    public function get number() : int
+    public function get type() : int
     {
-        return _internal_number;
+        return _internal_type;
     }
 
     [Bindable(event="propertyChange")]
@@ -114,27 +118,15 @@ public class _Super_EpisodeVO extends flash.events.EventDispatcher implements co
     }
 
     [Bindable(event="propertyChange")]
-    public function get staff() : String
-    {
-        return _internal_staff;
-    }
-
-    [Bindable(event="propertyChange")]
-    public function get facility() : String
-    {
-        return _internal_facility;
-    }
-
-    [Bindable(event="propertyChange")]
     public function get complete() : int
     {
         return _internal_complete;
     }
 
     [Bindable(event="propertyChange")]
-    public function get notes() : String
+    public function get data() : ArrayCollection
     {
-        return _internal_notes;
+        return _internal_data;
     }
 
     public function clearAssociations() : void
@@ -155,23 +147,23 @@ public class _Super_EpisodeVO extends flash.events.EventDispatcher implements co
         }
     }
 
-    public function set client_autoid(value:int) : void
+    public function set episode_autoid(value:int) : void
     {
-        var oldValue:int = _internal_client_autoid;
+        var oldValue:int = _internal_episode_autoid;
         if (oldValue !== value)
         {
-            _internal_client_autoid = value;
-            this.dispatchEvent(mx.events.PropertyChangeEvent.createUpdateEvent(this, "client_autoid", oldValue, _internal_client_autoid));
+            _internal_episode_autoid = value;
+            this.dispatchEvent(mx.events.PropertyChangeEvent.createUpdateEvent(this, "episode_autoid", oldValue, _internal_episode_autoid));
         }
     }
 
-    public function set number(value:int) : void
+    public function set type(value:int) : void
     {
-        var oldValue:int = _internal_number;
+        var oldValue:int = _internal_type;
         if (oldValue !== value)
         {
-            _internal_number = value;
-            this.dispatchEvent(mx.events.PropertyChangeEvent.createUpdateEvent(this, "number", oldValue, _internal_number));
+            _internal_type = value;
+            this.dispatchEvent(mx.events.PropertyChangeEvent.createUpdateEvent(this, "type", oldValue, _internal_type));
         }
     }
 
@@ -185,26 +177,6 @@ public class _Super_EpisodeVO extends flash.events.EventDispatcher implements co
         }
     }
 
-    public function set staff(value:String) : void
-    {
-        var oldValue:String = _internal_staff;
-        if (oldValue !== value)
-        {
-            _internal_staff = value;
-            this.dispatchEvent(mx.events.PropertyChangeEvent.createUpdateEvent(this, "staff", oldValue, _internal_staff));
-        }
-    }
-
-    public function set facility(value:String) : void
-    {
-        var oldValue:String = _internal_facility;
-        if (oldValue !== value)
-        {
-            _internal_facility = value;
-            this.dispatchEvent(mx.events.PropertyChangeEvent.createUpdateEvent(this, "facility", oldValue, _internal_facility));
-        }
-    }
-
     public function set complete(value:int) : void
     {
         var oldValue:int = _internal_complete;
@@ -215,13 +187,28 @@ public class _Super_EpisodeVO extends flash.events.EventDispatcher implements co
         }
     }
 
-    public function set notes(value:String) : void
+    public function set data(value:*) : void
     {
-        var oldValue:String = _internal_notes;
+        var oldValue:ArrayCollection = _internal_data;
         if (oldValue !== value)
         {
-            _internal_notes = value;
-            this.dispatchEvent(mx.events.PropertyChangeEvent.createUpdateEvent(this, "notes", oldValue, _internal_notes));
+            if (value is ArrayCollection)
+            {
+                _internal_data = value;
+            }
+            else if (value is Array)
+            {
+                _internal_data = new ArrayCollection(value);
+            }
+            else if (value == null)
+            {
+                _internal_data = null;
+            }
+            else
+            {
+                throw new Error("value of data must be a collection");
+            }
+            this.dispatchEvent(mx.events.PropertyChangeEvent.createUpdateEvent(this, "data", oldValue, _internal_data));
         }
     }
 
@@ -236,6 +223,18 @@ public class _Super_EpisodeVO extends flash.events.EventDispatcher implements co
      *  - the validity of the property (and the containing entity) if the given data property has a length restriction.
      *  - the validity of the property (and the containing entity) if the given data property is required.
      */
+
+    model_internal function setterListenerData(value:flash.events.Event):void
+    {
+        if (value is mx.events.PropertyChangeEvent)
+        {
+            if (mx.events.PropertyChangeEvent(value).newValue)
+            {
+                mx.events.PropertyChangeEvent(value).newValue.addEventListener(mx.events.CollectionEvent.COLLECTION_CHANGE, model_internal::setterListenerData);
+            }
+        }
+        _model.invalidateDependentOnData();
+    }
 
 
     /**
@@ -258,6 +257,11 @@ public class _Super_EpisodeVO extends flash.events.EventDispatcher implements co
         var validationFailureMessages:Array = new Array();
 
         var propertyValidity:Boolean = true;
+        if (!_model.dataIsValid)
+        {
+            propertyValidity = false;
+            com.adobe.fiber.util.FiberUtils.arrayAdd(validationFailureMessages, _model.model_internal::_dataValidationFailureMessages);
+        }
 
         model_internal::_cacheInitialized_isValid = true;
         model_internal::invalidConstraints_der = violatedConsts;
@@ -285,14 +289,14 @@ public class _Super_EpisodeVO extends flash.events.EventDispatcher implements co
 
     [Transient]
     [Bindable(event="propertyChange")]
-    public function get _model() : _EpisodeVOEntityMetadata
+    public function get _model() : _AssessmentVOEntityMetadata
     {
         return model_internal::_dminternal_model;
     }
 
-    public function set _model(value : _EpisodeVOEntityMetadata) : void
+    public function set _model(value : _AssessmentVOEntityMetadata) : void
     {
-        var oldValue : _EpisodeVOEntityMetadata = model_internal::_dminternal_model;
+        var oldValue : _AssessmentVOEntityMetadata = model_internal::_dminternal_model;
         if (oldValue !== value)
         {
             model_internal::_dminternal_model = value;
@@ -337,6 +341,33 @@ public class _Super_EpisodeVO extends flash.events.EventDispatcher implements co
         }
     }
 
+    model_internal var _doValidationCacheOfData : Array = null;
+    model_internal var _doValidationLastValOfData : ArrayCollection;
+
+    model_internal function _doValidationForData(valueIn:Object):Array
+    {
+        var value : ArrayCollection = valueIn as ArrayCollection;
+
+        if (model_internal::_doValidationCacheOfData != null && model_internal::_doValidationLastValOfData == value)
+           return model_internal::_doValidationCacheOfData ;
+
+        _model.model_internal::_dataIsValidCacheInitialized = true;
+        var validationFailures:Array = new Array();
+        var errorMessage:String;
+        var failure:Boolean;
+
+        var valRes:ValidationResult;
+        if (_model.isDataAvailable && _internal_data == null)
+        {
+            validationFailures.push(new ValidationResult(true, "", "", "data is required"));
+        }
+
+        model_internal::_doValidationCacheOfData = validationFailures;
+        model_internal::_doValidationLastValOfData = value;
+
+        return validationFailures;
+    }
+    
 
 }
 

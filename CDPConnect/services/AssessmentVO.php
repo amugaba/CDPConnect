@@ -1,5 +1,5 @@
 <?php
-class EpisodeVO
+class AssessmentVO
 {
 	/**
 	 * @var int
@@ -9,12 +9,12 @@ class EpisodeVO
 	/**
 	 * @var int
 	 */
-	public $client_autoid;
+	public $episode_autoid;
 	
 	/**
 	 * @var int
 	 */
-	public $number;
+	public $type;
 	
 	/**
 	 * @var string
@@ -22,35 +22,23 @@ class EpisodeVO
 	public $date;
 	
 	/**
-	 * @var string
-	 */
-	public $staff;
-	
-	/**
-	 * @var string
-	 */
-	public $facility;
-	
-	/**
 	 * @var int
 	 */
 	public $complete;
 	
 	/**
-	 * @var string
+	 * @var array
 	 */
-	public $notes;
+	public $data;
 	
 	public function __construct()
 	{
 		$this->autoid = -1;
-		$this->client_autoid = -1;
-		$this->number = -1;
+		$this->episode_autoid = -1;
+		$this->type = 0;
 		$this->date = "";
-		$this->staff = "";
-		$this->facility = "";
 		$this->complete = 0;
-		$this->notes = "";
+		$this->data = array();
 	}
 }
 ?>

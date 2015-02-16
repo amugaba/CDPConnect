@@ -12,7 +12,6 @@ import com.adobe.fiber.valueobjects.AvailablePropertyIterator;
 import com.adobe.fiber.valueobjects.IPropertyIterator;
 import mx.collections.ArrayCollection;
 import mx.events.ValidationResultEvent;
-import valueObjects.GpraVO;
 import com.adobe.fiber.core.model_internal;
 import com.adobe.fiber.valueobjects.IModelType;
 import mx.events.PropertyChangeEvent;
@@ -20,36 +19,36 @@ import mx.events.PropertyChangeEvent;
 use namespace model_internal;
 
 [ExcludeClass]
-internal class _ClientVOEntityMetadata extends com.adobe.fiber.valueobjects.AbstractEntityMetadata
+internal class _AssessmentVOEntityMetadata extends com.adobe.fiber.valueobjects.AbstractEntityMetadata
 {
     private static var emptyArray:Array = new Array();
 
-    model_internal static var allProperties:Array = new Array("autoid", "clientid", "gpras", "intake", "discharge", "followup", "firstname", "lastname", "dob", "ssn", "intakestaff", "createddate", "notes");
+    model_internal static var allProperties:Array = new Array("autoid", "episode_autoid", "type", "date", "complete", "data");
     model_internal static var allAssociationProperties:Array = new Array();
-    model_internal static var allRequiredProperties:Array = new Array("notes");
-    model_internal static var allAlwaysAvailableProperties:Array = new Array("autoid", "clientid", "gpras", "intake", "discharge", "followup", "firstname", "lastname", "dob", "ssn", "intakestaff", "createddate", "notes");
+    model_internal static var allRequiredProperties:Array = new Array("data");
+    model_internal static var allAlwaysAvailableProperties:Array = new Array("autoid", "episode_autoid", "type", "date", "complete", "data");
     model_internal static var guardedProperties:Array = new Array();
-    model_internal static var dataProperties:Array = new Array("autoid", "clientid", "gpras", "intake", "discharge", "followup", "firstname", "lastname", "dob", "ssn", "intakestaff", "createddate", "notes");
+    model_internal static var dataProperties:Array = new Array("autoid", "episode_autoid", "type", "date", "complete", "data");
     model_internal static var sourceProperties:Array = emptyArray
-    model_internal static var nonDerivedProperties:Array = new Array("autoid", "clientid", "gpras", "intake", "discharge", "followup", "firstname", "lastname", "dob", "ssn", "intakestaff", "createddate", "notes");
+    model_internal static var nonDerivedProperties:Array = new Array("autoid", "episode_autoid", "type", "date", "complete", "data");
     model_internal static var derivedProperties:Array = new Array();
-    model_internal static var collectionProperties:Array = new Array("gpras");
+    model_internal static var collectionProperties:Array = new Array("data");
     model_internal static var collectionBaseMap:Object;
-    model_internal static var entityName:String = "ClientVO";
+    model_internal static var entityName:String = "AssessmentVO";
     model_internal static var dependentsOnMap:Object;
     model_internal static var dependedOnServices:Array = new Array();
     model_internal static var propertyTypeMap:Object;
 
     
-    model_internal var _notesIsValid:Boolean;
-    model_internal var _notesValidator:com.adobe.fiber.styles.StyleValidator;
-    model_internal var _notesIsValidCacheInitialized:Boolean = false;
-    model_internal var _notesValidationFailureMessages:Array;
+    model_internal var _dataIsValid:Boolean;
+    model_internal var _dataValidator:com.adobe.fiber.styles.StyleValidator;
+    model_internal var _dataIsValidCacheInitialized:Boolean = false;
+    model_internal var _dataValidationFailureMessages:Array;
 
-    model_internal var _instance:_Super_ClientVO;
+    model_internal var _instance:_Super_AssessmentVO;
     model_internal static var _nullStyle:com.adobe.fiber.styles.Style = new com.adobe.fiber.styles.Style();
 
-    public function _ClientVOEntityMetadata(value : _Super_ClientVO)
+    public function _AssessmentVOEntityMetadata(value : _Super_AssessmentVO)
     {
         // initialize property maps
         if (model_internal::dependentsOnMap == null)
@@ -57,46 +56,32 @@ internal class _ClientVOEntityMetadata extends com.adobe.fiber.valueobjects.Abst
             // dependents map
             model_internal::dependentsOnMap = new Object();
             model_internal::dependentsOnMap["autoid"] = new Array();
-            model_internal::dependentsOnMap["clientid"] = new Array();
-            model_internal::dependentsOnMap["gpras"] = new Array();
-            model_internal::dependentsOnMap["intake"] = new Array();
-            model_internal::dependentsOnMap["discharge"] = new Array();
-            model_internal::dependentsOnMap["followup"] = new Array();
-            model_internal::dependentsOnMap["firstname"] = new Array();
-            model_internal::dependentsOnMap["lastname"] = new Array();
-            model_internal::dependentsOnMap["dob"] = new Array();
-            model_internal::dependentsOnMap["ssn"] = new Array();
-            model_internal::dependentsOnMap["intakestaff"] = new Array();
-            model_internal::dependentsOnMap["createddate"] = new Array();
-            model_internal::dependentsOnMap["notes"] = new Array();
+            model_internal::dependentsOnMap["episode_autoid"] = new Array();
+            model_internal::dependentsOnMap["type"] = new Array();
+            model_internal::dependentsOnMap["date"] = new Array();
+            model_internal::dependentsOnMap["complete"] = new Array();
+            model_internal::dependentsOnMap["data"] = new Array();
 
             // collection base map
             model_internal::collectionBaseMap = new Object();
-            model_internal::collectionBaseMap["gpras"] = "Object";
+            model_internal::collectionBaseMap["data"] = "Object";
         }
 
         // Property type Map
         model_internal::propertyTypeMap = new Object();
         model_internal::propertyTypeMap["autoid"] = "int";
-        model_internal::propertyTypeMap["clientid"] = "String";
-        model_internal::propertyTypeMap["gpras"] = "ArrayCollection";
-        model_internal::propertyTypeMap["intake"] = "valueObjects.GpraVO";
-        model_internal::propertyTypeMap["discharge"] = "valueObjects.GpraVO";
-        model_internal::propertyTypeMap["followup"] = "valueObjects.GpraVO";
-        model_internal::propertyTypeMap["firstname"] = "String";
-        model_internal::propertyTypeMap["lastname"] = "String";
-        model_internal::propertyTypeMap["dob"] = "String";
-        model_internal::propertyTypeMap["ssn"] = "String";
-        model_internal::propertyTypeMap["intakestaff"] = "String";
-        model_internal::propertyTypeMap["createddate"] = "String";
-        model_internal::propertyTypeMap["notes"] = "String";
+        model_internal::propertyTypeMap["episode_autoid"] = "int";
+        model_internal::propertyTypeMap["type"] = "int";
+        model_internal::propertyTypeMap["date"] = "String";
+        model_internal::propertyTypeMap["complete"] = "int";
+        model_internal::propertyTypeMap["data"] = "ArrayCollection";
 
         model_internal::_instance = value;
-        model_internal::_notesValidator = new StyleValidator(model_internal::_instance.model_internal::_doValidationForNotes);
-        model_internal::_notesValidator.required = true;
-        model_internal::_notesValidator.requiredFieldError = "notes is required";
-        //model_internal::_notesValidator.source = model_internal::_instance;
-        //model_internal::_notesValidator.property = "notes";
+        model_internal::_dataValidator = new StyleValidator(model_internal::_instance.model_internal::_doValidationForData);
+        model_internal::_dataValidator.required = true;
+        model_internal::_dataValidator.requiredFieldError = "data is required";
+        //model_internal::_dataValidator.source = model_internal::_instance;
+        //model_internal::_dataValidator.property = "data";
     }
 
     override public function getEntityName():String
@@ -147,7 +132,7 @@ internal class _ClientVOEntityMetadata extends com.adobe.fiber.valueobjects.Abst
     override public function getDependants(propertyName:String):Array
     {
        if (model_internal::nonDerivedProperties.indexOf(propertyName) == -1)
-            throw new Error(propertyName + " is not a data property of entity ClientVO");
+            throw new Error(propertyName + " is not a data property of entity AssessmentVO");
             
        return model_internal::dependentsOnMap[propertyName] as Array;  
     }
@@ -165,7 +150,7 @@ internal class _ClientVOEntityMetadata extends com.adobe.fiber.valueobjects.Abst
     override public function getCollectionBase(propertyName:String):String
     {
         if (model_internal::collectionProperties.indexOf(propertyName) == -1)
-            throw new Error(propertyName + " is not a collection property of entity ClientVO");
+            throw new Error(propertyName + " is not a collection property of entity AssessmentVO");
 
         return model_internal::collectionBaseMap[propertyName];
     }
@@ -173,7 +158,7 @@ internal class _ClientVOEntityMetadata extends com.adobe.fiber.valueobjects.Abst
     override public function getPropertyType(propertyName:String):String
     {
         if (model_internal::allProperties.indexOf(propertyName) == -1)
-            throw new Error(propertyName + " is not a property of ClientVO");
+            throw new Error(propertyName + " is not a property of AssessmentVO");
 
         return model_internal::propertyTypeMap[propertyName];
     }
@@ -187,7 +172,7 @@ internal class _ClientVOEntityMetadata extends com.adobe.fiber.valueobjects.Abst
     {
         if (model_internal::allProperties.indexOf(propertyName) == -1)
         {
-            throw new Error(propertyName + " does not exist for entity ClientVO");
+            throw new Error(propertyName + " does not exist for entity AssessmentVO");
         }
 
         return model_internal::_instance[propertyName];
@@ -197,7 +182,7 @@ internal class _ClientVOEntityMetadata extends com.adobe.fiber.valueobjects.Abst
     {
         if (model_internal::nonDerivedProperties.indexOf(propertyName) == -1)
         {
-            throw new Error(propertyName + " is not a modifiable property of entity ClientVO");
+            throw new Error(propertyName + " is not a modifiable property of entity AssessmentVO");
         }
 
         model_internal::_instance[propertyName] = value;
@@ -229,7 +214,7 @@ internal class _ClientVOEntityMetadata extends com.adobe.fiber.valueobjects.Abst
     {
         if (model_internal::allProperties.indexOf(propertyName) == -1)
         {
-            throw new Error(propertyName + " does not exist for entity ClientVO");
+            throw new Error(propertyName + " does not exist for entity AssessmentVO");
         }
 
         if (model_internal::allAlwaysAvailableProperties.indexOf(propertyName) != -1)
@@ -330,73 +315,31 @@ internal class _ClientVOEntityMetadata extends com.adobe.fiber.valueobjects.Abst
     }
 
     [Bindable(event="propertyChange")]
-    public function get isClientidAvailable():Boolean
+    public function get isEpisode_autoidAvailable():Boolean
     {
         return true;
     }
 
     [Bindable(event="propertyChange")]
-    public function get isGprasAvailable():Boolean
+    public function get isTypeAvailable():Boolean
     {
         return true;
     }
 
     [Bindable(event="propertyChange")]
-    public function get isIntakeAvailable():Boolean
+    public function get isDateAvailable():Boolean
     {
         return true;
     }
 
     [Bindable(event="propertyChange")]
-    public function get isDischargeAvailable():Boolean
+    public function get isCompleteAvailable():Boolean
     {
         return true;
     }
 
     [Bindable(event="propertyChange")]
-    public function get isFollowupAvailable():Boolean
-    {
-        return true;
-    }
-
-    [Bindable(event="propertyChange")]
-    public function get isFirstnameAvailable():Boolean
-    {
-        return true;
-    }
-
-    [Bindable(event="propertyChange")]
-    public function get isLastnameAvailable():Boolean
-    {
-        return true;
-    }
-
-    [Bindable(event="propertyChange")]
-    public function get isDobAvailable():Boolean
-    {
-        return true;
-    }
-
-    [Bindable(event="propertyChange")]
-    public function get isSsnAvailable():Boolean
-    {
-        return true;
-    }
-
-    [Bindable(event="propertyChange")]
-    public function get isIntakestaffAvailable():Boolean
-    {
-        return true;
-    }
-
-    [Bindable(event="propertyChange")]
-    public function get isCreateddateAvailable():Boolean
-    {
-        return true;
-    }
-
-    [Bindable(event="propertyChange")]
-    public function get isNotesAvailable():Boolean
+    public function get isDataAvailable():Boolean
     {
         return true;
     }
@@ -405,12 +348,12 @@ internal class _ClientVOEntityMetadata extends com.adobe.fiber.valueobjects.Abst
     /**
      * derived property recalculation
      */
-    public function invalidateDependentOnNotes():void
+    public function invalidateDependentOnData():void
     {
-        if (model_internal::_notesIsValidCacheInitialized )
+        if (model_internal::_dataIsValidCacheInitialized )
         {
-            model_internal::_instance.model_internal::_doValidationCacheOfNotes = null;
-            model_internal::calculateNotesIsValid();
+            model_internal::_instance.model_internal::_doValidationCacheOfData = null;
+            model_internal::calculateDataIsValid();
         }
     }
 
@@ -426,110 +369,68 @@ internal class _ClientVOEntityMetadata extends com.adobe.fiber.valueobjects.Abst
     }
 
     [Bindable(event="propertyChange")]   
-    public function get clientidStyle():com.adobe.fiber.styles.Style
+    public function get episode_autoidStyle():com.adobe.fiber.styles.Style
     {
         return model_internal::_nullStyle;
     }
 
     [Bindable(event="propertyChange")]   
-    public function get gprasStyle():com.adobe.fiber.styles.Style
+    public function get typeStyle():com.adobe.fiber.styles.Style
     {
         return model_internal::_nullStyle;
     }
 
     [Bindable(event="propertyChange")]   
-    public function get intakeStyle():com.adobe.fiber.styles.Style
+    public function get dateStyle():com.adobe.fiber.styles.Style
     {
         return model_internal::_nullStyle;
     }
 
     [Bindable(event="propertyChange")]   
-    public function get dischargeStyle():com.adobe.fiber.styles.Style
+    public function get completeStyle():com.adobe.fiber.styles.Style
     {
         return model_internal::_nullStyle;
     }
 
     [Bindable(event="propertyChange")]   
-    public function get followupStyle():com.adobe.fiber.styles.Style
+    public function get dataStyle():com.adobe.fiber.styles.Style
     {
         return model_internal::_nullStyle;
     }
 
-    [Bindable(event="propertyChange")]   
-    public function get firstnameStyle():com.adobe.fiber.styles.Style
+    public function get dataValidator() : StyleValidator
     {
-        return model_internal::_nullStyle;
+        return model_internal::_dataValidator;
     }
 
-    [Bindable(event="propertyChange")]   
-    public function get lastnameStyle():com.adobe.fiber.styles.Style
+    model_internal function set _dataIsValid_der(value:Boolean):void 
     {
-        return model_internal::_nullStyle;
-    }
-
-    [Bindable(event="propertyChange")]   
-    public function get dobStyle():com.adobe.fiber.styles.Style
-    {
-        return model_internal::_nullStyle;
-    }
-
-    [Bindable(event="propertyChange")]   
-    public function get ssnStyle():com.adobe.fiber.styles.Style
-    {
-        return model_internal::_nullStyle;
-    }
-
-    [Bindable(event="propertyChange")]   
-    public function get intakestaffStyle():com.adobe.fiber.styles.Style
-    {
-        return model_internal::_nullStyle;
-    }
-
-    [Bindable(event="propertyChange")]   
-    public function get createddateStyle():com.adobe.fiber.styles.Style
-    {
-        return model_internal::_nullStyle;
-    }
-
-    [Bindable(event="propertyChange")]   
-    public function get notesStyle():com.adobe.fiber.styles.Style
-    {
-        return model_internal::_nullStyle;
-    }
-
-    public function get notesValidator() : StyleValidator
-    {
-        return model_internal::_notesValidator;
-    }
-
-    model_internal function set _notesIsValid_der(value:Boolean):void 
-    {
-        var oldValue:Boolean = model_internal::_notesIsValid;         
+        var oldValue:Boolean = model_internal::_dataIsValid;         
         if (oldValue !== value)
         {
-            model_internal::_notesIsValid = value;
-            this.dispatchEvent(mx.events.PropertyChangeEvent.createUpdateEvent(this, "notesIsValid", oldValue, value));
+            model_internal::_dataIsValid = value;
+            this.dispatchEvent(mx.events.PropertyChangeEvent.createUpdateEvent(this, "dataIsValid", oldValue, value));
         }                             
     }
 
     [Bindable(event="propertyChange")]
-    public function get notesIsValid():Boolean
+    public function get dataIsValid():Boolean
     {
-        if (!model_internal::_notesIsValidCacheInitialized)
+        if (!model_internal::_dataIsValidCacheInitialized)
         {
-            model_internal::calculateNotesIsValid();
+            model_internal::calculateDataIsValid();
         }
 
-        return model_internal::_notesIsValid;
+        return model_internal::_dataIsValid;
     }
 
-    model_internal function calculateNotesIsValid():void
+    model_internal function calculateDataIsValid():void
     {
-        var valRes:ValidationResultEvent = model_internal::_notesValidator.validate(model_internal::_instance.notes)
-        model_internal::_notesIsValid_der = (valRes.results == null);
-        model_internal::_notesIsValidCacheInitialized = true;
+        var valRes:ValidationResultEvent = model_internal::_dataValidator.validate(model_internal::_instance.data)
+        model_internal::_dataIsValid_der = (valRes.results == null);
+        model_internal::_dataIsValidCacheInitialized = true;
         if (valRes.results == null)
-             model_internal::notesValidationFailureMessages_der = emptyArray;
+             model_internal::dataValidationFailureMessages_der = emptyArray;
         else
         {
             var _valFailures:Array = new Array();
@@ -537,22 +438,22 @@ internal class _ClientVOEntityMetadata extends com.adobe.fiber.valueobjects.Abst
             {
                 _valFailures.push(valRes.results[a].errorMessage);
             }
-            model_internal::notesValidationFailureMessages_der = _valFailures;
+            model_internal::dataValidationFailureMessages_der = _valFailures;
         }
     }
 
     [Bindable(event="propertyChange")]
-    public function get notesValidationFailureMessages():Array
+    public function get dataValidationFailureMessages():Array
     {
-        if (model_internal::_notesValidationFailureMessages == null)
-            model_internal::calculateNotesIsValid();
+        if (model_internal::_dataValidationFailureMessages == null)
+            model_internal::calculateDataIsValid();
 
-        return _notesValidationFailureMessages;
+        return _dataValidationFailureMessages;
     }
 
-    model_internal function set notesValidationFailureMessages_der(value:Array) : void
+    model_internal function set dataValidationFailureMessages_der(value:Array) : void
     {
-        var oldValue:Array = model_internal::_notesValidationFailureMessages;
+        var oldValue:Array = model_internal::_dataValidationFailureMessages;
 
         var needUpdate : Boolean = false;
         if (oldValue == null)
@@ -580,8 +481,8 @@ internal class _ClientVOEntityMetadata extends com.adobe.fiber.valueobjects.Abst
 
         if (needUpdate)
         {
-            model_internal::_notesValidationFailureMessages = value;   
-            this.dispatchEvent(mx.events.PropertyChangeEvent.createUpdateEvent(this, "notesValidationFailureMessages", oldValue, value));
+            model_internal::_dataValidationFailureMessages = value;   
+            this.dispatchEvent(mx.events.PropertyChangeEvent.createUpdateEvent(this, "dataValidationFailureMessages", oldValue, value));
             // Only execute calculateIsValid if it has been called before, to update the validationFailureMessages for
             // the entire entity.
             if (model_internal::_instance.model_internal::_cacheInitialized_isValid)
@@ -616,9 +517,9 @@ internal class _ClientVOEntityMetadata extends com.adobe.fiber.valueobjects.Abst
      {
          switch(propertyName)
          {
-            case("notes"):
+            case("data"):
             {
-                return notesValidationFailureMessages;
+                return dataValidationFailureMessages;
             }
             default:
             {

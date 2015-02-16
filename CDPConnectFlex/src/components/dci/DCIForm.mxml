@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Form xmlns:fx="http://ns.adobe.com/mxml/2009" 
+<assessment:QuestionForm xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		 xmlns:s="library://ns.adobe.com/flex/spark" 
 		 xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%"
+		 xmlns:assessment="components.assessment.*" 
 		 labelWidth="260">
 	<fx:Script>
 		<![CDATA[
@@ -17,6 +18,7 @@
 			import components.validators.DateAgeValidator;
 			import components.validators.DropDownValidator;
 			
+			import mx.collections.ArrayCollection;
 			import mx.collections.ArrayList;
 			import mx.controls.HRule;
 			import mx.controls.Text;
@@ -27,8 +29,6 @@
 			
 			import spark.events.IndexChangeEvent;
 			
-			protected var global:CDPConnectFlex = FlexGlobals.topLevelApplication as CDPConnectFlex;
-			public var questions:Vector.<QuestionClass> = new Vector.<QuestionClass>();
 			protected static var yn:ArrayList = new ArrayList([YES_VALUE,NO_VALUE]);
 			protected static var ynrdm:ArrayList = new ArrayList([YES_VALUE,NO_VALUE,REFUSED_VALUE,DONT_KNOW_VALUE,MISSING_VALUE]);
 			protected static var ynrm:ArrayList = new ArrayList([YES_VALUE,NO_VALUE,REFUSED_VALUE,MISSING_VALUE]);
@@ -46,92 +46,9 @@
 			public static var DONT_KNOW_VALUE:String = "Don't Know";
 			public static var MISSING_VALUE:String = "Missing Data";
 			
-			public var viewstackIndex:int = 0;
-			protected var created:Boolean = false;
-			
-			public function addQuestion(q:QuestionClass, width:int = -1):void
-			{
-				questions.push(q);
-				addElement(q);
-				if(width != -1)
-					q.inputControl.width = width;
-			}
-			
-			public function initializeForm():void
-			{
-				if(!created)
-					createForm();
-				else
-					reset();
-			}
-			
-			public function createForm():void
-			{
-			}
-			
-			public function reset():void
-			{
-				for each(var q:QuestionClass in questions)
-					q.restoreDefault();
-			}
-			
-			protected function addDivider():void
-			{
-				var h:HRule = new HRule();
-				h.height = 5;
-				h.percentWidth = 100;
-				addElement(h);
-			}
-			
-			
-			
-			protected function addSkipDropDown(sourceQuestion:QuestionClass, skipAnswers:Array, skipQuestions:Array, inverse:Boolean = false):void
-			{
-				var skip:SkipPattern = new SkipPattern(sourceQuestion,skipQuestions,skipAnswers,[IndexChangeEvent.CHANGE],inverse);
-				sourceQuestion.skipPatterns.push(skip);
-			}
-			
-			protected function addSkipDropDownMultiple(handler:SkipMultipleHandler, sourceQuestion:QuestionClass, skipAnswers:Array):void
-			{
-				var skip:SkipPatternMultiple = new SkipPatternMultiple(handler,sourceQuestion,skipAnswers,[IndexChangeEvent.CHANGE]);
-				sourceQuestion.skipPatterns.push(skip);
-			}
-			protected function addSkipTextNumberMultiple(handler:SkipMultipleHandler, sourceQuestion:QuestionClass, skipAnswers:Array):void
-			{
-				var skip:SkipPatternMultiple = new SkipPatternMultiple(handler,sourceQuestion,skipAnswers,[FlexEvent.VALUE_COMMIT,FocusEvent.MOUSE_FOCUS_CHANGE]);
-				sourceQuestion.skipPatterns.push(skip);
-			}
-			protected function createSkipMultipleHandler(skipQuestions:Array):SkipMultipleHandler
-			{
-				return new SkipMultipleHandler(skipQuestions);
-			}
-			protected function addSkipTextNumber(sourceQuestion:QuestionClass, skipQuestions:Array, skipAnswers:Array):void
-			{
-				//(getQuestion(sourceQuestion) as QuestionTextNumber).addSkip(qArray,min,max,invert);
-				var skip:SkipPattern = new SkipPattern(sourceQuestion,skipQuestions,skipAnswers,[FlexEvent.VALUE_COMMIT,FocusEvent.MOUSE_FOCUS_CHANGE]);
-				sourceQuestion.skipPatterns.push(skip);
-			}
-			protected function addSkipTextRange(sourceQuestion:QuestionClass, skipQuestions:Array, min:int=0,max:int=0,invert:Boolean=false):void
-			{
-				//(getQuestion(sourceQuestion) as QuestionTextNumber).addSkip(qArray,min,max,invert);
-				var skip:SkipPattern = new SkipPatternRange(sourceQuestion,skipQuestions,min,max,invert,[FlexEvent.VALUE_COMMIT,FocusEvent.MOUSE_FOCUS_CHANGE]);
-				sourceQuestion.skipPatterns.push(skip);
-			}
-			
-			protected function createText(text:String,style:String):void
-			{
-				var t:Text = new Text();
-				t.text = text;
-				t.width = 540-10;//This needs to be changed to access the GPRAPage viewstack.width value - 10
-				t.styleName = style;
-				addElement(t);
-			}
-			
-			public function enableForm(enabled:Boolean):void
-			{
-			}
-			
-			public function saveData(gpraData:Array):void
+			public var viewstackIndex:int = 0;	
+
+			public override function saveData(gpraData:Array):Array
 			{
 				for each(var q:QuestionClass in questions)
 				{
@@ -164,6 +81,7 @@
 						gpraData[q.codeName] = getDBValue_qList(q as QuestionList);
 					}
 				}
+				return gpraData;
 			}
 			
 			private function getDBValue_qTextRef_int(q:QuestionTextRefusable):int
@@ -280,4 +198,4 @@
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
-</mx:Form>
+</assessment:QuestionForm>

@@ -62,6 +62,11 @@ class ClientVO
 	 */
 	public $createddate;
 	
+	/**
+	 * @var string
+	 */
+	public $notes;
+	
 	public function __construct()
 	{
 		$this->autoid = -1;
@@ -76,6 +81,7 @@ class ClientVO
 		$this->ssn = "";
 		$this->intakestaff = "Unknown";
 		$this->createddate = "";
+		$this->notes = "";
 	}
 }
 ?>

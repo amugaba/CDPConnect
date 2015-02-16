@@ -34,13 +34,14 @@
 			import valueObjects.ClientVO;
 			import valueObjects.GpraVO;
 			
-			[Bindable] protected var clientGPRAs:ArrayCollection = new ArrayCollection();
 			protected var global:CDPConnectFlex = FlexGlobals.topLevelApplication as CDPConnectFlex;
 			
 			public function initializePage():void
 			{
 				clientGroup.initializeGroup();
 				episodeGroup.initializeGroup();
+				if(global.activeClient == null)
+					global.pageButtonBar.enabled = false;
 			}		
 			
 			
@@ -200,52 +201,7 @@
 	</fx:Declarations>
 	<client:ClientGroup id="clientGroup" x="0" y="0" />
 	<mx:HRule x="10" y="223" width="695" height="20"/>
-	<client:EpisodeGroup id="episodeGroup" x="0" y="240" />
-	<mx:HRule x="10" y="454" width="695" height="20"/>
-	<!-- Assessments Area -->
-	<s:DataGrid id="assessmentGrid" x="9" y="506" width="289" height="194"
-				dataProvider="{clientGPRAs}" itemRenderer="components.gpraGridRenderer"
-				requestedRowCount="3" resizableColumns="false">
-		<s:columns>
-			<s:ArrayList>
-				<s:GridColumn dataField="type" headerText="Type" width="100"></s:GridColumn>
-				<s:GridColumn dataField="date" headerText="Date" width="70"></s:GridColumn>
-				<s:GridColumn dataField="status" headerText="Done" width="50"></s:GridColumn>
-				<s:GridColumn dataField="load" headerText="Load" width="60"></s:GridColumn>
-			</s:ArrayList>
-		</s:columns>
-		<s:typicalItem>
-			<fx:Object type="Intake" date="5/22/2013"></fx:Object>
-		</s:typicalItem>
-	</s:DataGrid>
-	<s:Button id="sbirtIntakeNegativeButton" x="418" y="540"
-			  label="SBIRT - Neg"/>
-	<s:Button id="sbirtIntakeBIButton" x="423" y="580"
-			  label="SBIRT - BI" />
-	<s:Button id="dischargeGeneralButton" x="536" y="505"
-			  label="General"/>
-	<s:Button id="followupGeneralButton" x="633" y="505"
-			  label="General" />
-
-	
-	
-	<s:Label x="102" y="480" fontWeight="bold" text="Assessments List"/>
-	<mx:VRule x="302" y="464" width="14" height="231"/>
-	<mx:VRule x="398" y="463" width="14" height="231"/>
-	<s:Label x="328" y="481" fontWeight="bold" text="Screening"/>
-	<s:Label x="433" y="478" fontWeight="bold" text="DCI Intake"/>
-	<s:Label x="533" y="477" fontWeight="bold" text="DCI Discharge"/>
-	<s:Label x="634" y="478" fontWeight="bold" text="DCI Followup"/>
-	<s:Button id="prescreenButton" x="318" y="503" label="Prescreen"/>
-	<s:Button id="auditButton" x="320" y="542" label="AUDIT"/>
-	<s:Button id="dast10Button" x="320" y="581" label="DAST-10"/>
-	<s:Button id="phq9Button" x="320" y="621" label="PHQ9"/>
-	<s:Button id="intakeGeneralButton" x="426" y="503" label="General"/>
-	<s:Button id="sbirtIntakeRTButton" x="412" y="621" label="SBIRT - BT/RT"/>
-	<mx:VRule x="513" y="463" width="14" height="231"/>
-	<s:Button id="dischargeNoInterviewButton" x="528" y="541" label="No Interview"/>
-	<s:Button id="sbirtFollowupButton" x="631" y="541"
-			  label="SBIRT - BI" />
-	<mx:VRule x="617" y="463" width="14" height="231"/>
-
+	<client:EpisodeGroup id="episodeGroup" x="0" y="233" />
+	<mx:HRule x="10" y="462" width="695" height="20"/>
+	<client:AssessmentGroup id="assessmentGroup" x="0" y="471"/>
 </s:NavigatorContent>

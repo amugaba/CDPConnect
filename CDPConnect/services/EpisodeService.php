@@ -33,7 +33,7 @@ class EpisodeService
 	 */
     public function getEpisodesByClientID ($autoid)
     {
-        $stmt = mysqli_prepare($this->connection, "SELECT autoid, number, date, staff, facility, complete FROM $this->tablename where client_autoid=?");
+        $stmt = mysqli_prepare($this->connection, "SELECT autoid, number, date, staff, facility, complete, notes FROM $this->tablename where client_autoid=?");
         $this->throwExceptionOnError();
 
         $stmt->bind_param('i', $autoid);
@@ -43,7 +43,7 @@ class EpisodeService
         $this->throwExceptionOnError();
 
         $episode = new EpisodeVO();
-        $stmt->bind_result($episode->autoid, $episode->number, $episode->date, $episode->staff, $episode->facility, $episode->complete);
+        $stmt->bind_result($episode->autoid, $episode->number, $episode->date, $episode->staff, $episode->facility, $episode->complete, $episode->notes);
         
         $episodes = array();
         while($stmt->fetch())
@@ -51,7 +51,7 @@ class EpisodeService
         	$episode->client_autoid = $autoid;
         	array_push($episodes, $episode);
         	$episode = new EpisodeVO();
-        	$stmt->bind_result($episode->autoid, $episode->number, $episode->date, $episode->staff, $episode->facility, $episode->complete);
+        	$stmt->bind_result($episode->autoid, $episode->number, $episode->date, $episode->staff, $episode->facility, $episode->complete, $episode->notes);
         }
 
 	    $stmt->free_result();
@@ -81,6 +81,56 @@ class EpisodeService
 	    $stmt->free_result();
 	    $this->connection->close();     
         return $episode;
+    }
+    
+	/**
+	 * Update an episode
+	 * 
+	 * @param EpisodeVO $item
+	 * @return EpisodeVO
+	 */
+    public function updateEpisode ($item)
+    {        
+        $stmt = $this->connection->prepare("UPDATE $this->tablename SET
+        client_autoid=?, number=?, date=?, staff=?, facility=?, complete=?
+        WHERE autoid=?");
+        $this->throwExceptionOnError();
+
+        $stmt->bind_param('iisssii', $item->client_autoid, $item->number, $item->date, $item->staff,
+        	$item->facility, $item->complete, $item->autoid);
+        $this->throwExceptionOnError();
+
+        $rs = $stmt->execute();
+        $this->throwExceptionOnError();
+        
+        $stmt->free_result();
+        $this->connection->close();
+        
+        return $item; 
+    }
+    
+	/**
+	 * Save notes
+	 * 
+	 * @param EpisodeVO $item
+	 * @return EpisodeVO
+	 */
+    public function updateNotes ($item)
+    {        
+        $stmt = $this->connection->prepare("UPDATE $this->tablename SET
+        notes=? WHERE autoid=?");
+        $this->throwExceptionOnError();
+
+        $stmt->bind_param('si', $item->notes, $item->autoid);
+        $this->throwExceptionOnError();
+
+        $rs = $stmt->execute();
+        $this->throwExceptionOnError();
+        
+        $stmt->free_result();
+        $this->connection->close();
+        
+        return $item; 
     }
    
     /**
