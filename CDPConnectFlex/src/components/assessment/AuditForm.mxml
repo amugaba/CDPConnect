@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<assessment:QuestionForm xmlns:fx="http://ns.adobe.com/mxml/2009" 
+						 xmlns:s="library://ns.adobe.com/flex/spark" 
+						 xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:assessment="components.assessment.*" width="100%" height="100%"
+						 xmlns:assessmentservice="services.assessmentservice.*"
+						 labelWidth="400">
+	<fx:Script>
+		<![CDATA[
+			import components.questions.QuestionList;
+			import components.questions.QuestionText;
+			import components.skips.SkipMultipleHandler;
+			
+			import mx.collections.ArrayList;
+			import mx.controls.Alert;
+			import mx.rpc.events.ResultEvent;
+			
+			import valueObjects.AssessmentVO;
+			
+			private var freqList:ArrayList = new ArrayList(["Never","Less than monthly","Monthly","Weekly","Daily or almost daily"]);
+			private var freqList2:ArrayList = new ArrayList(["No","Yes, but not in the last year","Yes, during the last year"]);
+			
+			public var q1:QuestionList = new QuestionList("Q1","1. How often do you have a drink of containing alcohol?",new ArrayList(["Never","Monthly or less","2 to 4 times a month","2 to 3 times a week","4 or more times a week"]),0);
+			public var q2:QuestionList = new QuestionList("Q2","2. How many drinks containing alcohol do you have on a typical day when you are drinking?",new ArrayList(["1 or 2","3 or 4","5 or 6","7 to 9","10 or more"]),0);
+			public var q3:QuestionList = new QuestionList("Q3","3. How often do you have [5 for men / 4 for women] or more drinks on one occasion?",freqList,0);
+			public var q4:QuestionList = new QuestionList("Q4","4. How often during the last year have you found that you were not able to stop drinking once you had started?",freqList,0);
+			public var q5:QuestionList = new QuestionList("Q5","5. How often during the last year have you failed to do what was normally expected of you because of drinking?",freqList,0);
+			public var q6:QuestionList = new QuestionList("Q6","6. How often during the last year have you needed a first drink in the morning to get yourself going after a heavy drinking session?",freqList,0);
+			public var q7:QuestionList = new QuestionList("Q7","7. How often during the last year have you had a feeling of guilt or remorse after drinking?",freqList,0);
+			public var q8:QuestionList = new QuestionList("Q8","8. How often during the last year have you been unable to remember what happened the night before because of your drinking?",freqList,0);
+			public var q9:QuestionList = new QuestionList("Q9","9. Have you or someone else been injured because of your drinking?",freqList2,0);
+			public var q10:QuestionList = new QuestionList("Q10","10. Has a relative, friend, doctor, or other health care worker been concerned about your drinking or suggested you cut down?",freqList2,0);
+			public var qScore:QuestionText = new QuestionText("Score","Score","");
+			public var qModality:QuestionList = new QuestionList("Modality","Suggested action/modality",new ArrayList(["Negative/Positive Reinforcement","Brief Intervention","Brief Treatment","Referral to Treatment"]),-1);
+			
+			public override function createForm():void
+			{
+				createText("AUDIT - Alcohol Use Disorders Identification Test","h1");
+				var width1:int = 120;
+				var width2:int = 210;
+				addQuestion(q1,width2);
+				addQuestion(q2);
+				addQuestion(q3,width1);
+				addQuestion(q4,width1);
+				addQuestion(q5,width1);
+				addQuestion(q6,width1);
+				addQuestion(q7,width1);
+				addQuestion(q8,width1);
+				addQuestion(q9,width2);
+				addQuestion(q10,width2);
+				createText("Results","h1");
+				addQuestion(qScore,80);
+				addQuestion(qModality,width2);
+				qScore.input.editable = false;
+				qModality.input.enabled = false
+				
+				//Control logic
+				addSkipDropDown(q1, ["Never"], [q2,q3]);
+				var smh:SkipMultipleHandler = createSkipMultipleHandler([q4,q5,q6,q7,q8]);
+				smh.allMustSkip = true;
+				addSkipDropDownMultiple(smh, q2, ["1 or 2"]);
+				addSkipDropDownMultiple(smh, q3, ["Never"]);
+			}
+			
+			protected function saveButton_clickHandler(event:MouseEvent):void
+			{
+				var score:int = calculateScore();
+				qScore.answer = score.toString();
+				qModality.input.selectedIndex = getScoreModality(score);
+				global.pageAssessment.saveAssessment();
+			}
+			
+			private function calculateScore():int
+			{
+				var score:int = 0;
+				score += q1.getAnswerIndex();
+				score += q2.getAnswerIndex();
+				score += q3.getAnswerIndex();
+				score += q4.getAnswerIndex();
+				score += q5.getAnswerIndex();
+				score += q6.getAnswerIndex();
+				score += q7.getAnswerIndex();
+				score += q8.getAnswerIndex();
+				score += 2*q9.getAnswerIndex();
+				score += 2*q10.getAnswerIndex();
+				return score;
+			}
+			
+			private function getScoreModality(score:int):int
+			{
+				if(score < 8)
+					return SBIRTModality.NEG;
+				if(score < 16)
+					return SBIRTModality.BI;
+				if(score < 20)
+					return SBIRTModality.BT;
+				else
+					return SBIRTModality.RT;
+			}			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<s:Button id="saveButton" label="Save" x="150" y="300" click="saveButton_clickHandler(event)"/>
+</assessment:QuestionForm>

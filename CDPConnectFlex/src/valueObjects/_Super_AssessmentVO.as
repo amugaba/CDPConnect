@@ -66,6 +66,7 @@ public class _Super_AssessmentVO extends flash.events.EventDispatcher implements
     private var _internal_autoid : int;
     private var _internal_episode_autoid : int;
     private var _internal_type : int;
+    private var _internal_subtype : int;
     private var _internal_date : String;
     private var _internal_complete : int;
     private var _internal_data : ArrayCollection;
@@ -85,6 +86,7 @@ public class _Super_AssessmentVO extends flash.events.EventDispatcher implements
         _model = new _AssessmentVOEntityMetadata(this);
 
         // Bind to own data or source properties for cache invalidation triggering
+        model_internal::_changeWatcherArray.push(mx.binding.utils.ChangeWatcher.watch(this, "date", model_internal::setterListenerDate));
         model_internal::_changeWatcherArray.push(mx.binding.utils.ChangeWatcher.watch(this, "data", model_internal::setterListenerData));
 
     }
@@ -109,6 +111,12 @@ public class _Super_AssessmentVO extends flash.events.EventDispatcher implements
     public function get type() : int
     {
         return _internal_type;
+    }
+
+    [Bindable(event="propertyChange")]
+    public function get subtype() : int
+    {
+        return _internal_subtype;
     }
 
     [Bindable(event="propertyChange")]
@@ -164,6 +172,16 @@ public class _Super_AssessmentVO extends flash.events.EventDispatcher implements
         {
             _internal_type = value;
             this.dispatchEvent(mx.events.PropertyChangeEvent.createUpdateEvent(this, "type", oldValue, _internal_type));
+        }
+    }
+
+    public function set subtype(value:int) : void
+    {
+        var oldValue:int = _internal_subtype;
+        if (oldValue !== value)
+        {
+            _internal_subtype = value;
+            this.dispatchEvent(mx.events.PropertyChangeEvent.createUpdateEvent(this, "subtype", oldValue, _internal_subtype));
         }
     }
 
@@ -224,6 +242,11 @@ public class _Super_AssessmentVO extends flash.events.EventDispatcher implements
      *  - the validity of the property (and the containing entity) if the given data property is required.
      */
 
+    model_internal function setterListenerDate(value:flash.events.Event):void
+    {
+        _model.invalidateDependentOnDate();
+    }
+
     model_internal function setterListenerData(value:flash.events.Event):void
     {
         if (value is mx.events.PropertyChangeEvent)
@@ -257,6 +280,11 @@ public class _Super_AssessmentVO extends flash.events.EventDispatcher implements
         var validationFailureMessages:Array = new Array();
 
         var propertyValidity:Boolean = true;
+        if (!_model.dateIsValid)
+        {
+            propertyValidity = false;
+            com.adobe.fiber.util.FiberUtils.arrayAdd(validationFailureMessages, _model.model_internal::_dateValidationFailureMessages);
+        }
         if (!_model.dataIsValid)
         {
             propertyValidity = false;
@@ -341,6 +369,33 @@ public class _Super_AssessmentVO extends flash.events.EventDispatcher implements
         }
     }
 
+    model_internal var _doValidationCacheOfDate : Array = null;
+    model_internal var _doValidationLastValOfDate : String;
+
+    model_internal function _doValidationForDate(valueIn:Object):Array
+    {
+        var value : String = valueIn as String;
+
+        if (model_internal::_doValidationCacheOfDate != null && model_internal::_doValidationLastValOfDate == value)
+           return model_internal::_doValidationCacheOfDate ;
+
+        _model.model_internal::_dateIsValidCacheInitialized = true;
+        var validationFailures:Array = new Array();
+        var errorMessage:String;
+        var failure:Boolean;
+
+        var valRes:ValidationResult;
+        if (_model.isDateAvailable && _internal_date == null)
+        {
+            validationFailures.push(new ValidationResult(true, "", "", "date is required"));
+        }
+
+        model_internal::_doValidationCacheOfDate = validationFailures;
+        model_internal::_doValidationLastValOfDate = value;
+
+        return validationFailures;
+    }
+    
     model_internal var _doValidationCacheOfData : Array = null;
     model_internal var _doValidationLastValOfData : ArrayCollection;
 

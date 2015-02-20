@@ -40,6 +40,7 @@
 			{
 				clientGroup.initializeGroup();
 				episodeGroup.initializeGroup();
+				assessmentGroup.initializeGroup();
 				if(global.activeClient == null)
 					global.pageButtonBar.enabled = false;
 			}		

@@ -1,7 +1,10 @@
 package components.questions
 {
+	import components.skips.SkipPattern;
+	
 	import flash.display.InteractiveObject;
 	
+	import mx.collections.ArrayList;
 	import mx.core.UIComponent;
 	import mx.validators.Validator;
 	
@@ -13,7 +16,7 @@ package components.questions
 		public var codeName:String;
 		public var skipQuestions:Array = new Array();
 		public var skipAnswers:Array = new Array();
-		public var skipPatterns:Array = new Array();
+		public var skipPatterns:Vector.<SkipPattern> = new Vector.<SkipPattern>();
 		public var validators:Vector.<Validator> = new Vector.<Validator>();
 		public var inline:Boolean = false;
 		public var isSkipped:Boolean = false;

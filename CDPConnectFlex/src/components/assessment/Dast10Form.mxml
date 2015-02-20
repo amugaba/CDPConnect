@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<assessment:QuestionForm xmlns:fx="http://ns.adobe.com/mxml/2009" 
+						 xmlns:s="library://ns.adobe.com/flex/spark" 
+						 xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:assessment="components.assessment.*" width="100%" height="100%"
+						 labelWidth="400">
+	<fx:Script>
+		<![CDATA[
+			import components.questions.QuestionList;
+			import components.questions.QuestionText;
+			
+			import mx.collections.ArrayList;
+			
+			protected static var yn:ArrayList = new ArrayList(["No","Yes"]);
+			
+			public var q1:QuestionList = new QuestionList("Q1","1. Have you used drugs other than those required for medical reasons?",yn,0);
+			public var q2:QuestionList = new QuestionList("Q2","2. Do you abuse more than one drug at a time?",yn,0);
+			public var q3:QuestionList = new QuestionList("Q3","3. Are you always able to stop using drugs when you want to?",yn,0);
+			public var q4:QuestionList = new QuestionList("Q4","4. Have you had 'blackouts' or 'flashbacks' as a result of drug use?",yn,0);
+			public var q5:QuestionList = new QuestionList("Q5","5. Do you ever feel bad or guilty about your drug use?",yn,0);
+			public var q6:QuestionList = new QuestionList("Q6","6. Does your spouse (or parents) ever complain about your involvement with drugs?",yn,0);
+			public var q7:QuestionList = new QuestionList("Q7","7. Have you neglected your family because of your use of drugs?",yn,0);
+			public var q8:QuestionList = new QuestionList("Q8","8. Have you engaged in illegal activities in order to obtain drugs?",yn,0);
+			public var q9:QuestionList = new QuestionList("Q9","9. Have you ever experienced withdrawal symptoms (felt sick) when you stopped taking drugs?",yn,0);
+			public var q10:QuestionList = new QuestionList("Q10","10. Have you had medical problems as a result of your drug use (e.g., memory loss, hepatitis, convulsions, bleeding, etc.)?",yn,0);
+			public var qScore:QuestionText = new QuestionText("Score","Score","");
+			public var qModality:QuestionList = new QuestionList("Modality","Suggested action/modality",new ArrayList(["Negative/Positive Reinforcement","Brief Intervention","Brief Treatment","Referral to Treatment"]),-1);
+			
+			public override function createForm():void
+			{
+				createText("DAST-10 - Drug Abuse Screening Test","h1");
+				var width1:int = 80;
+				var width2:int = 210;
+				addQuestion(q1,width1);
+				addQuestion(q2,width1);
+				addQuestion(q3,width1);
+				addQuestion(q4,width1);
+				addQuestion(q5,width1);
+				addQuestion(q6,width1);
+				addQuestion(q7,width1);
+				addQuestion(q8,width1);
+				addQuestion(q9,width1);
+				addQuestion(q10,width1);
+				createText("Results","h1");
+				addQuestion(qScore,80);
+				addQuestion(qModality,width2);
+				qScore.input.editable = false;
+				qModality.input.enabled = false
+			}
+			
+			protected function saveButton_clickHandler(event:MouseEvent):void
+			{
+				var score:int = calculateScore();
+				qScore.answer = score.toString();
+				qModality.input.selectedIndex = getScoreModality(score);
+				global.pageAssessment.saveAssessment();
+			}
+			
+			private function calculateScore():int
+			{
+				var score:int = 0;
+				score += q1.getAnswerIndex();
+				score += q2.getAnswerIndex();
+				score += 1 - q3.getAnswerIndex();//inverted
+				score += q4.getAnswerIndex();
+				score += q5.getAnswerIndex();
+				score += q6.getAnswerIndex();
+				score += q7.getAnswerIndex();
+				score += q8.getAnswerIndex();
+				score += q9.getAnswerIndex();
+				score += q10.getAnswerIndex();
+				return score;
+			}
+			
+			private function getScoreModality(score:int):int
+			{
+				if(score < 1)
+					return SBIRTModality.NEG;
+				if(score < 3)
+					return SBIRTModality.BI;
+				if(score < 6)
+					return SBIRTModality.BT;
+				else
+					return SBIRTModality.RT;
+			}	
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<s:Button id="saveButton" label="Save" x="150" y="300" click="saveButton_clickHandler(event)"/>
+</assessment:QuestionForm>

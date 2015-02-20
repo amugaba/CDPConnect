@@ -3,21 +3,23 @@
 		 xmlns:s="library://ns.adobe.com/flex/spark"
 		 xmlns:mx="library://ns.adobe.com/flex/mx"
 		 xmlns:assessmentservice="services.assessmentservice.*"
-		 width="715" height="300">
+		 width="715" height="300" xmlns:valueObjects="valueObjects.*">
 	<fx:Script>
 		<![CDATA[
 			import components.assessment.AssessType;
+			import components.dci.InterviewType;
 			
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.core.FlexGlobals;
 			import mx.rpc.events.ResultEvent;
 			
-			[Bindable] protected var clientGPRAs:ArrayCollection = new ArrayCollection();
+			import spark.components.NavigatorContent;
+			
 			protected var global:CDPConnectFlex = FlexGlobals.topLevelApplication as CDPConnectFlex;
 			private var created:Boolean = false;
 			
-			[Bindable] private var assessmentList:ArrayCollection = new ArrayCollection();
+			[Bindable] public var assessmentList:ArrayCollection = new ArrayCollection();
 			
 			public function initializeGroup():void
 			{
@@ -45,10 +47,90 @@
 				assessmentList = getAssessmentsByEpisodeIDResult.lastResult;
 			}
 			
+			/**
+			 * Load Screening Assessments
+			 * */
+			public function loadButton_clickHandler():void
+			{
+				global.activeAssessment = assessmentGrid.selectedItem as AssessmentVO;
+				getAssessmentDataResult.token = assessmentService.getAssessmentData(global.activeAssessment);
+			}
+			
+			protected function getAssessmentDataResult_resultHandler(event:ResultEvent):void
+			{
+				global.activeAssessment.data = getAssessmentDataResult.lastResult;
+				global.pageAssessment.initAssessment(global.activeAssessment.type);
+				global.pageViewstack.selectedChild = global.pageAssessment;
+			}
+			
+			/**
+			 * Create Screening Assessments
+			 * */
+			private function createAssessment(type:int):void
+			{
+				//switch out the assessment and DCI pages
+				if(global.pageViewstack.contains(global.pageDCI))
+				{
+					global.pageViewstack.removeChild(global.pageDCI);
+					global.pageViewstack.addChild(global.pageAssessment);
+				}
+				global.activeAssessment = null;
+				global.pageAssessment.initAssessment(type);
+				global.pageViewstack.selectedChild = global.pageAssessment;
+			}
+			
 			protected function prescreenButton_clickHandler(event:MouseEvent):void
 			{
-				global.pageAssessment.createAssessment(AssessType.PRESCREEN);
-				global.pageViewstack.selectedChild = global.pageAssessment;
+				createAssessment(AssessType.PRESCREEN);
+			}
+			protected function auditButton_clickHandler(event:MouseEvent):void
+			{
+				createAssessment(AssessType.AUDIT);
+			}			
+			protected function dast10Button_clickHandler(event:MouseEvent):void
+			{
+				createAssessment(AssessType.DAST10);
+			}			
+			protected function phq9Button_clickHandler(event:MouseEvent):void
+			{
+				createAssessment(AssessType.PHQ9);
+			}
+			
+			/**
+			 * Create DCI Interviews
+			 * */
+			private function createDCI(subtype:int):void
+			{
+				//switch out the assessment and DCI pages, this may generate more work, visible button maybe
+				if(global.pageViewstack.contains(global.pageAssessment))
+				{
+					global.pageViewstack.removeChild(global.pageAssessment);
+					global.pageViewstack.addChild(global.pageDCI);
+				}
+				global.activeAssessment = null;
+				var oldPage:Object = global.pageDCI.viewStack.selectedChild;
+				global.pageDCI.viewStack.selectedIndex = 0;
+				oldPage.visible = false;
+				global.pageDCI.initializePage(subtype);
+				global.pageViewstack.selectedChild = global.pageDCI;
+					
+			}
+			
+			protected function intakeGeneralButton_clickHandler(event:MouseEvent):void
+			{
+				createDCI(InterviewType.INTAKE_GENERAL);
+			}			
+			protected function sbirtIntakeRTButton_clickHandler(event:MouseEvent):void
+			{
+				createDCI(InterviewType.INTAKE_SBIRT_RT);
+			}
+			protected function sbirtIntakeNegativeButton_clickHandler(event:MouseEvent):void
+			{
+				createDCI(InterviewType.INTAKE_SBIRT_NEG);
+			}
+			protected function sbirtIntakeBIButton_clickHandler(event:MouseEvent):void
+			{
+				createDCI(InterviewType.INTAKE_SBIRT_BI);
 			}
 			
 		]]>
@@ -58,37 +140,47 @@
 		<assessmentservice:AssessmentService id="assessmentService"
 											 fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
 											 showBusyCursor="true"/>
+		<s:CallResponder id="getAssessmentDataResult" result="getAssessmentDataResult_resultHandler(event)"/>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
 	<s:Label x="102" y="17" fontWeight="bold" text="Assessments List"/>
 	<s:DataGrid id="assessmentGrid" x="9" y="40" width="289" height="189"
-				dataProvider="{assessmentList}"
+				dataProvider="{assessmentList}" itemRenderer="components.client.assessmentGridRenderer"
 				requestedRowCount="3" resizableColumns="false">
 		<s:columns>
 			<s:ArrayList>
 				<s:GridColumn dataField="type" headerText="Type" width="100"></s:GridColumn>
-				<s:GridColumn dataField="date" headerText="Date" width="70"></s:GridColumn>
-				<s:GridColumn dataField="complete" headerText="Done" width="50"></s:GridColumn>
-				<s:GridColumn dataField="load" headerText="Load" width="60"></s:GridColumn>
+				<s:GridColumn dataField="date" headerText="Date" width="75"></s:GridColumn>
+				<s:GridColumn dataField="complete" headerText="Done" width="45"></s:GridColumn>
+				<s:GridColumn dataField="load" headerText="Load" width="60">
+					<s:itemRenderer>
+						<fx:Component>
+							<s:GridItemRenderer width="100%">
+								<s:Button label="Load" x="7" width="55" click="{outerDocument.loadButton_clickHandler()}" />
+							</s:GridItemRenderer>
+						</fx:Component>
+					</s:itemRenderer>
+				</s:GridColumn>
 			</s:ArrayList>
 		</s:columns>
+		<s:typicalItem>
+			<valueObjects:AssessmentVO type="1" subtype="0" complete="1" autoid="0" episode_autoid="0" date="01/01/1900"/>
+		</s:typicalItem>
 	</s:DataGrid>
 	
 	<mx:VRule x="302" y="1" width="14" height="231"/>
 	<s:Label x="328" y="18" fontWeight="bold" text="Screening"/>
 	<s:Button id="prescreenButton" x="318" y="40" label="Prescreen" click="prescreenButton_clickHandler(event)"/>
-	<s:Button id="auditButton" x="320" y="79" label="AUDIT"/>
-	<s:Button id="dast10Button" x="320" y="118" label="DAST-10"/>
-	<s:Button id="phq9Button" x="320" y="158" label="PHQ9"/>
+	<s:Button id="auditButton" x="320" y="79" label="AUDIT" click="auditButton_clickHandler(event)"/>
+	<s:Button id="dast10Button" x="320" y="118" label="DAST-10" click="dast10Button_clickHandler(event)"/>
+	<s:Button id="phq9Button" x="320" y="158" label="PHQ9" click="phq9Button_clickHandler(event)"/>
 	
 	<mx:VRule x="398" y="0" width="14" height="231"/>
 	<s:Label x="433" y="15" fontWeight="bold" text="DCI Intake"/>
-	<s:Button id="intakeGeneralButton" x="426" y="40" label="General"/>
-	<s:Button id="sbirtIntakeRTButton" x="412" y="158" label="SBIRT - BT/RT"/>
-	<s:Button id="sbirtIntakeNegativeButton" x="418" y="77"
-			  label="SBIRT - Neg"/>
-	<s:Button id="sbirtIntakeBIButton" x="423" y="117"
-			  label="SBIRT - BI" />
+	<s:Button id="intakeGeneralButton" x="426" y="40" label="General" click="intakeGeneralButton_clickHandler(event)"/>
+	<s:Button id="sbirtIntakeRTButton" x="412" y="158" label="SBIRT - BT/RT" click="sbirtIntakeRTButton_clickHandler(event)"/>
+	<s:Button id="sbirtIntakeNegativeButton" x="418" y="77" label="SBIRT - Neg" click="sbirtIntakeNegativeButton_clickHandler(event)"/>
+	<s:Button id="sbirtIntakeBIButton" x="423" y="117" label="SBIRT - BI" click="sbirtIntakeBIButton_clickHandler(event)"/>
 	
 	<mx:VRule x="513" y="0" width="14" height="231"/>
 	<s:Label x="533" y="14" fontWeight="bold" text="DCI Discharge"/>

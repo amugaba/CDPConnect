@@ -10,6 +10,8 @@
 			import components.questions.QuestionList;
 			import components.questions.QuestionText;
 			
+			import flashx.textLayout.factory.TruncationOptions;
+			
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.core.FlexGlobals;

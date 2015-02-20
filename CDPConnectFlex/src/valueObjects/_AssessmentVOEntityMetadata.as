@@ -23,14 +23,14 @@ internal class _AssessmentVOEntityMetadata extends com.adobe.fiber.valueobjects.
 {
     private static var emptyArray:Array = new Array();
 
-    model_internal static var allProperties:Array = new Array("autoid", "episode_autoid", "type", "date", "complete", "data");
+    model_internal static var allProperties:Array = new Array("autoid", "episode_autoid", "type", "subtype", "date", "complete", "data");
     model_internal static var allAssociationProperties:Array = new Array();
-    model_internal static var allRequiredProperties:Array = new Array("data");
-    model_internal static var allAlwaysAvailableProperties:Array = new Array("autoid", "episode_autoid", "type", "date", "complete", "data");
+    model_internal static var allRequiredProperties:Array = new Array("autoid", "episode_autoid", "type", "subtype", "date", "complete", "data");
+    model_internal static var allAlwaysAvailableProperties:Array = new Array("autoid", "episode_autoid", "type", "subtype", "date", "complete", "data");
     model_internal static var guardedProperties:Array = new Array();
-    model_internal static var dataProperties:Array = new Array("autoid", "episode_autoid", "type", "date", "complete", "data");
+    model_internal static var dataProperties:Array = new Array("autoid", "episode_autoid", "type", "subtype", "date", "complete", "data");
     model_internal static var sourceProperties:Array = emptyArray
-    model_internal static var nonDerivedProperties:Array = new Array("autoid", "episode_autoid", "type", "date", "complete", "data");
+    model_internal static var nonDerivedProperties:Array = new Array("autoid", "episode_autoid", "type", "subtype", "date", "complete", "data");
     model_internal static var derivedProperties:Array = new Array();
     model_internal static var collectionProperties:Array = new Array("data");
     model_internal static var collectionBaseMap:Object;
@@ -39,6 +39,11 @@ internal class _AssessmentVOEntityMetadata extends com.adobe.fiber.valueobjects.
     model_internal static var dependedOnServices:Array = new Array();
     model_internal static var propertyTypeMap:Object;
 
+    
+    model_internal var _dateIsValid:Boolean;
+    model_internal var _dateValidator:com.adobe.fiber.styles.StyleValidator;
+    model_internal var _dateIsValidCacheInitialized:Boolean = false;
+    model_internal var _dateValidationFailureMessages:Array;
     
     model_internal var _dataIsValid:Boolean;
     model_internal var _dataValidator:com.adobe.fiber.styles.StyleValidator;
@@ -58,6 +63,7 @@ internal class _AssessmentVOEntityMetadata extends com.adobe.fiber.valueobjects.
             model_internal::dependentsOnMap["autoid"] = new Array();
             model_internal::dependentsOnMap["episode_autoid"] = new Array();
             model_internal::dependentsOnMap["type"] = new Array();
+            model_internal::dependentsOnMap["subtype"] = new Array();
             model_internal::dependentsOnMap["date"] = new Array();
             model_internal::dependentsOnMap["complete"] = new Array();
             model_internal::dependentsOnMap["data"] = new Array();
@@ -72,11 +78,17 @@ internal class _AssessmentVOEntityMetadata extends com.adobe.fiber.valueobjects.
         model_internal::propertyTypeMap["autoid"] = "int";
         model_internal::propertyTypeMap["episode_autoid"] = "int";
         model_internal::propertyTypeMap["type"] = "int";
+        model_internal::propertyTypeMap["subtype"] = "int";
         model_internal::propertyTypeMap["date"] = "String";
         model_internal::propertyTypeMap["complete"] = "int";
         model_internal::propertyTypeMap["data"] = "ArrayCollection";
 
         model_internal::_instance = value;
+        model_internal::_dateValidator = new StyleValidator(model_internal::_instance.model_internal::_doValidationForDate);
+        model_internal::_dateValidator.required = true;
+        model_internal::_dateValidator.requiredFieldError = "date is required";
+        //model_internal::_dateValidator.source = model_internal::_instance;
+        //model_internal::_dateValidator.property = "date";
         model_internal::_dataValidator = new StyleValidator(model_internal::_instance.model_internal::_doValidationForData);
         model_internal::_dataValidator.required = true;
         model_internal::_dataValidator.requiredFieldError = "data is required";
@@ -327,6 +339,12 @@ internal class _AssessmentVOEntityMetadata extends com.adobe.fiber.valueobjects.
     }
 
     [Bindable(event="propertyChange")]
+    public function get isSubtypeAvailable():Boolean
+    {
+        return true;
+    }
+
+    [Bindable(event="propertyChange")]
     public function get isDateAvailable():Boolean
     {
         return true;
@@ -348,6 +366,14 @@ internal class _AssessmentVOEntityMetadata extends com.adobe.fiber.valueobjects.
     /**
      * derived property recalculation
      */
+    public function invalidateDependentOnDate():void
+    {
+        if (model_internal::_dateIsValidCacheInitialized )
+        {
+            model_internal::_instance.model_internal::_doValidationCacheOfDate = null;
+            model_internal::calculateDateIsValid();
+        }
+    }
     public function invalidateDependentOnData():void
     {
         if (model_internal::_dataIsValidCacheInitialized )
@@ -381,9 +407,109 @@ internal class _AssessmentVOEntityMetadata extends com.adobe.fiber.valueobjects.
     }
 
     [Bindable(event="propertyChange")]   
+    public function get subtypeStyle():com.adobe.fiber.styles.Style
+    {
+        return model_internal::_nullStyle;
+    }
+
+    [Bindable(event="propertyChange")]   
     public function get dateStyle():com.adobe.fiber.styles.Style
     {
         return model_internal::_nullStyle;
+    }
+
+    public function get dateValidator() : StyleValidator
+    {
+        return model_internal::_dateValidator;
+    }
+
+    model_internal function set _dateIsValid_der(value:Boolean):void 
+    {
+        var oldValue:Boolean = model_internal::_dateIsValid;         
+        if (oldValue !== value)
+        {
+            model_internal::_dateIsValid = value;
+            this.dispatchEvent(mx.events.PropertyChangeEvent.createUpdateEvent(this, "dateIsValid", oldValue, value));
+        }                             
+    }
+
+    [Bindable(event="propertyChange")]
+    public function get dateIsValid():Boolean
+    {
+        if (!model_internal::_dateIsValidCacheInitialized)
+        {
+            model_internal::calculateDateIsValid();
+        }
+
+        return model_internal::_dateIsValid;
+    }
+
+    model_internal function calculateDateIsValid():void
+    {
+        var valRes:ValidationResultEvent = model_internal::_dateValidator.validate(model_internal::_instance.date)
+        model_internal::_dateIsValid_der = (valRes.results == null);
+        model_internal::_dateIsValidCacheInitialized = true;
+        if (valRes.results == null)
+             model_internal::dateValidationFailureMessages_der = emptyArray;
+        else
+        {
+            var _valFailures:Array = new Array();
+            for (var a:int = 0 ; a<valRes.results.length ; a++)
+            {
+                _valFailures.push(valRes.results[a].errorMessage);
+            }
+            model_internal::dateValidationFailureMessages_der = _valFailures;
+        }
+    }
+
+    [Bindable(event="propertyChange")]
+    public function get dateValidationFailureMessages():Array
+    {
+        if (model_internal::_dateValidationFailureMessages == null)
+            model_internal::calculateDateIsValid();
+
+        return _dateValidationFailureMessages;
+    }
+
+    model_internal function set dateValidationFailureMessages_der(value:Array) : void
+    {
+        var oldValue:Array = model_internal::_dateValidationFailureMessages;
+
+        var needUpdate : Boolean = false;
+        if (oldValue == null)
+            needUpdate = true;
+    
+        // avoid firing the event when old and new value are different empty arrays
+        if (!needUpdate && (oldValue !== value && (oldValue.length > 0 || value.length > 0)))
+        {
+            if (oldValue.length == value.length)
+            {
+                for (var a:int=0; a < oldValue.length; a++)
+                {
+                    if (oldValue[a] !== value[a])
+                    {
+                        needUpdate = true;
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                needUpdate = true;
+            }
+        }
+
+        if (needUpdate)
+        {
+            model_internal::_dateValidationFailureMessages = value;   
+            this.dispatchEvent(mx.events.PropertyChangeEvent.createUpdateEvent(this, "dateValidationFailureMessages", oldValue, value));
+            // Only execute calculateIsValid if it has been called before, to update the validationFailureMessages for
+            // the entire entity.
+            if (model_internal::_instance.model_internal::_cacheInitialized_isValid)
+            {
+                model_internal::_instance.model_internal::isValid_der = model_internal::_instance.model_internal::calculateIsValid();
+            }
+        }
     }
 
     [Bindable(event="propertyChange")]   
@@ -517,6 +643,10 @@ internal class _AssessmentVOEntityMetadata extends com.adobe.fiber.valueobjects.
      {
          switch(propertyName)
          {
+            case("date"):
+            {
+                return dateValidationFailureMessages;
+            }
             case("data"):
             {
                 return dataValidationFailureMessages;

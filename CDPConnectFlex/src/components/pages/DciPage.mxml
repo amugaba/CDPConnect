@@ -1,16 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<s:NavigatorContent xmlns:fx="http://ns.adobe.com/mxml/2009" 
-		 xmlns:s="library://ns.adobe.com/flex/spark" 
-		 xmlns:mx="library://ns.adobe.com/flex/mx"
-		 xmlns:custom="components.*"
-		 xmlns:gpraservice="services.gpraservice.*"
-		 xmlns:styles="com.adobe.fiber.styles.*"
-		 xmlns:clientservice="services.clientservice.*"
-		 width="400" height="300" xmlns:dci="components.dci.*">
+<s:NavigatorContent xmlns:fx="http://ns.adobe.com/mxml/2009"
+					xmlns:s="library://ns.adobe.com/flex/spark"
+					xmlns:mx="library://ns.adobe.com/flex/mx"
+					xmlns:custom="components.*"
+					xmlns:gpraservice="services.gpraservice.*"
+					xmlns:styles="com.adobe.fiber.styles.*"
+					xmlns:clientservice="services.clientservice.*"
+					xmlns:dci="components.dci.*"
+					xmlns:assessmentservice="services.assessmentservice.*"
+					width="400" height="300">
 	<fx:Script>
 		<![CDATA[
 			import com.adobe.serializers.utility.TypeUtility;
 			
+			import components.assessment.AssessType;
 			import components.dci.DCIForm;
 			import components.dci.InterviewType;
 			import components.questions.QuestionClass;
@@ -24,25 +27,47 @@
 			import mx.collections.ArrayList;
 			import mx.controls.Alert;
 			import mx.controls.DateField;
+			import mx.controls.tabBarClasses.Tab;
 			import mx.core.FlexGlobals;
 			import mx.events.ValidationResultEvent;
 			import mx.rpc.events.ResultEvent;
 			import mx.validators.ValidationResult;
 			
+			import valueObjects.AssessmentVO;
 			import valueObjects.ClientVO;
 			import valueObjects.GpraVO;
 			
 			protected var questionDict:Dictionary = new Dictionary();
 			
 			protected var global:CDPConnectFlex = FlexGlobals.topLevelApplication as CDPConnectFlex;
-			protected var dciForms:Array = new Array(recordForm,sbirtForm,services1Form,services2Form,demoForm,demo2Form,military1Form,military2Form,drugForm,drug2Form,livingForm,employmentForm,
-				crimeForm,health1Form,health2Form,health3Form,health4Form,health5Form,socialForm,followupForm,dischargeForm,dischargeServices1Form,dischargeServices2Form);
-			protected var dciTabs:Array = new Array(recordTab,sbirtTab,services1Tab,services2Tab,demoTab,demo2Tab,military1Tab,military2Tab,drugTab,drug2Tab,livingTab,employmentTab,
-				crimeTab,health1Tab,health2Tab,health3Tab,health4Tab,health5Tab,socialTab,followupTab,dischargeTab,dischargeServices1Tab,dischargeServices2Tab);
+			protected var dciForms:Array = new Array();
+			protected var dciTabs:Array = new Array();
+			protected var tabButtons:Array = new Array();
+			protected var activeTabIndexes:Array = new Array();
+			protected var activeFormIndexes:Array = new Array();
+			protected var created:Boolean = false;
+			public var interviewType:int;
 			
-			public function initializeGPRA():void
+			public function initializePage(type:int):void
 			{				
-				if(global.activeGPRA.type == InterviewType.INTAKE_SBIRT_NEG)
+				interviewType = type;
+				//viewStack.selectedChild = recordTab;
+				
+				if(!created)
+				{
+					dciForms = new Array(recordForm,sbirtForm,services1Form,services2Form,demoForm,demo2Form,military1Form,military2Form,drugForm,drug2Form,livingForm,employmentForm,
+						crimeForm,health1Form,health2Form,health3Form,health4Form,health5Form,socialForm,followupForm,dischargeForm,dischargeServices1Form,dischargeServices2Form);
+					dciTabs = new Array(recordTab,sbirtTab,services1Tab,services2Tab,demoTab,demo2Tab,military1Tab,military2Tab,drugTab,drug2Tab,livingTab,employmentTab,
+						crimeTab,health1Tab,health2Tab,health3Tab,health4Tab,health5Tab,socialTab,followupTab,dischargeTab,dischargeServices1Tab,dischargeServices2Tab,saveTab);
+
+					for each(var btmp:Tab in tabBar.getChildren())
+						tabButtons.push(btmp);
+					created = true;
+				}
+				
+				recordForm.initForm();
+				
+				if(type == InterviewType.INTAKE_SBIRT_NEG)
 				{
 					enableSectionSBIRT(true);
 					enableSectionA(true);
@@ -52,7 +77,7 @@
 					enableSectionJ(false);
 					enableSectionK(false);
 				}
-				else if(global.activeGPRA.type == InterviewType.INTAKE_SBIRT_BI)
+				else if(type == InterviewType.INTAKE_SBIRT_BI)
 				{
 					enableSectionSBIRT(true);
 					enableSectionA(true);
@@ -62,7 +87,7 @@
 					enableSectionJ(false);
 					enableSectionK(false);
 				}
-				else if(global.activeGPRA.type == InterviewType.INTAKE_SBIRT_RT)
+				else if(type == InterviewType.INTAKE_SBIRT_RT)
 				{
 					enableSectionSBIRT(true);
 					enableSectionA(true);
@@ -72,7 +97,7 @@
 					enableSectionJ(false);
 					enableSectionK(false);
 				}
-				else if(global.activeGPRA.type == InterviewType.INTAKE_GENERAL)
+				else if(type == InterviewType.INTAKE_GENERAL)
 				{
 					enableSectionSBIRT(false);
 					enableSectionA(true);
@@ -82,7 +107,7 @@
 					enableSectionJ(false);
 					enableSectionK(false);
 				}
-				else if(global.activeGPRA.type == InterviewType.FOLLOWUP)
+				else if(type == InterviewType.FOLLOWUP)
 				{
 					enableSectionSBIRT(false);
 					enableSectionA(false);
@@ -92,7 +117,7 @@
 					enableSectionJ(false);
 					enableSectionK(true);
 				}
-				else if(global.activeGPRA.type == InterviewType.FOLLOWUP_SBIRT_BI)
+				else if(type == InterviewType.FOLLOWUP_SBIRT_BI)
 				{
 					enableSectionSBIRT(false);
 					enableSectionA(false);
@@ -102,7 +127,7 @@
 					enableSectionJ(false);
 					enableSectionK(true);
 				}
-				else if(global.activeGPRA.type == InterviewType.DISCHARGE)
+				else if(type == InterviewType.DISCHARGE)
 				{
 					enableSectionSBIRT(false);
 					enableSectionA(false);
@@ -112,7 +137,7 @@
 					enableSectionJ(true);
 					enableSectionK(true);
 				}
-				else if(global.activeGPRA.type == InterviewType.DISCHARGE_NO_INTERVIEW)
+				else if(type == InterviewType.DISCHARGE_NO_INTERVIEW)
 				{
 					enableSectionSBIRT(false);
 					enableSectionA(false);
@@ -123,46 +148,88 @@
 					enableSectionK(true);
 				}
 				
-				for(var i:int = 0; i < dciForms.length; i++)
+				//Determine which items are active
+				activeTabIndexes = new Array();
+				activeFormIndexes = new Array();
+				for(var i:int = 0; i < tabButtons.length; i++)
 				{
-					//if this form is active
-					if(viewStack.contains(dciTabs[i]))
-						dciForms[i].initializeForm();
+					if(tabButtons[i].visible)
+					{
+						activeTabIndexes.push(i);
+						if(i < dciForms.length)
+							activeFormIndexes.push(i);
+					}
 				}
 				
-				//validateGPRA();
-				viewStack.selectedChild = recordTab;
+				//If loading a DCI
+				if(global.activeAssessment != null)
+				{
+					//Load data
+					for(i = 0; i < dciForms.length; i++)
+					{
+						//if this form is active
+						if(viewStack.contains(dciTabs[i]))
+							(dciForms[i] as DCIForm).loadData(global.activeAssessment.data.source);
+					}
+					
+					//Then validate
+					for(i = 0; i < dciForms.length; i++)
+					{
+						//if this form is active
+						if(viewStack.contains(dciTabs[i]))
+							(dciForms[i] as DCIForm).validateForm();
+					}
+					
+					//Then process skips
+					for(i = 0; i < dciForms.length; i++)
+					{
+						//if this form is active
+						if(viewStack.contains(dciTabs[i]))
+							(dciForms[i] as DCIForm).doAllSkips();
+					}
+				}
+				
+				//Reorder all tab buttons so that the invisible ones are at the bottom
+				//Have to reorder the tabs in the viewstack to correspond to the new order too though
+				var index:int = 0;
+				for each(i in activeTabIndexes)
+				{
+					viewStack.setChildIndex(dciTabs[i],index);
+					index++;
+				}
 			}
 			
 			protected function enableTab(tab:NavigatorContent, enabled:Boolean):void
 			{
-				if(enabled)
-				{
-					viewStack.addChildAt(tab,Math.min(dciTabs.indexOf(tab),viewStack.numChildren));
-				}
-				else
-				{
-					if(viewStack.contains(tab))
-						viewStack.removeChild(tab);
-				}
+				(tabButtons[dciTabs.indexOf(tab)] as Tab).visible = enabled;
 			}
 			
 			protected function enableSectionSBIRT(enabled:Boolean):void
 			{
-				sbirtForm.enableForm(enabled);
+				sbirtForm.initForm();
 				enableTab(sbirtTab,enabled);
 			}
 			
 			protected function enableSectionB(enabled:Boolean):void
 			{
-				drugForm.enableForm(enabled);
-				drug2Form.enableForm(enabled);
+				drugForm.initForm();
+				drug2Form.initForm();
 				enableTab(drugTab,enabled);
 				enableTab(drug2Tab,enabled);
 			}
 			
 			protected function enableSectionCtoG(enabled:Boolean):void
 			{
+				livingForm.initForm();
+				employmentForm.initForm();
+				crimeForm.initForm();
+				health1Form.initForm();
+				health2Form.initForm();
+				health3Form.initForm();
+				health4Form.initForm();
+				health5Form.initForm();
+				socialForm.initForm();
+				
 				enableTab(livingTab,enabled);
 				enableTab(employmentTab,enabled);
 				enableTab(crimeTab,enabled);
@@ -176,18 +243,20 @@
 			
 			protected function enableSectionK(enabled:Boolean):void
 			{
+				dischargeServices1Form.initForm();
+				dischargeServices2Form.initForm();
 				enableTab(dischargeServices1Tab,enabled);
 				enableTab(dischargeServices2Tab,enabled);
 			}
 			
 			protected function enableSectionA(enabled:Boolean):void
 			{
-				services1Form.enableForm(enabled);
-				services2Form.enableForm(enabled);
-				demoForm.enableForm(enabled);
-				demo2Form.enableForm(enabled);
-				military1Form.enableForm(enabled);
-				military2Form.enableForm(enabled);
+				services1Form.initForm();
+				services2Form.initForm();
+				demoForm.initForm();
+				demo2Form.initForm();
+				military1Form.initForm();
+				military2Form.initForm();
 				
 				enableTab(services1Tab,enabled);
 				enableTab(services2Tab,enabled);
@@ -207,6 +276,7 @@
 			
 			protected function enableSectionI(enabled:Boolean):void
 			{
+				followupForm.initForm();
 				enableTab(followupTab,enabled);
 				if(enabled)
 				{
@@ -222,6 +292,7 @@
 			
 			protected function enableSectionJ(enabled:Boolean):void
 			{
+				dischargeForm.initForm();
 				enableTab(dischargeTab,enabled);
 				if(enabled)
 				{
@@ -360,38 +431,22 @@
 				military2Form.updateFamilyValidator();
 			}
 			
-			//Parse Form Data, construct GPRAVO
-			protected function parseForm():void
-			{
-				var gpraData:Array = new Array();
-				
-				var date:Date = DateField.stringToDate(recordForm.qInterviewDate.answer,"MM/DD/YYYY");
-				for(var i:int = 0; i < dciForms.length; i++)
-				{
-					//if this form isn't active, skip it
-					if(!viewStack.contains(dciTabs[i]))
-						continue;
-					
-					var form:DCIForm = dciForms[i];					
-					gpraData = form.saveData(gpraData);
-				}
-				
-				//Add in other fields
-				gpraData["client_autoid"] = global.activeClient.autoid;//DB autoid and DCI client ID need to be different
-				
-				//If doing discharge or followup, get gender from the intake
-				if([InterviewType.INTAKE_GENERAL,InterviewType.INTAKE_SBIRT_BI,InterviewType.INTAKE_SBIRT_NEG,InterviewType.INTAKE_SBIRT_RT].indexOf(global.activeGPRA.type) == -1)
-				{
-					gpraData["Gender"] = global.activeClient.intake.data.source["Gender"];
-					gpraData["IntakeDate"] = global.activeClient.intake.date;
-				}
-				
-				saveDCIResult.token = gpraService.saveDCI(-1,gpraData);
-			}
-			
+			/**
+			 * Save DCI
+			 * 1. Validate for errors
+			 * 2. Save each active form's data
+			 * */
 			protected function saveButton_clickHandler(event:MouseEvent):void
 			{
-				var results:Array = validateGPRA();
+				//Validate all active pages
+				var results:Array = new Array();
+				for each(var i:int in activeFormIndexes)
+				{
+					var tmpResults:Array = (dciForms[i] as DCIForm).validateForm();
+					for(var j:int = 0; j < tmpResults.length; j++)
+						results.push(tmpResults[j]);
+				}
+				
 				if(results.length > 0)
 				{
 					Alert.show(results.join("\n"),"Validation Errors");
@@ -400,41 +455,64 @@
 					parseForm();
 			}
 			
-			protected function validateGPRA():Array
+			//Parse Form Data, construct Assessment data
+			protected function parseForm():void
 			{
-				var results:Array = new Array();
-				var ev:ValidationResultEvent;
-				for each(var q:QuestionClass in questionDict)
+				var data:Array = new Array();
+				
+				for each(var i:int in activeFormIndexes)
 				{
-					if(q.validator != null && q.validator.enabled)
-					{
-						if(!q.isSkipped && q.inputControl.enabled)
-						{
-							ev = q.validator.validate();
-							if(ev.results != null)
-							{
-								for each(var vr:ValidationResult in ev.results)
-								{
-									var s:String = "";
-									if(q.owner != null)
-										s += ((q.owner as mx.containers.Form).owner as NavigatorContent).label; //q.owner is form, form.owner is navigator panel
-									else
-										s += (((q.inputControl.owner as QuestionClass).owner as mx.containers.Form).owner as NavigatorContent).label; //inputControl.owner is another question
-									s += ": " + q.codeName + " - ";
-									s += vr.errorMessage;
-									results.push(s);
-								}
-							}
-						}
-						else
-						{
-							var evt:ValidationResultEvent = new ValidationResultEvent(ValidationResultEvent.VALID);
-							q.validator.dispatchEvent(evt);
-						}
-					}
+					data = (dciForms[i] as DCIForm).saveData(data);
 				}
-				return results;
+				
+				//Add in other fields
+				data["client_autoid"] = global.activeClient.autoid;
+				
+				//If doing discharge or followup, get gender from the intake
+				if([InterviewType.INTAKE_GENERAL,InterviewType.INTAKE_SBIRT_BI,InterviewType.INTAKE_SBIRT_NEG,InterviewType.INTAKE_SBIRT_RT].indexOf(interviewType) == -1)
+				{
+					data["Gender"] = global.activeClient.intake.data.source["Gender"];
+					data["IntakeDate"] = global.activeClient.intake.date;
+				}
+				
+				//Create
+				if(global.activeAssessment == null)
+				{
+					global.activeAssessment = new AssessmentVO();
+					global.activeAssessment.episode_autoid = global.activeEpisode.autoid;
+					global.activeAssessment.type = AssessType.DCI;
+					global.activeAssessment.subtype = interviewType;
+					global.activeAssessment.date = global.dateFormatter.format(new Date());
+					global.activeAssessment.complete = 1;
+					global.activeAssessment.data = data;
+					createAssessmentResult.token = assessmentService.createAssessment(global.activeAssessment);
+				}
+				else //Update
+				{
+					//Preserve the autoids when saving
+					var data_autoid:int = global.activeAssessment.data.source["autoid"];
+					var assessment_autoid:int = global.activeAssessment.data.source["assessment_autoid"];
+					data["autoid"] = data_autoid;
+					data["assessment_autoid"] = assessment_autoid;
+					global.activeAssessment.data = data;
+					updateAssessmentDataResult.token = assessmentService.updateAssessmentData(global.activeAssessment);
+				}
 			}
+			
+			protected function createAssessmentResult_resultHandler(event:ResultEvent):void
+			{
+				Alert.show("DCI saved.");
+				//Add in new autoid and put in assessments grid
+				global.activeAssessment = createAssessmentResult.lastResult;
+				global.pageClient.assessmentGroup.assessmentList.addItem(global.activeAssessment);
+			}
+			
+			protected function updateAssessmentResult_resultHandler(event:ResultEvent):void
+			{
+				Alert.show("DCI updated.");
+			}
+			
+			
 			
 			protected function headerButton_clickHandler(event:MouseEvent):void
 			{
@@ -449,45 +527,22 @@
 				}
 				file.save(output,"CodeNames.csv");
 			}
-			
-			protected function saveDCIResult_resultHandler(event:ResultEvent):void
-			{
-				//global.pageClient.populateClientForm();
-				var g:GpraVO = new GpraVO();
-				if(saveDCIResult.lastResult > 0)
-				{
-					g.autoid = saveDCIResult.lastResult;
-					Alert.show("New GPRA created.");
-				}
-				else if(saveDCIResult.lastResult == 0)
-				{
-					//g.autoid = global.activeGPRA.autoid; //this needs to be fixed
-					Alert.show("Existing GPRA updated.");
-				}
-				
-				/*g.status = global.activeGPRA.data.source["gpra_status"];
-				if(g.status == 1)
-				{
-				viewStack.selectedChild = recordTab;
-				viewStack.removeChild(saveTab);
-				}*/
-				//g.type = global.activeGPRA.data.source["InterviewTypeCode"];
-				//g.date = global.activeGPRA.data.source["InterviewCreateDate"];
-				global.activeGPRA = g;
-			}
-			
 		]]>
 	</fx:Script>
 	<fx:Declarations>
 		<gpraservice:GpraService id="gpraService"
 								 fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
 								 showBusyCursor="true"/>
-		<s:CallResponder id="saveDCIResult" result="saveDCIResult_resultHandler(event)"/>
+		<assessmentservice:AssessmentService id="assessmentService"
+											 fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
+											 showBusyCursor="true"/>
+		<s:CallResponder id="createAssessmentResult" result="createAssessmentResult_resultHandler(event)"/>
+		<s:CallResponder id="updateAssessmentDataResult" result="updateAssessmentResult_resultHandler(event)"/>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 		
 	</fx:Declarations>
 	
-	<mx:TabBar id="tabBar" x="0" y="10" dataProvider="viewStack"
+	<mx:TabBar id="tabBar" x="0" y="0" dataProvider="viewStack"
 			   direction="vertical"/>
 	<mx:ViewStack id="viewStack" x="105" y="10" width="603" height="650"
 				  backgroundColor="#EAEAEA" creationPolicy="all" dropShadowVisible="true">

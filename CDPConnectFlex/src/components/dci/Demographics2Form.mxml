@@ -66,9 +66,9 @@
 				addSkipDropDown(qGender,["Male","Female","Refused","Missing Data"],[qGenderOtherSpecify]);
 				
 				//Gender related questions
-				addSkipDropDown(qGender,["Male"],[global.pageGPRA.livingForm.qPregnant]);
+				addSkipDropDown(qGender,["Male"],[global.pageDCI.livingForm.qPregnant]);
 				BindingUtils.bindSetter(function():void{
-						global.pageGPRA.drugForm.setIntoxLabel(qGender.answer == "Female");
+						global.pageDCI.drugForm.setIntoxLabel(qGender.answer == "Female");
 				}, qGender.inputControl, "selectedItem");
 			}
 		]]>

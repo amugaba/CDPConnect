@@ -35,14 +35,14 @@ class AssessmentService
     }
 
 	/**
-	 * Get all assessments belonging to an episode
+	 * Get all assessments belonging to an episode, without the data
 	 * 
 	 * @param int $autoid
 	 * @return AssessmentVO[]
 	 */
     public function getAssessmentsByEpisodeID ($autoid)
     {
-        $stmt = mysqli_prepare($this->connection, "SELECT autoid, episode_autoid, type, date, complete FROM $this->tablename where episode_autoid=?");
+        $stmt = mysqli_prepare($this->connection, "SELECT autoid, episode_autoid, type, subtype, date, complete FROM $this->tablename where episode_autoid=?");
         $this->throwExceptionOnError();
 
         $stmt->bind_param('i', $autoid);
@@ -52,19 +52,40 @@ class AssessmentService
         $this->throwExceptionOnError();
 
         $item = new AssessmentVO();
-        $stmt->bind_result($item->autoid, $item->episode_autoid, $item->type, $item->date, $item->complete);
+        $stmt->bind_result($item->autoid, $item->episode_autoid, $item->type, $item->subtype, $item->date, $item->complete);
         
         $items = array();
         while($stmt->fetch())
         {
         	array_push($items, $item);
         	$item = new AssessmentVO();
-        	$stmt->bind_result($item->autoid, $item->episode_autoid, $item->type, $item->date, $item->complete);
+        	$stmt->bind_result($item->autoid, $item->episode_autoid, $item->type, $item->subtype, $item->date, $item->complete);
         }
 
 	    $stmt->free_result();
 	    $this->connection->close();     
         return $items;
+    }
+    
+/**
+	 * Get an assessment's data
+	 * 
+	 * @param AssessmentVO $item
+	 * @return Object
+	 */
+    public function getAssessmentData ($item)
+    {
+    	$table = $this->tableByType[$item->type];
+        $rs = mysqli_query($this->connection, "SELECT * FROM $table where assessment_autoid=$item->autoid");
+		$this->throwExceptionOnError();
+		
+		$res = mysqli_fetch_assoc($rs);
+	    mysqli_close($this->connection);
+	    
+	    $res["autoid"] = intval($res["autoid"]);
+	    $res["assessment_autoid"] = intval($res["assessment_autoid"]);
+	
+	    return $res;
     }
     
 	/**
@@ -75,10 +96,10 @@ class AssessmentService
 	 */
     public function createAssessment ($item)
     {
-        $stmt = mysqli_prepare($this->connection, "INSERT IGNORE INTO $this->tablename (episode_autoid, type, date, complete) VALUES (?,?,?,?)");
+        $stmt = mysqli_prepare($this->connection, "INSERT IGNORE INTO $this->tablename (episode_autoid, type, subtype, date, complete) VALUES (?,?,?,?,?)");
         $this->throwExceptionOnError();
 
-        $stmt->bind_param('iisi', $item->episode_autoid, $item->type, $item->date, $item->complete);
+        $stmt->bind_param('iiisi', $item->episode_autoid, $item->type, $item->subtype, $item->date, $item->complete);
         $this->throwExceptionOnError();
 
         $stmt->execute();
@@ -101,6 +122,10 @@ class AssessmentService
 		$rs = mysqli_query($this->connection, "INSERT INTO $table (assessment_autoid, $columns) VALUES ($item->autoid, $values)");
 	    $this->throwExceptionOnError();
 	    
+	    $data_autoid = mysqli_insert_id($this->connection);
+	    $item->data["autoid"] = $data_autoid;
+	    $item->data["assessment_autoid"] = $item->autoid;
+	    
 	    $this->connection->close();     
         return $item;
     }
@@ -109,25 +134,27 @@ class AssessmentService
 	 * Update an assessment
 	 * 
 	 * @param AssessmentVO $item
-	 * @return AssessmentVO
+	 * 
 	 */
-    public function updateAssessment ($item)
-    {        
-        $stmt = $this->connection->prepare("UPDATE $this->tablename SET
-        episode_autoid=?, type=?, date=?, complete=?
-        WHERE autoid=?");
+    public function updateAssessmentData ($item)
+    {   
+    	$data = $item->data;
+    	$pairs = array();
+    	foreach($data as $key => &$value)
+        {
+        	if(is_string($value))
+        		$value = "'".mysqli_real_escape_string($this->connection,$value)."'";
+        	array_push($pairs, $key."=".$value);
+        }
+        $query = join(",", $pairs);
+        
+        $table = $this->tableByType[$item->type];
+        $autoid = $data["autoid"];
+        
+        mysqli_query($this->connection, "UPDATE $table SET $query WHERE autoid = $autoid");
         $this->throwExceptionOnError();
 
-        $stmt->bind_param('iisii', $item->episode_autoid, $item->type, $item->date, $item->complete, $item->autoid);
-        $this->throwExceptionOnError();
-
-        $rs = $stmt->execute();
-        $this->throwExceptionOnError();
-        
-        $stmt->free_result();
-        $this->connection->close();
-        
-        return $item; 
+        $this->connection->close(); 
     }
    
     /**

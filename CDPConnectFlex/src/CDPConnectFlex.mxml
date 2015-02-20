@@ -19,6 +19,8 @@ By David Tidd
 			   pageTitle="CDP Connect" xmlns:pages="components.pages.*">
 	<fx:Script>
 		<![CDATA[
+			import components.assessment.AssessType;
+			
 			import flash.globalization.DateTimeFormatter;
 			import flash.globalization.LocaleID;
 			
@@ -38,7 +40,6 @@ By David Tidd
 			import valueObjects.UserVO;			
 
 			[Bindable] public var activeClient:ClientVO = null;
-			[Bindable] public var activeGPRA:GpraVO = null;
 			[Bindable] public var activeUser:UserVO = null;
 			[Bindable] public var activeEpisode:EpisodeVO = null;
 			[Bindable] public var activeGrant:GrantVO = null;
@@ -104,24 +105,17 @@ By David Tidd
 					s = "ID: "+activeClient.autoid+" Name: "+activeClient.lastname+", "+activeClient.firstname;
 				return s;
 			}
-			protected function headerGpraText(activeGPRA:GpraVO):String
+			protected function headerAssessmentText(assessment:AssessmentVO):String
 			{
 				var s:String = "";
-				if(activeGPRA.autoid == 0) //distinguish between none and new
-				{
-					s = "New GPRA";
-				}
-				else
+				if(assessment != null) //distinguish between none and new
 				{
 					s = "Type: ";
-					if(activeGPRA.type == 1) s += "Intake";
-					if(activeGPRA.type == 2) s += "6 Month Followup";
-					if(activeGPRA.type == 3) s += "12 Month Followup";
-					if(activeGPRA.type == 4) s += "3 Month Followup";
-					if(activeGPRA.type == 5) s += "Discharge";
-					/*s += " Status: ";
-					if(activeGPRA.status == 0) s += "In Progress";
-					if(activeGPRA.status == 1) s += "Complete";*/
+					if(assessment.type == AssessType.DCI) s += "DCI";
+					if(assessment.type == AssessType.AUDIT) s += "AUDIT";
+					if(assessment.type == AssessType.DAST10) s += "DAST-10";
+					if(assessment.type == AssessType.PHQ9) s += "PHQ-9";
+					if(assessment.type == AssessType.PRESCREEN) s += "Prescreen";
 				}
 				return s;
 			}
@@ -160,7 +154,7 @@ By David Tidd
 				// TODO Auto-generated method stub
 				activeUser = null;
 				activeClient = null;
-				activeGPRA = null;
+				activeAssessment = null;
 				pageHomeButton.enabled = false;
 				pageClientButton.enabled = false;
 				pageGpraButton.enabled = false;
@@ -212,7 +206,7 @@ By David Tidd
 		<pages:HomePage id="pageHome" width="100%" height="100%" label="Home" />
 		<pages:ClientPage id="pageClient" width="100%" height="100%" label="Client" />
 		<pages:AdminPage id="pageAdmin" width="100%" height="100%" label="Admin"/>
-		<pages:DciPage id="pageGPRA" width="100%" height="100%" label="GPRA"/>
+		<pages:DciPage id="pageDCI" width="100%" height="100%" label="GPRA"/>
 		<pages:AssessmentPage id="pageAssessment" width="100%" height="100%" label="Assess"/>
 	</mx:ViewStack>
 	<s:Image x="0" y="0" source="assets/ConnectBanner.png"/>
@@ -224,8 +218,8 @@ By David Tidd
 		<s:FormItem x="156" y="27" label="Open Client:">
 			<s:Label id="headerClientLabel" text="{headerClientText(activeClient)}"/>
 		</s:FormItem>
-		<s:FormItem x="156" y="46" label="Open GPRA:">
-			<s:Label id="headerGpraLabel" text="{headerGpraText(activeGPRA)}"/>
+		<s:FormItem x="156" y="46" label="Open Assessment:">
+			<s:Label id="headerGpraLabel" text="{headerAssessmentText(activeAssessment)}"/>
 		</s:FormItem>
 		<s:Button id="logoutButton" x="606" y="5" label="Logout"
 				  click="logoutButton_clickHandler(event)"/>

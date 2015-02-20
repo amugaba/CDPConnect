@@ -29,6 +29,7 @@
 			{
 				//Questions
 				addQuestion(qClientID);
+				qClientID.answerType = String;
 				addQuestion(qInterviewTypeCode, 150);
 				addQuestion(qConductedInterview);
 				addQuestion(qInterviewDate);
@@ -56,14 +57,14 @@
 			
 			private function populateForm():void
 			{
-				qClientID.answer = String(global.activeClient.autoid);
-				if([InterviewType.INTAKE_GENERAL,InterviewType.INTAKE_SBIRT_BI,InterviewType.INTAKE_SBIRT_NEG,InterviewType.INTAKE_SBIRT_RT].indexOf(global.activeGPRA.type) != -1)
+				qClientID.answer = String(global.activeClient.clientid);
+				if([InterviewType.INTAKE_GENERAL,InterviewType.INTAKE_SBIRT_BI,InterviewType.INTAKE_SBIRT_NEG,InterviewType.INTAKE_SBIRT_RT].indexOf(global.pageDCI.interviewType) != -1)
 					qInterviewTypeCode.answer = "Intake";
-				else if([InterviewType.FOLLOWUP,InterviewType.FOLLOWUP_SBIRT_BI].indexOf(global.activeGPRA.type) != -1)
+				else if([InterviewType.FOLLOWUP,InterviewType.FOLLOWUP_SBIRT_BI].indexOf(global.pageDCI.interviewType) != -1)
 					qInterviewTypeCode.answer = "6 Month Followup";
-				else if(InterviewType.DISCHARGE == global.activeGPRA.type)
+				else if(InterviewType.DISCHARGE == global.pageDCI.interviewType)
 					qInterviewTypeCode.answer = "Discharge";
-				else if(InterviewType.DISCHARGE == global.activeGPRA.type)
+				else if(InterviewType.DISCHARGE == global.pageDCI.interviewType)
 					qInterviewTypeCode.answer = "Discharge: Administrative";
 				qInterviewDate.answer = dateFormatter.format(new Date());
 			}

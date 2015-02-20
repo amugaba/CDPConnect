@@ -90,7 +90,7 @@
 				//Control Logic
 				addSkipTextNumber(qAlcoholDays,[qAlcoholIntoxDays,qAlcoholDrugBothDays],["0"]);
 				//might be unnecessary
-				var handler:SkipMultipleHandler = createSkipMultipleHandler([global.pageGPRA.livingForm.qImpactStress,global.pageGPRA.livingForm.qImpactActivity,global.pageGPRA.livingForm.qImpactEmotional]);
+				var handler:SkipMultipleHandler = createSkipMultipleHandler([global.pageDCI.livingForm.qImpactStress,global.pageDCI.livingForm.qImpactActivity,global.pageDCI.livingForm.qImpactEmotional]);
 				addSkipTextNumberMultiple(handler,qAlcoholDays,["0"]);
 				addSkipTextNumberMultiple(handler,qIllegalDrugsDays,["0"]);
 				handler.allMustSkip = true;

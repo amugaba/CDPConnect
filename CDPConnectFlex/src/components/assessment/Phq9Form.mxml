@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<assessment:QuestionForm xmlns:fx="http://ns.adobe.com/mxml/2009" 
+						 xmlns:s="library://ns.adobe.com/flex/spark" 
+						 xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:assessment="components.assessment.*" width="100%" height="100%"
+						 labelWidth="400">
+	<fx:Script>
+		<![CDATA[
+			import components.questions.QuestionList;
+			import components.questions.QuestionText;
+			import components.skips.SkipMultipleHandler;
+			
+			import mx.collections.ArrayList;
+			import mx.controls.Alert;
+			import mx.rpc.events.ResultEvent;
+			
+			import valueObjects.AssessmentVO;
+			
+			private var freqList:ArrayList = new ArrayList(["Not at all","Several days","More than half the days","Nearly every day"]);
+			
+			public var q1:QuestionList = new QuestionList("Q1","1. Little interest or pleasure in doing things",freqList,0);
+			public var q2:QuestionList = new QuestionList("Q2","2. Feeling down, depressed, or hopeless",freqList,0);
+			public var q3:QuestionList = new QuestionList("Q3","3. Trouble falling or staying asleep, or sleeping too much",freqList,0);
+			public var q4:QuestionList = new QuestionList("Q4","4. Feeling tired or having little energy",freqList,0);
+			public var q5:QuestionList = new QuestionList("Q5","5. Poor appetite or overeating",freqList,0);
+			public var q6:QuestionList = new QuestionList("Q6","6. Feeling bad about yourself, or that you are a failure or have let your family down",freqList,0);
+			public var q7:QuestionList = new QuestionList("Q7","7. Trouble concentrating on things, such as reading the newspaper or watching television",freqList,0);
+			public var q8:QuestionList = new QuestionList("Q8","8. Moving or speaking so slowly that other people could have noticed. Or the opposite, being so figety or restless that you have been moving around a lot more than usual",freqList,0);
+			public var q9:QuestionList = new QuestionList("Q9","9. Thoughts that you would be better off dead, or of hurting yourself",freqList,0);
+			public var q10:QuestionList = new QuestionList("Q10","10. [IF ANY PROBLEMS SELECTED] How difficult have these problems made it for you to do your work, take care of things at home, or get along with other people?",new ArrayList(["Not difficult at all","Somewhat difficult","Very difficult","Extremely difficult"]),0);
+			public var qScore:QuestionText = new QuestionText("Score","Score","");
+			public var qModality:QuestionList = new QuestionList("Modality","Depression Severity",new ArrayList(["Minimal depression","Mild depression","Moderate depression","Moderately severe depression","Severe depression"]),-1);
+			
+			public override function createForm():void
+			{
+				createText("PHQ-9 - Patient Health Questionnaire","h1");
+				createText("Over the last 2 weeks, how often have you been bothered by any of the following problems?","h1");
+				var width1:int = 140;
+				var width2:int = 210;
+				addQuestion(q1,width1);
+				addQuestion(q2,width1);
+				addQuestion(q3,width1);
+				addQuestion(q4,width1);
+				addQuestion(q5,width1);
+				addQuestion(q6,width1);
+				addQuestion(q7,width1);
+				addQuestion(q8,width1);
+				addQuestion(q9,width1);
+				addQuestion(q10,width1);
+				createText("Results","h1");
+				addQuestion(qScore,80);
+				addQuestion(qModality,width2);
+				qScore.input.editable = false;
+				qModality.input.enabled = false
+			}
+			
+			protected function saveButton_clickHandler(event:MouseEvent):void
+			{
+				var score:int = calculateScore();
+				qScore.answer = score.toString();
+				qModality.input.selectedIndex = getScoreModality(score);
+				global.pageAssessment.saveAssessment();
+			}
+			
+			private function calculateScore():int
+			{
+				var score:int = 0;
+				score += q1.getAnswerIndex();
+				score += q2.getAnswerIndex();
+				score += q3.getAnswerIndex();
+				score += q4.getAnswerIndex();
+				score += q5.getAnswerIndex();
+				score += q6.getAnswerIndex();
+				score += q7.getAnswerIndex();
+				score += q8.getAnswerIndex();
+				score += q9.getAnswerIndex();
+				return score;
+			}
+			
+			private function getScoreModality(score:int):int
+			{
+				if(score < 5)
+					return 0;
+				if(score < 10)
+					return 1;
+				if(score < 15)
+					return 2;
+				if(score < 20)
+					return 3;
+				else
+					return 4;
+			}			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<s:Button id="saveButton" label="Save" x="150" y="300" click="saveButton_clickHandler(event)"/>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+</assessment:QuestionForm>

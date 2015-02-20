@@ -17,6 +17,11 @@ class AssessmentVO
 	public $type;
 	
 	/**
+	 * @var int
+	 */
+	public $subtype;
+	
+	/**
 	 * @var string
 	 */
 	public $date;
@@ -36,6 +41,7 @@ class AssessmentVO
 		$this->autoid = -1;
 		$this->episode_autoid = -1;
 		$this->type = 0;
+		$this->subtype = 0;
 		$this->date = "";
 		$this->complete = 0;
 		$this->data = array();

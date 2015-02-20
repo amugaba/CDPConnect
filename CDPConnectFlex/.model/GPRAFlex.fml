@@ -553,34 +553,37 @@
         <item name="analyzed">true</item>
       </annotation>
       <annotation name="ValidProperties">
-        <item name="propertySpecifier">autoid,episode_autoid,type,date,complete</item>
+        <item name="propertySpecifier">autoid,episode_autoid,type,subtype,date,complete,data</item>
       </annotation>
       <annotation name="original signature">
         <item name="returnType">opaque</item>
       </annotation>
       <parameter name="autoid" type="integer"/>
     </function>
+    <function name="getAssessmentData" return-type="opaque">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="returnType">opaque</item>
+      </annotation>
+      <parameter name="item" type="AssessmentVO"/>
+    </function>
     <function name="createAssessment" return-type="AssessmentVO">
       <annotation name="analyze group">
         <item name="analyzed">true</item>
       </annotation>
-      <annotation name="ValidProperties">
-        <item name="propertySpecifier">autoid,episode_autoid,type,date,complete,data</item>
-      </annotation>
       <annotation name="original signature">
-        <item name="returnType">AssessmentVO</item>
+        <item name="returnType">opaque</item>
       </annotation>
       <parameter name="item" type="AssessmentVO"/>
     </function>
-    <function name="updateAssessment" return-type="AssessmentVO">
+    <function name="updateAssessmentData" return-type="void">
       <annotation name="analyze group">
         <item name="analyzed">true</item>
       </annotation>
-      <annotation name="ValidProperties">
-        <item name="propertySpecifier">autoid,episode_autoid,type,date,complete,data</item>
-      </annotation>
       <annotation name="original signature">
-        <item name="returnType">AssessmentVO</item>
+        <item name="returnType">opaque</item>
       </annotation>
       <parameter name="item" type="AssessmentVO"/>
     </function>
@@ -595,25 +598,23 @@
       <item name="IncludeRemoteClass">nonempty</item>
     </annotation>
     <annotation name="createAssessment">
-      <item name="propertySpecifier">autoid,episode_autoid,type,date,complete,data</item>
-    </annotation>
-    <annotation name="updateAssessment">
-      <item name="propertySpecifier">autoid,episode_autoid,type,date,complete,data</item>
+      <item name="propertySpecifier">autoid,episode_autoid,type,subtype,date,complete,data</item>
     </annotation>
     <annotation name="service Group">
-      <item name="service">AssessmentService</item>
+      <item name="service">AssessmentService,AssessmentServiceDummy</item>
     </annotation>
     <annotation name="ActionScriptGeneration">
       <item name="Package">valueObjects</item>
     </annotation>
     <annotation name="getAssessmentsByEpisodeID">
-      <item name="propertySpecifier">autoid,episode_autoid,type,date,complete</item>
+      <item name="propertySpecifier">autoid,episode_autoid,type,subtype,date,complete,data</item>
     </annotation>
-    <property name="autoid" type="integer"/>
-    <property name="episode_autoid" type="integer"/>
-    <property name="type" type="integer"/>
-    <property name="date" type="string"/>
-    <property name="complete" type="integer"/>
+    <property name="autoid" type="integer" required="true"/>
+    <property name="episode_autoid" type="integer" required="true"/>
+    <property name="type" type="integer" required="true"/>
+    <property name="subtype" type="integer" required="true"/>
+    <property name="date" type="string" required="true"/>
+    <property name="complete" type="integer" required="true"/>
     <property name="data" type="opaque[]" required="true"/>
   </entity>
 </model>

@@ -23,14 +23,17 @@
 			import mx.controls.Text;
 			import mx.core.FlexGlobals;
 			import mx.events.FlexEvent;
+			import mx.events.ValidationResultEvent;
 			import mx.validators.NumberValidator;
+			import mx.validators.ValidationResult;
 			import mx.validators.Validator;
 			
+			import spark.components.NavigatorContent;
 			import spark.events.IndexChangeEvent;
 			
 			protected var global:CDPConnectFlex = FlexGlobals.topLevelApplication as CDPConnectFlex;
-			public var questions:Vector.<QuestionClass> = new Vector.<QuestionClass>();
-			protected var created:Boolean = false;
+			public var questions:Vector.<QuestionClass> = new Vector.<QuestionClass> ();
+			public var created:Boolean = false;
 			
 			public function addQuestion(q:QuestionClass, width:int = -1):void
 			{
@@ -40,22 +43,46 @@
 					q.inputControl.width = width;
 			}
 			
-			public function initializeForm():void
-			{
-				if(!created)
-					createForm();
-				else
-					reset();
-			}
-			
 			public function createForm():void
 			{
+				
+			}
+			
+			public function initForm():void
+			{
+				if(!created)
+				{
+					createForm();
+					created = true;
+				}
+				else
+					reset();
 			}
 			
 			public function reset():void
 			{
 				for each(var q:QuestionClass in questions)
 					q.restoreDefault();
+					
+				doAllSkips();
+				removeAllErrors();
+			}
+			
+			public function doAllSkips():void
+			{
+				for each(var q:QuestionClass in questions)
+				{
+					for each(var s:SkipPattern in q.skipPatterns)
+					s.skipHandler(null);
+				}
+			}
+			
+			public function removeAllErrors():void
+			{
+				for each(var q:QuestionClass in questions)
+				{
+					q.inputControl.errorString = ""; //remove validation markers
+				}
 			}
 			
 			protected function addDivider():void
@@ -108,10 +135,6 @@
 				addElement(t);
 			}
 			
-			public function enableForm(enabled:Boolean):void
-			{
-			}
-			
 			public function saveData(data:Array):Array
 			{
 				if(data == null)
@@ -119,15 +142,11 @@
 				
 				for each(var q:QuestionClass in questions)
 				{
-					//gpraData[q.codeName] = q.answer;
-					
-					var valInt:int;
-					var valString:String;
-					
 					if(q.isSkipped)
 					{
 						//question is being skipped, put null for N/A
 						continue;
+						
 					}
 					else if(q is QuestionText)
 					{
@@ -142,6 +161,68 @@
 					}
 				}
 				return data;
+			}
+			
+			public function loadData(data:Array):Array
+			{
+				for each(var q:QuestionClass in questions)
+				{
+					//gpraData[q.codeName] = q.answer;
+					
+					var valInt:int;
+					var valString:String;
+					
+					if(data[q.codeName] == null)
+					{
+						q.disable(); //skipped
+					}
+					else if(q is QuestionText)
+					{
+						q.answer = data[q.codeName].toString();
+					}
+					else if(q is QuestionList)
+					{
+						if(data[q.codeName] is String)
+							data[q.codeName] = parseInt(data[q.codeName]);
+						(q as QuestionList).input.selectedIndex = data[q.codeName];
+					}
+				}
+				return data;
+			}
+			
+			public function validateForm():Array
+			{
+				var results:Array = new Array();
+				var ev:ValidationResultEvent;
+				for each(var q:QuestionClass in questions)
+				{
+					for each(var val:Validator in q.validators)
+					{
+						if(val == null || !val.enabled)
+							continue;
+						
+						if(!q.isSkipped && q.inputControl.enabled)
+						{
+							ev = val.validate();
+							if(ev.results != null)
+							{
+								for each(var vr:ValidationResult in ev.results)
+								{
+									var s:String = "";
+									s += q.codeName + " - ";
+									s += vr.errorMessage;
+									results.push(s);
+								}
+							}
+						}
+						else
+						{
+							var evt:ValidationResultEvent = new ValidationResultEvent(ValidationResultEvent.VALID);
+							val.dispatchEvent(evt);
+						}
+					}
+				}
+				return results;
 			}
 		]]>
 	</fx:Script>

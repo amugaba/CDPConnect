@@ -4,7 +4,7 @@
 						 xmlns:mx="library://ns.adobe.com/flex/mx"
 						 xmlns:assessment="components.assessment.*"
 						 xmlns:assessmentservice="services.assessmentservice.*"
-						 width="100%" height="100%">
+						 width="100%" height="100%" labelWidth="300">
 	<fx:Script>
 		<![CDATA[
 			import components.questions.QuestionList;
@@ -18,51 +18,31 @@
 			public var qAlcohol:QuestionList = new QuestionList("Alcohol","Did the client prescreen positive for ALCOHOL?",new ArrayList(["No","Yes"]),0);
 			public var qDrugs:QuestionList = new QuestionList("Drug","Did the client prescreen positive for DRUGS?",new ArrayList(["No","Yes"]),0);
 			public var qDepression:QuestionList = new QuestionList("Depression","Did the client prescreen positive for DEPRESSION?",new ArrayList(["No","Yes"]),0);
+			public var qPositive:QuestionList = new QuestionList("Positive","Did the client prescreen positive?",new ArrayList(["No","Yes"]),-1);
 			
 			public override function createForm():void
 			{
-				if(!created)
-				{
-					addQuestion(qAlcohol);
-					addQuestion(qDrugs);
-					addQuestion(qDepression);
-				}
-				else
-					reset();
+				createText("SBIRT Prescreen Questions","h1");
+				addQuestion(qAlcohol);
+				addQuestion(qDrugs);
+				addQuestion(qDepression);
+				createText("Results","h1");
+				addQuestion(qPositive);
+				qPositive.input.enabled = false;				
 			}
 			
 			protected function saveButton_clickHandler(event:MouseEvent):void
 			{
-				if(global.activeAssessment == null)
-				{
-					global.activeAssessment = new AssessmentVO();
-					global.activeAssessment.episode_autoid = global.activeEpisode.autoid;
-					global.activeAssessment.type = AssessType.PRESCREEN;
-					global.activeAssessment.date = global.dateFormatter.format(new Date());
-					global.activeAssessment.complete = 1;
-					global.activeAssessment.data = saveData(new Array());
-					createAssessmentResult.token = assessmentService.createAssessment(global.activeAssessment);
-				}
+				if(qAlcohol.getAnswerIndex() == 1 || qDrugs.getAnswerIndex() == 1)
+					qPositive.setAnswerIndex(1);
 				else
-				{
-					global.activeAssessment.data = saveData(global.activeAssessment.data.source);
-					updateAssessmentResult.token = assessmentService.updateAssessment(global.activeAssessment);
-				}
-			}
-			
-			protected function createAssessmentResult_resultHandler(event:ResultEvent):void
-			{
-				Alert.show("Prescreen saved.");
+					qPositive.setAnswerIndex(0);
+				global.pageAssessment.saveAssessment();
 			}
 			
 		]]>
 	</fx:Script>
 	<fx:Declarations>
-		<s:CallResponder id="createAssessmentResult" result="createAssessmentResult_resultHandler(event)"/>
-		<assessmentservice:AssessmentService id="assessmentService"
-											 fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
-											 showBusyCursor="true"/>
-		<s:CallResponder id="updateAssessmentResult"/>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
 	<s:Button id="saveButton" label="Save" x="150" y="300" click="saveButton_clickHandler(event)"/>
