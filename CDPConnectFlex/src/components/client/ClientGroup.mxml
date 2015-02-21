@@ -152,7 +152,6 @@
 				saveNotesButton.enabled = !enabled;
 				
 				//enable assessment and client areas
-				global.pageButtonBar.enabled = !enabled;
 				global.pageClient.episodeGroup.enabled = !enabled;
 			}
 			
@@ -172,11 +171,13 @@
 				Alert.show("Client created.");
 				global.activeClient = createClientResult.lastResult;//getting autoid
 				setIsCreatingClient(false);
+				global.enableLeftButtonsOnly(global.pageClientButton);
 			}
 			
 			protected function cancelClientButton_clickHandler(event:MouseEvent):void
 			{
 				setIsCreatingClient(false);
+				global.enableLeftButtonsOnly(global.pageHomeButton);
 				global.pageViewstack.selectedChild = global.pageHome;
 			}
 			

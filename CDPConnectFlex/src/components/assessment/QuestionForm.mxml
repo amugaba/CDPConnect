@@ -163,15 +163,10 @@
 				return data;
 			}
 			
-			public function loadData(data:Array):Array
+			public function loadData(data:Array):void
 			{
 				for each(var q:QuestionClass in questions)
-				{
-					//gpraData[q.codeName] = q.answer;
-					
-					var valInt:int;
-					var valString:String;
-					
+				{					
 					if(data[q.codeName] == null)
 					{
 						q.disable(); //skipped
@@ -187,7 +182,6 @@
 						(q as QuestionList).input.selectedIndex = data[q.codeName];
 					}
 				}
-				return data;
 			}
 			
 			public function validateForm():Array
@@ -204,15 +198,18 @@
 						if(!q.isSkipped && q.inputControl.enabled)
 						{
 							ev = val.validate();
-							if(ev.results != null)
+							if(ev.results != null && ev.results.length > 0)
 							{
-								for each(var vr:ValidationResult in ev.results)
+								/*for each(var vr:ValidationResult in ev.results)
 								{
 									var s:String = "";
 									s += q.codeName + " - ";
 									s += vr.errorMessage;
 									results.push(s);
-								}
+								}*/
+								//Only store the first error per question, otherwise the message is overly long
+								results.push(q.codeName + " - " + (ev.results[0] as ValidationResult).errorMessage);
+								break;//move on to next question
 							}
 						}
 						else

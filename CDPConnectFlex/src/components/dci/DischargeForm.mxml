@@ -63,9 +63,11 @@
 				
 				//Validators
 				Valid.addDateAgeValidator(qDischargeDate,0,DateAgeValidator.DAY,1,DateAgeValidator.YEAR);
-				Valid.addDateAgeValidator(qDischargeDate,0,DateAgeValidator.DAY,3,DateAgeValidator.YEAR);
+				Valid.addDateAgeValidator(qLastServiceDate,0,DateAgeValidator.DAY,3,DateAgeValidator.YEAR);
 				Valid.addRequiredValidator(qDischargeSpec);
 				qDischargeSpec.answerType = String;
+				qDischargeDate.answerType = String;
+				qLastServiceDate.answerType = String;
 				
 				//Control Logic
 				addSkipDropDown(qDischargeStatus,["Other"],[qDischargeSpec],true);

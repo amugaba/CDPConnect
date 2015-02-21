@@ -136,34 +136,42 @@
 				Alert.show("Episode created.");
 				global.activeEpisode = createEpisodeResult.lastResult;//this is just getting the autoid
 				setIsCreatingEpisode(false);
+				global.enableLeftButtonsOnly(global.pageClientButton);
 				episodeList.addItem(global.activeEpisode);
 				episodeGrid.selectedItem = global.activeEpisode;
+				global.pageDCI.intakeExists = false;
+				global.pageDCI.dischargeExists = false;
+				global.pageDCI.followupExists = false;
+				global.pageDCI.intakeDCI = null;
 			}
 			
-			protected function setIsCreatingEpisode(enabled:Boolean):void
+			protected function setIsCreatingEpisode(creating:Boolean):void
 			{
-				createEpisodeButton.visible = enabled;
-				cancelEpisodeButton.visible = enabled;
-				saveEpisodeProfileButton.visible = !enabled;
-				episodeNewButton.enabled = !enabled;
-				episodeGrid.enabled = !enabled;
+				createEpisodeButton.visible = creating;
+				cancelEpisodeButton.visible = creating;
+				saveEpisodeProfileButton.visible = !creating;
+				episodeNewButton.enabled = !creating;
+				episodeGrid.enabled = !creating;
 				
-				var epLoaded:Boolean = !enabled && global.activeEpisode != null
+				var epLoaded:Boolean = !creating && global.activeEpisode != null
 				notesArea.enabled = epLoaded;
 				saveNotesButton.enabled = epLoaded;
 				saveEpisodeProfileButton.enabled = epLoaded;
 				
-				episodeForm.enabled = enabled || global.activeEpisode != null;
+				episodeForm.enabled = creating || global.activeEpisode != null;
 				
 				//enable assessment and client areas
-				global.pageButtonBar.enabled = !enabled;
-				global.pageClient.clientGroup.enabled = !enabled;
+				global.pageClient.clientGroup.enabled = !creating;
+				global.pageClient.assessmentGroup.enabled = !creating;
+				if(creating)
+					global.pageClient.assessmentGroup.assessmentList.removeAll();
 			}
 			
 			protected function episodeNewButton_clickHandler(event:MouseEvent):void
 			{
 				global.activeEpisode = null;
 				setIsCreatingEpisode(true);
+				global.disableAllOtherButtons(global.pageClientButton);
 				resetGroup();
 				
 				//load new number into episode #
@@ -176,6 +184,7 @@
 			protected function cancelEpisodeButton_clickHandler(event:MouseEvent):void
 			{
 				setIsCreatingEpisode(false);
+				global.enableLeftButtonsOnly(global.pageClientButton);
 				resetGroup();
 			}
 			
@@ -212,6 +221,7 @@
 				global.activeEpisode = episodeGrid.selectedItem as EpisodeVO;
 				sendGlobalObjectToFormData();
 				setIsCreatingEpisode(false);
+				global.enableLeftButtonsOnly(global.pageClientButton);
 				global.pageClient.assessmentGroup.initializeGroup();
 			}
 			
@@ -233,7 +243,7 @@
 		<s:columns>
 			<s:ArrayList>
 				<s:GridColumn dataField="number" headerText="#" width="40"></s:GridColumn>
-				<s:GridColumn dataField="date" headerText="Date" width="100"></s:GridColumn>
+				<s:GridColumn dataField="date" headerText="Date" width="90"></s:GridColumn>
 			</s:ArrayList>
 		</s:columns>
 	</s:DataGrid>

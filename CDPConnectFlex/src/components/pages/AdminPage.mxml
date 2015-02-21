@@ -23,7 +23,6 @@
 			import mx.rpc.events.ResultEvent;
 			
 			import valueObjects.ClientVO;
-			import valueObjects.GpraVO;
 			import valueObjects.GrantVO;
 			
 			protected var global:CDPConnectFlex = FlexGlobals.topLevelApplication as CDPConnectFlex;
@@ -62,29 +61,29 @@
 			
 			protected function exportNewGPRAsButton_clickHandler(event:MouseEvent):void
 			{
-				getGprasResult.token = gpraService.getGprasNotUploadedArray();
+				//getGprasResult.token = gpraService.getGprasNotUploadedArray();
 			}
 			
 			protected function exportAllGPRAsButton_clickHandler(event:MouseEvent):void
 			{
-				getGprasResult.token = gpraService.getAllGprasArray();
+				//getGprasResult.token = gpraService.getAllGprasArray();
 			}
 			
 			protected function getGprasResult_resultHandler(event:ResultEvent):void
 			{
-				if(getGprasResult.lastResult != null)
+				/*if(getGprasResult.lastResult != null)
 				{
 					Alert.show("Save file?","",Alert.YES|Alert.NO,null,exportGPRAsCloseHandler);
 				}
 				else
 				{
 					Alert.show("There are no GPRAs to export.");
-				}
+				}*/
 			}
 			
 			protected function exportGPRAsCloseHandler( event:CloseEvent ):void
 			{
-				var output:String = gpraHeaders;
+				/*var output:String = gpraHeaders;
 				if(event.detail == Alert.YES)
 				{
 					var file:FileReference = new FileReference();
@@ -96,7 +95,7 @@
 					}
 					var date:Date = new Date();
 					file.save(output,"GPRAs " + (date.month+1).toString() + "-" + date.date.toString() + "-" + date.fullYear.toString() + ".csv");
-				}
+				}*/
 			}
 			
 			protected function exportClientsButton_clickHandler(event:MouseEvent):void
@@ -154,10 +153,6 @@
 
 	</fx:Style>
 	<fx:Declarations>
-		<s:CallResponder id="getGprasResult" result="getGprasResult_resultHandler(event)"/>
-		<gpraservice:GpraService id="gpraService"
-								 fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
-								 showBusyCursor="true"/>
 		<s:CallResponder id="getAllClientsArrayResult" result="getAllClientsArrayResult_resultHandler(event)"/>
 		<clientservice:ClientService id="clientService"
 									 fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
@@ -182,13 +177,13 @@
 			<s:Button id="exportClientsButton" label="Run" click="exportClientsButton_clickHandler(event)"/>
 		</s:Panel>
 		<mx:ProgressBar id="uploadProgress" x="392" y="417" indeterminate="true" visible="false"/>
-		<s:Panel x="162" y="206" width="372" height="183" title="DCI Settings">
+		<s:Panel x="162" y="206" width="372" height="225" title="DCI Settings">
 			<s:Form x="0" y="0">
 				<s:FormItem label="SAMHSA Center">
 					<s:DropDownList id="samhsaCenter" dataProvider="{new ArrayList(['CSAT','CMHS','CSAP'])}"></s:DropDownList>
 				</s:FormItem>
 				<s:FormItem label="Program Type">
-					<s:DropDownList id="programType" dataProvider="{new ArrayList(['Treatment Grant Program','Recovery Grant Program'])}"></s:DropDownList>
+					<s:DropDownList id="programType" width="160" dataProvider="{new ArrayList(['Treatment Grant Program','Recovery Grant Program'])}"></s:DropDownList>
 				</s:FormItem>
 				<s:FormItem label="Grant ID">
 					<s:TextInput id="grantCode"/>

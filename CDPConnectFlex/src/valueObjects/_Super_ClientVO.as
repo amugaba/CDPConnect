@@ -14,7 +14,6 @@ import mx.binding.utils.ChangeWatcher;
 import mx.collections.ArrayCollection;
 import mx.events.PropertyChangeEvent;
 import mx.validators.ValidationResult;
-import valueObjects.GpraVO;
 
 import flash.net.registerClassAlias;
 import flash.net.getClassByAlias;
@@ -44,7 +43,6 @@ public class _Super_ClientVO extends flash.events.EventDispatcher implements com
 
     model_internal static function initRemoteClassAliasAllRelated() : void
     {
-        valueObjects.GpraVO.initRemoteClassAliasSingleChild();
     }
 
     model_internal var _dminternal_model : _ClientVOEntityMetadata;
@@ -66,15 +64,10 @@ public class _Super_ClientVO extends flash.events.EventDispatcher implements com
      */
     private var _internal_autoid : int;
     private var _internal_clientid : String;
-    private var _internal_gpras : ArrayCollection;
-    private var _internal_intake : valueObjects.GpraVO;
-    private var _internal_discharge : valueObjects.GpraVO;
-    private var _internal_followup : valueObjects.GpraVO;
     private var _internal_firstname : String;
     private var _internal_lastname : String;
     private var _internal_dob : String;
     private var _internal_ssn : String;
-    private var _internal_intakestaff : String;
     private var _internal_createddate : String;
     private var _internal_notes : String;
 
@@ -93,6 +86,12 @@ public class _Super_ClientVO extends flash.events.EventDispatcher implements com
         _model = new _ClientVOEntityMetadata(this);
 
         // Bind to own data or source properties for cache invalidation triggering
+        model_internal::_changeWatcherArray.push(mx.binding.utils.ChangeWatcher.watch(this, "clientid", model_internal::setterListenerClientid));
+        model_internal::_changeWatcherArray.push(mx.binding.utils.ChangeWatcher.watch(this, "firstname", model_internal::setterListenerFirstname));
+        model_internal::_changeWatcherArray.push(mx.binding.utils.ChangeWatcher.watch(this, "lastname", model_internal::setterListenerLastname));
+        model_internal::_changeWatcherArray.push(mx.binding.utils.ChangeWatcher.watch(this, "dob", model_internal::setterListenerDob));
+        model_internal::_changeWatcherArray.push(mx.binding.utils.ChangeWatcher.watch(this, "ssn", model_internal::setterListenerSsn));
+        model_internal::_changeWatcherArray.push(mx.binding.utils.ChangeWatcher.watch(this, "createddate", model_internal::setterListenerCreateddate));
         model_internal::_changeWatcherArray.push(mx.binding.utils.ChangeWatcher.watch(this, "notes", model_internal::setterListenerNotes));
 
     }
@@ -111,30 +110,6 @@ public class _Super_ClientVO extends flash.events.EventDispatcher implements com
     public function get clientid() : String
     {
         return _internal_clientid;
-    }
-
-    [Bindable(event="propertyChange")]
-    public function get gpras() : ArrayCollection
-    {
-        return _internal_gpras;
-    }
-
-    [Bindable(event="propertyChange")]
-    public function get intake() : valueObjects.GpraVO
-    {
-        return _internal_intake;
-    }
-
-    [Bindable(event="propertyChange")]
-    public function get discharge() : valueObjects.GpraVO
-    {
-        return _internal_discharge;
-    }
-
-    [Bindable(event="propertyChange")]
-    public function get followup() : valueObjects.GpraVO
-    {
-        return _internal_followup;
     }
 
     [Bindable(event="propertyChange")]
@@ -159,12 +134,6 @@ public class _Super_ClientVO extends flash.events.EventDispatcher implements com
     public function get ssn() : String
     {
         return _internal_ssn;
-    }
-
-    [Bindable(event="propertyChange")]
-    public function get intakestaff() : String
-    {
-        return _internal_intakestaff;
     }
 
     [Bindable(event="propertyChange")]
@@ -204,61 +173,6 @@ public class _Super_ClientVO extends flash.events.EventDispatcher implements com
         {
             _internal_clientid = value;
             this.dispatchEvent(mx.events.PropertyChangeEvent.createUpdateEvent(this, "clientid", oldValue, _internal_clientid));
-        }
-    }
-
-    public function set gpras(value:*) : void
-    {
-        var oldValue:ArrayCollection = _internal_gpras;
-        if (oldValue !== value)
-        {
-            if (value is ArrayCollection)
-            {
-                _internal_gpras = value;
-            }
-            else if (value is Array)
-            {
-                _internal_gpras = new ArrayCollection(value);
-            }
-            else if (value == null)
-            {
-                _internal_gpras = null;
-            }
-            else
-            {
-                throw new Error("value of gpras must be a collection");
-            }
-            this.dispatchEvent(mx.events.PropertyChangeEvent.createUpdateEvent(this, "gpras", oldValue, _internal_gpras));
-        }
-    }
-
-    public function set intake(value:valueObjects.GpraVO) : void
-    {
-        var oldValue:valueObjects.GpraVO = _internal_intake;
-        if (oldValue !== value)
-        {
-            _internal_intake = value;
-            this.dispatchEvent(mx.events.PropertyChangeEvent.createUpdateEvent(this, "intake", oldValue, _internal_intake));
-        }
-    }
-
-    public function set discharge(value:valueObjects.GpraVO) : void
-    {
-        var oldValue:valueObjects.GpraVO = _internal_discharge;
-        if (oldValue !== value)
-        {
-            _internal_discharge = value;
-            this.dispatchEvent(mx.events.PropertyChangeEvent.createUpdateEvent(this, "discharge", oldValue, _internal_discharge));
-        }
-    }
-
-    public function set followup(value:valueObjects.GpraVO) : void
-    {
-        var oldValue:valueObjects.GpraVO = _internal_followup;
-        if (oldValue !== value)
-        {
-            _internal_followup = value;
-            this.dispatchEvent(mx.events.PropertyChangeEvent.createUpdateEvent(this, "followup", oldValue, _internal_followup));
         }
     }
 
@@ -302,16 +216,6 @@ public class _Super_ClientVO extends flash.events.EventDispatcher implements com
         }
     }
 
-    public function set intakestaff(value:String) : void
-    {
-        var oldValue:String = _internal_intakestaff;
-        if (oldValue !== value)
-        {
-            _internal_intakestaff = value;
-            this.dispatchEvent(mx.events.PropertyChangeEvent.createUpdateEvent(this, "intakestaff", oldValue, _internal_intakestaff));
-        }
-    }
-
     public function set createddate(value:String) : void
     {
         var oldValue:String = _internal_createddate;
@@ -344,6 +248,36 @@ public class _Super_ClientVO extends flash.events.EventDispatcher implements com
      *  - the validity of the property (and the containing entity) if the given data property is required.
      */
 
+    model_internal function setterListenerClientid(value:flash.events.Event):void
+    {
+        _model.invalidateDependentOnClientid();
+    }
+
+    model_internal function setterListenerFirstname(value:flash.events.Event):void
+    {
+        _model.invalidateDependentOnFirstname();
+    }
+
+    model_internal function setterListenerLastname(value:flash.events.Event):void
+    {
+        _model.invalidateDependentOnLastname();
+    }
+
+    model_internal function setterListenerDob(value:flash.events.Event):void
+    {
+        _model.invalidateDependentOnDob();
+    }
+
+    model_internal function setterListenerSsn(value:flash.events.Event):void
+    {
+        _model.invalidateDependentOnSsn();
+    }
+
+    model_internal function setterListenerCreateddate(value:flash.events.Event):void
+    {
+        _model.invalidateDependentOnCreateddate();
+    }
+
     model_internal function setterListenerNotes(value:flash.events.Event):void
     {
         _model.invalidateDependentOnNotes();
@@ -370,6 +304,36 @@ public class _Super_ClientVO extends flash.events.EventDispatcher implements com
         var validationFailureMessages:Array = new Array();
 
         var propertyValidity:Boolean = true;
+        if (!_model.clientidIsValid)
+        {
+            propertyValidity = false;
+            com.adobe.fiber.util.FiberUtils.arrayAdd(validationFailureMessages, _model.model_internal::_clientidValidationFailureMessages);
+        }
+        if (!_model.firstnameIsValid)
+        {
+            propertyValidity = false;
+            com.adobe.fiber.util.FiberUtils.arrayAdd(validationFailureMessages, _model.model_internal::_firstnameValidationFailureMessages);
+        }
+        if (!_model.lastnameIsValid)
+        {
+            propertyValidity = false;
+            com.adobe.fiber.util.FiberUtils.arrayAdd(validationFailureMessages, _model.model_internal::_lastnameValidationFailureMessages);
+        }
+        if (!_model.dobIsValid)
+        {
+            propertyValidity = false;
+            com.adobe.fiber.util.FiberUtils.arrayAdd(validationFailureMessages, _model.model_internal::_dobValidationFailureMessages);
+        }
+        if (!_model.ssnIsValid)
+        {
+            propertyValidity = false;
+            com.adobe.fiber.util.FiberUtils.arrayAdd(validationFailureMessages, _model.model_internal::_ssnValidationFailureMessages);
+        }
+        if (!_model.createddateIsValid)
+        {
+            propertyValidity = false;
+            com.adobe.fiber.util.FiberUtils.arrayAdd(validationFailureMessages, _model.model_internal::_createddateValidationFailureMessages);
+        }
         if (!_model.notesIsValid)
         {
             propertyValidity = false;
@@ -454,6 +418,168 @@ public class _Super_ClientVO extends flash.events.EventDispatcher implements com
         }
     }
 
+    model_internal var _doValidationCacheOfClientid : Array = null;
+    model_internal var _doValidationLastValOfClientid : String;
+
+    model_internal function _doValidationForClientid(valueIn:Object):Array
+    {
+        var value : String = valueIn as String;
+
+        if (model_internal::_doValidationCacheOfClientid != null && model_internal::_doValidationLastValOfClientid == value)
+           return model_internal::_doValidationCacheOfClientid ;
+
+        _model.model_internal::_clientidIsValidCacheInitialized = true;
+        var validationFailures:Array = new Array();
+        var errorMessage:String;
+        var failure:Boolean;
+
+        var valRes:ValidationResult;
+        if (_model.isClientidAvailable && _internal_clientid == null)
+        {
+            validationFailures.push(new ValidationResult(true, "", "", "clientid is required"));
+        }
+
+        model_internal::_doValidationCacheOfClientid = validationFailures;
+        model_internal::_doValidationLastValOfClientid = value;
+
+        return validationFailures;
+    }
+    
+    model_internal var _doValidationCacheOfFirstname : Array = null;
+    model_internal var _doValidationLastValOfFirstname : String;
+
+    model_internal function _doValidationForFirstname(valueIn:Object):Array
+    {
+        var value : String = valueIn as String;
+
+        if (model_internal::_doValidationCacheOfFirstname != null && model_internal::_doValidationLastValOfFirstname == value)
+           return model_internal::_doValidationCacheOfFirstname ;
+
+        _model.model_internal::_firstnameIsValidCacheInitialized = true;
+        var validationFailures:Array = new Array();
+        var errorMessage:String;
+        var failure:Boolean;
+
+        var valRes:ValidationResult;
+        if (_model.isFirstnameAvailable && _internal_firstname == null)
+        {
+            validationFailures.push(new ValidationResult(true, "", "", "firstname is required"));
+        }
+
+        model_internal::_doValidationCacheOfFirstname = validationFailures;
+        model_internal::_doValidationLastValOfFirstname = value;
+
+        return validationFailures;
+    }
+    
+    model_internal var _doValidationCacheOfLastname : Array = null;
+    model_internal var _doValidationLastValOfLastname : String;
+
+    model_internal function _doValidationForLastname(valueIn:Object):Array
+    {
+        var value : String = valueIn as String;
+
+        if (model_internal::_doValidationCacheOfLastname != null && model_internal::_doValidationLastValOfLastname == value)
+           return model_internal::_doValidationCacheOfLastname ;
+
+        _model.model_internal::_lastnameIsValidCacheInitialized = true;
+        var validationFailures:Array = new Array();
+        var errorMessage:String;
+        var failure:Boolean;
+
+        var valRes:ValidationResult;
+        if (_model.isLastnameAvailable && _internal_lastname == null)
+        {
+            validationFailures.push(new ValidationResult(true, "", "", "lastname is required"));
+        }
+
+        model_internal::_doValidationCacheOfLastname = validationFailures;
+        model_internal::_doValidationLastValOfLastname = value;
+
+        return validationFailures;
+    }
+    
+    model_internal var _doValidationCacheOfDob : Array = null;
+    model_internal var _doValidationLastValOfDob : String;
+
+    model_internal function _doValidationForDob(valueIn:Object):Array
+    {
+        var value : String = valueIn as String;
+
+        if (model_internal::_doValidationCacheOfDob != null && model_internal::_doValidationLastValOfDob == value)
+           return model_internal::_doValidationCacheOfDob ;
+
+        _model.model_internal::_dobIsValidCacheInitialized = true;
+        var validationFailures:Array = new Array();
+        var errorMessage:String;
+        var failure:Boolean;
+
+        var valRes:ValidationResult;
+        if (_model.isDobAvailable && _internal_dob == null)
+        {
+            validationFailures.push(new ValidationResult(true, "", "", "dob is required"));
+        }
+
+        model_internal::_doValidationCacheOfDob = validationFailures;
+        model_internal::_doValidationLastValOfDob = value;
+
+        return validationFailures;
+    }
+    
+    model_internal var _doValidationCacheOfSsn : Array = null;
+    model_internal var _doValidationLastValOfSsn : String;
+
+    model_internal function _doValidationForSsn(valueIn:Object):Array
+    {
+        var value : String = valueIn as String;
+
+        if (model_internal::_doValidationCacheOfSsn != null && model_internal::_doValidationLastValOfSsn == value)
+           return model_internal::_doValidationCacheOfSsn ;
+
+        _model.model_internal::_ssnIsValidCacheInitialized = true;
+        var validationFailures:Array = new Array();
+        var errorMessage:String;
+        var failure:Boolean;
+
+        var valRes:ValidationResult;
+        if (_model.isSsnAvailable && _internal_ssn == null)
+        {
+            validationFailures.push(new ValidationResult(true, "", "", "ssn is required"));
+        }
+
+        model_internal::_doValidationCacheOfSsn = validationFailures;
+        model_internal::_doValidationLastValOfSsn = value;
+
+        return validationFailures;
+    }
+    
+    model_internal var _doValidationCacheOfCreateddate : Array = null;
+    model_internal var _doValidationLastValOfCreateddate : String;
+
+    model_internal function _doValidationForCreateddate(valueIn:Object):Array
+    {
+        var value : String = valueIn as String;
+
+        if (model_internal::_doValidationCacheOfCreateddate != null && model_internal::_doValidationLastValOfCreateddate == value)
+           return model_internal::_doValidationCacheOfCreateddate ;
+
+        _model.model_internal::_createddateIsValidCacheInitialized = true;
+        var validationFailures:Array = new Array();
+        var errorMessage:String;
+        var failure:Boolean;
+
+        var valRes:ValidationResult;
+        if (_model.isCreateddateAvailable && _internal_createddate == null)
+        {
+            validationFailures.push(new ValidationResult(true, "", "", "createddate is required"));
+        }
+
+        model_internal::_doValidationCacheOfCreateddate = validationFailures;
+        model_internal::_doValidationLastValOfCreateddate = value;
+
+        return validationFailures;
+    }
+    
     model_internal var _doValidationCacheOfNotes : Array = null;
     model_internal var _doValidationLastValOfNotes : String;
 

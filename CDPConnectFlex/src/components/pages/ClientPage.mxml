@@ -32,7 +32,6 @@
 			import mx.validators.Validator;
 			
 			import valueObjects.ClientVO;
-			import valueObjects.GpraVO;
 			
 			protected var global:CDPConnectFlex = FlexGlobals.topLevelApplication as CDPConnectFlex;
 			
@@ -43,144 +42,7 @@
 				assessmentGroup.initializeGroup();
 				if(global.activeClient == null)
 					global.pageButtonBar.enabled = false;
-			}		
-			
-			
-			/*
-			
-			protected function loadGpraButton_clickHandler(event:MouseEvent):void
-			{
-				if(assessmentGrid.selectedIndex > -1)
-				{
-					global.activeGPRA = assessmentGrid.selectedItem as GpraVO;
-					getGpraByIDResult.token = gpraService.getGpraByID(global.activeGPRA.autoid);
-				}
-			}
-			protected function getGpraByIDResult_resultHandler(event:ResultEvent):void
-			{
-				if(getGpraByIDResult.lastResult != null)
-				{
-					//global.pageGPRA.initializeGPRA();
-					global.activeGPRA.data = getGpraByIDResult.lastResult;
-					//global.pageGPRA.populateForm(global.activeGPRA.data);
-					global.pageViewstack.selectedChild = global.pageGPRA;
-					global.pageGpraButton.enabled = true;
-				}
-				else
-					Alert.show("GPRA not found with this ID.");
-			}
-			
-			protected function createNegativeIntakeButton_clickHandler(event:MouseEvent):void
-			{
-				if(global.activeClient == null)
-					Alert.show("Add or load a client first.");
-				else if(global.activeClient.intake != null)
-					Alert.show("A GPRA intake already exists.");
-				else
-				{
-					var g:GpraVO = new GpraVO();
-					g.autoid = -1;
-					g.type = InterviewType.INTAKE_SBIRT_NEG;
-					g.status = 0;
-					g.clientid = global.activeClient.autoid;
-					global.activeGPRA = g;
-					//global.pageViewstack.selectedChild = global.pageGPRA;
-					global.pageGpraButton.enabled = true;
-					//global.pageGPRA.initializeGPRA();
-				}	
-			}
-			
-			protected function createBIIntakeButton_clickHandler(event:MouseEvent):void
-			{
-				if(global.activeClient == null)
-					Alert.show("Add or load a client first.");
-				//else if(global.activeClient.intake != null)
-				//	Alert.show("A GPRA intake already exists.");
-				else
-				{
-					var g:GpraVO = new GpraVO();
-					g.autoid = -1;
-					g.type = InterviewType.INTAKE_SBIRT_BI;
-					g.status = 0;
-					g.clientid = global.activeClient.autoid;
-					global.activeGPRA = g;
-					//global.pageViewstack.selectedChild = global.pageGPRA;
-					global.pageGpraButton.enabled = true;
-					//global.pageGPRA.initializeGPRA();
-				}	
-			}
-			
-			protected function getGpraSummaryByClientIDResult_resultHandler(event:ResultEvent):void
-			{
-				global.activeClient.gpras = getGpraSummaryByClientIDResult.lastResult;
-				clientGPRAs = getGpraSummaryByClientIDResult.lastResult;
-				
-				global.activeClient.intake = null;
-				global.activeClient.followup = null;
-				global.activeClient.discharge = null;
-				for each(var g:GpraVO in clientGPRAs)
-				{
-					if(g.type == 1)
-					{
-						global.activeClient.intake = g;
-						getIntakeData.token = gpraService.getGpraByID(g.autoid);
-					}
-					else if(g.type == 2)
-						global.activeClient.followup = g;
-					else if(g.type == 5)
-						global.activeClient.discharge = g;
-				}
-			}
-			
-			protected function createDischargeButton_clickHandler(event:MouseEvent):void
-			{
-				if(global.activeClient == null)
-					Alert.show("Add or load a client first.");
-				else if(global.activeClient.intake == null)
-					Alert.show("Create a GPRA intake first.");
-				else if(global.activeClient.discharge != null)
-					Alert.show("A GPRA discharge already exists.");
-				else
-				{
-					var g:GpraVO = new GpraVO();
-					g.autoid = -1;
-					g.type = 5;
-					g.status = 0;
-					g.clientid = global.activeClient.autoid;
-					global.activeGPRA = g;
-					//global.pageViewstack.selectedChild = global.pageGPRA;
-					global.pageGpraButton.enabled = true;
-					//global.pageGPRA.initializeGPRA();
-				}	
-			}
-			
-			protected function createFollowupButton_clickHandler(event:MouseEvent):void
-			{
-				if(global.activeClient == null)
-					Alert.show("Add or load a client first.");
-				else if(global.activeClient.intake == null)
-					Alert.show("Create a GPRA intake first.");
-				else if(global.activeClient.followup != null)
-					Alert.show("A GPRA followup already exists.");
-				else
-				{
-					var g:GpraVO = new GpraVO();
-					g.autoid = -1;
-					g.type = 2;
-					g.status = 0;
-					g.clientid = global.activeClient.autoid;
-					global.activeGPRA = g;
-					//global.pageViewstack.selectedChild = global.pageGPRA;
-					global.pageGpraButton.enabled = true;
-					//global.pageGPRA.initializeGPRA();
-				}
-			}
-			*/
-			protected function getIntakeData_resultHandler(event:ResultEvent):void
-			{
-				global.activeClient.intake.data = getIntakeData.lastResult;
-			}
-			
+			}			
 		]]>
 	</fx:Script>
 	<fx:Style> 
@@ -191,14 +53,6 @@
 	</fx:Style>
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
-		<!--<s:CallResponder id="getGpraByIDResult" result="getGpraByIDResult_resultHandler(event)"/>
-		<s:CallResponder id="getGpraSummaryByClientIDResult" result="getGpraSummaryByClientIDResult_resultHandler(event)"/>-->
-		<s:CallResponder id="getIntakeData" result="getIntakeData_resultHandler(event)"/>
-		<gpraservice:GpraService id="gpraService"
-								 fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
-								 showBusyCursor="true"/>
-
-		
 	</fx:Declarations>
 	<client:ClientGroup id="clientGroup" x="0" y="0" />
 	<mx:HRule x="10" y="223" width="695" height="20"/>

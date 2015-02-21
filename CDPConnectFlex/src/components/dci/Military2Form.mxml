@@ -117,18 +117,42 @@
 					var stressed:String = arr[4];
 					var dead:String = arr[5];
 					
-					gpraData["ServiceMemRelationship"+String(i)] = questionValue(relation, qServiceMemRelationship);
+					gpraData["ServiceMemRelationship"+String(i)] = getIndexFromValue(relation, qServiceMemRelationship);
 					if(relation == "Other")
 						gpraData["ServiceMemExpOther"+String(i)] = relationOther;
 					
-					gpraData["ServiceMemExpDeployed"+String(i)] = questionValue(deployed, qServiceMemExpDeployed);
-					gpraData["ServiceMemExpInjured"+String(i)] = questionValue(injured, qServiceMemExpInjured);
-					gpraData["ServiceMemExpCombatStress"+String(i)] = questionValue(stressed, qServiceMemExpCombatStress);
-					gpraData["ServiceMemExpDeceased"+String(i)] = questionValue(dead, qServiceMemExpDeceased);
+					gpraData["ServiceMemExpDeployed"+String(i)] = getIndexFromValue(deployed, qServiceMemExpDeployed);
+					gpraData["ServiceMemExpInjured"+String(i)] = getIndexFromValue(injured, qServiceMemExpInjured);
+					gpraData["ServiceMemExpCombatStress"+String(i)] = getIndexFromValue(stressed, qServiceMemExpCombatStress);
+					gpraData["ServiceMemExpDeceased"+String(i)] = getIndexFromValue(dead, qServiceMemExpDeceased);
 
 					i += 1;
 				}
 				return gpraData;
+			}
+			
+			public override function loadData(data:Array):void
+			{
+				super.loadData(data);
+				
+				familyVeterans = new ArrayList();
+				for(var i:int = 1; i <= 6; i++)
+				{
+					if(data["ServiceMemRelationship"+String(i)] == null)
+						break;
+					
+					var relation:String = getValueFromDBIndex(data["ServiceMemRelationship"+String(i)], qServiceMemRelationship);
+					var relationOther:String = "";
+					if(data["ServiceMemExpOther"+String(i)] != null)
+						relationOther = data["ServiceMemExpOther"+String(i)].toString();
+					var deployed:String = getValueFromDBIndex(data["ServiceMemExpDeployed"+String(i)], qServiceMemExpDeployed);
+					var injured:String = getValueFromDBIndex(data["ServiceMemExpInjured"+String(i)], qServiceMemExpInjured);
+					var stressed:String = getValueFromDBIndex(data["ServiceMemExpCombatStress"+String(i)], qServiceMemExpCombatStress);
+					var dead:String = getValueFromDBIndex(data["ServiceMemExpDeceased"+String(i)], qServiceMemExpDeceased);
+					
+					familyVeterans.addItem([relation,relationOther,deployed,injured,stressed,dead]);
+				}
+				updateFamilyValidator();
 			}
 		]]>
 	</fx:Script>

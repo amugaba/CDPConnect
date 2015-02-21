@@ -156,6 +156,46 @@ class AssessmentService
 
         $this->connection->close(); 
     }
+    
+	/**
+	 * Followup Eligibility
+	 * A. Count the number of positive intakes
+	 * B. Count the number of followup-selected intakes
+	 * If B/A < 10%, this client is eligible for followup
+	 * 
+	 * @return bool
+	 */
+    public function checkFollowupEligibility()
+    {   
+    	$table = $this->tableByType[0];
+    	$rs = mysqli_query($this->connection, "SELECT COUNT(*) as total FROM $table WHERE SBIRTScreen = 1");
+        $this->throwExceptionOnError();
+        $arr = $rs->fetch_assoc();
+        $numPosIntakes = $arr["total"];
+        
+        $rs = $numFollowupSelected = mysqli_query($this->connection, "SELECT COUNT(*) as total FROM $table WHERE followupSelected = 1");
+        $this->throwExceptionOnError();
+        $arr = $rs->fetch_assoc();
+        $numFollowupSelected = $arr["total"];
+        
+        $percent = $numFollowupSelected * 1.0 / $numPosIntakes;
+        
+        $this->connection->close();
+        return $percent < 0.1;
+    }
+    
+	/**
+	 * Set DCI intake as followup selected
+	 * @param int $autoid
+	 */
+    public function setFollowupSelected($autoid)
+    {   
+    	$table = $this->tableByType[0];
+    	mysqli_query($this->connection, "UPDATE $table SET followupSelected = 1 WHERE autoid = $autoid");
+        $this->throwExceptionOnError();
+        
+        $this->connection->close();
+    }
    
     /**
      * Utitity function to throw an exception if an error occurs

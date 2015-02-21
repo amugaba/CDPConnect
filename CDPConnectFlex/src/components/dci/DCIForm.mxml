@@ -84,6 +84,53 @@
 				return gpraData;
 			}
 			
+			public override function loadData(data:Array):void
+			{
+				for each(var q:QuestionClass in questions)
+				{
+					var valInt:int;
+					
+					if(data[q.codeName] == null)
+					{
+						q.disable(); //skipped
+					}
+					else if(q is QuestionTextRefusable)
+					{
+						var qr:QuestionTextRefusable = q as QuestionTextRefusable;
+						
+						//Get the value as an integer
+						if(data[q.codeName] is String)
+							valInt = parseInt(data[q.codeName]);
+						else
+							valInt = data[q.codeName];
+						
+						//If the value indicates answer was refused, set refused handler
+						if(getRefusedIndexFromValue(valInt) > 0)
+						{
+							qr.refuseInput.selectedIndex = getRefusedIndexFromValue(valInt);
+							qr.refusedHandler(null);
+						}
+						else
+							q.answer = data[q.codeName].toString();
+					}
+					else if(q is QuestionText)
+					{
+						q.answer = data[q.codeName].toString();
+					}
+					else if(q is QuestionList)
+					{
+						var ql:QuestionList = q as QuestionList;
+						
+						if(data[q.codeName] is String)
+							valInt = parseInt(data[q.codeName]);
+						else
+							valInt = data[q.codeName];
+						
+						ql.answer = getValueFromDBIndex(valInt, ql);
+					}
+				}
+			}
+			
 			private function getDBValue_qTextRef_int(q:QuestionTextRefusable):int
 			{				
 				if(q.refuseInput.selectedItem == REFUSED_VALUE)
@@ -106,6 +153,17 @@
 					return MISSING_CODE.toString();
 				else
 					return q.answer;
+			}
+			
+			private function getRefusedIndexFromValue(val:int):int
+			{				
+				if(val == REFUSED_CODE)
+					return 1;
+				if(val == DONT_KNOW_CODE)
+					return 2;
+				if(val == MISSING_CODE)
+					return 3;
+				return -1;
 			}
 			
 			private function getDBValue_qList(q:QuestionList):int
@@ -171,7 +229,7 @@
 				}
 			}
 			
-			protected function questionValue(answer:String, q:QuestionList):int
+			protected function getIndexFromValue(answer:String, q:QuestionList):int
 			{
 				if(answer == "Yes")
 					return 1;
@@ -184,7 +242,25 @@
 				if(answer == "Missing Data")
 					return -9;
 				return q.input.dataProvider.getItemIndex(answer);
-			}			
+			}	
+			
+			protected function getValueFromDBIndex(index:int, q:QuestionList):String
+			{
+				if(q.input.dataProvider.getItemAt(0) == YES_VALUE && q.input.dataProvider.getItemAt(1) == NO_VALUE)
+				{
+					if(index == YES_CODE)
+						return YES_VALUE;
+					if(index == NO_CODE)
+						return NO_VALUE;
+				}
+				if(index == REFUSED_CODE)
+					return REFUSED_VALUE;
+				if(index == MISSING_CODE)
+					return MISSING_VALUE;
+				if(index == DONT_KNOW_CODE)
+					return DONT_KNOW_VALUE;
+				return q.input.dataProvider.getItemAt(index).toString();
+			}
 			
 		]]>
 	</fx:Script>

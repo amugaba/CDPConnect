@@ -93,100 +93,6 @@
     <property name="admin" type="integer" required="true"/>
     <property name="grantid" type="integer" required="true"/>
   </entity>
-  <service name="GpraService">
-    <annotation name="ActionScriptGeneration">
-      <item name="Source">GpraService</item>
-      <item name="ServiceType">RemoteObject</item>
-      <item name="Package">services.gpraservice</item>
-      <item name="Endpoint">http://localhost//CDPConnect/CDPConnect/public/gateway.php</item>
-      <item name="Destination">GpraService</item>
-    </annotation>
-    <annotation name="ServiceTypeGroup">
-      <item name="ServiceBackendType">com.zend.php.flashbuilder.php</item>
-    </annotation>
-    <annotation name="ServiceConfig">
-      <item name="PHP_RELATIVE_LOCATION">CDPConnect/CDPConnect/services/GpraService.php</item>
-      <item name="PHP_SERVER_ROOT">C:/wamp/www</item>
-      <item name="PHP_WORKSPACE_LOCATION">/CDPConnect/services/GpraService.php</item>
-      <item name="DEFAULT_ENTITY_PACKAGE">valueObjects</item>
-      <item name="PHP_SERVICES_FOLDER">C:/wamp/www/CDPConnect/CDPConnect/public/bin-debug/services</item>
-      <item name="PHP_LOCATION">C:/wamp/www/CDPConnect/CDPConnect/services/GpraService.php</item>
-      <item name="LINKED_FILE">GpraService_GpraService.php</item>
-      <item name="PHP_SERVER_ROOT_URL">http://localhost/</item>
-      <item name="ABSOLUTE_ENDPOINT">http://localhost//CDPConnect/CDPConnect/public/gateway.php</item>
-      <item name="PHP_CLASS_NAME">GpraService</item>
-    </annotation>
-    <function name="getGpraByID" return-type="opaque">
-      <annotation name="analyze group">
-        <item name="analyzed">false</item>
-      </annotation>
-      <annotation name="original signature">
-        <item name="returnType">opaque</item>
-      </annotation>
-      <parameter name="autoid" type="integer"/>
-    </function>
-    <function name="getGpraObjByID" return-type="opaque">
-      <annotation name="analyze group">
-        <item name="analyzed">false</item>
-      </annotation>
-      <annotation name="original signature">
-        <item name="returnType">opaque</item>
-      </annotation>
-      <parameter name="autoid" type="integer"/>
-    </function>
-    <function name="getGprasNotUploaded" return-type="opaque[]">
-      <annotation name="analyze group">
-        <item name="analyzed">false</item>
-      </annotation>
-      <annotation name="original signature">
-        <item name="returnType">opaque</item>
-      </annotation>
-    </function>
-    <function name="getGprasNotUploadedArray" return-type="opaque[]">
-      <annotation name="analyze group">
-        <item name="analyzed">false</item>
-      </annotation>
-      <annotation name="original signature">
-        <item name="returnType">opaque</item>
-      </annotation>
-    </function>
-    <function name="getAllGprasArray" return-type="opaque[]">
-      <annotation name="analyze group">
-        <item name="analyzed">false</item>
-      </annotation>
-      <annotation name="original signature">
-        <item name="returnType">opaque</item>
-      </annotation>
-    </function>
-    <function name="setGprasUploaded" return-type="opaque">
-      <annotation name="analyze group">
-        <item name="analyzed">false</item>
-      </annotation>
-      <annotation name="original signature">
-        <item name="returnType">opaque</item>
-      </annotation>
-      <parameter name="autoids" type="opaque"/>
-    </function>
-    <function name="getGpraSummaryByClientID" return-type="opaque[]">
-      <annotation name="analyze group">
-        <item name="analyzed">false</item>
-      </annotation>
-      <annotation name="original signature">
-        <item name="returnType">opaque</item>
-      </annotation>
-      <parameter name="clientID" type="integer"/>
-    </function>
-    <function name="saveDCI" return-type="integer">
-      <annotation name="analyze group">
-        <item name="analyzed">true</item>
-      </annotation>
-      <annotation name="original signature">
-        <item name="returnType">opaque</item>
-      </annotation>
-      <parameter name="autoid" type="integer"/>
-      <parameter name="data" type="opaque"/>
-    </function>
-  </service>
   <service name="MiscService">
     <annotation name="ActionScriptGeneration">
       <item name="Source">MiscService</item>
@@ -260,168 +166,6 @@
     <property name="samhsaCenter" type="integer" required="true"/>
     <property name="programType" type="integer" required="true"/>
     <property name="grantCode" type="string" required="true"/>
-  </entity>
-  <service name="ClientService">
-    <annotation name="ActionScriptGeneration">
-      <item name="Source">ClientService</item>
-      <item name="ServiceType">RemoteObject</item>
-      <item name="Package">services.clientservice</item>
-      <item name="Endpoint">http://localhost//CDPConnect/CDPConnect/public/gateway.php</item>
-      <item name="Destination">ClientService</item>
-    </annotation>
-    <annotation name="ServiceTypeGroup">
-      <item name="ServiceBackendType">com.zend.php.flashbuilder.php</item>
-    </annotation>
-    <annotation name="ServiceConfig">
-      <item name="PHP_RELATIVE_LOCATION">CDPConnect/CDPConnect/services/ClientService.php</item>
-      <item name="PHP_SERVER_ROOT">C:/wamp/www</item>
-      <item name="PHP_WORKSPACE_LOCATION">/CDPConnect/services/ClientService.php</item>
-      <item name="DEFAULT_ENTITY_PACKAGE">valueObjects</item>
-      <item name="PHP_SERVICES_FOLDER">C:/wamp/www/CDPConnect/CDPConnect/public/bin-debug/services</item>
-      <item name="PHP_LOCATION">C:/wamp/www/CDPConnect/CDPConnect/services/ClientService.php</item>
-      <item name="LINKED_FILE">ClientService.php</item>
-      <item name="PHP_SERVER_ROOT_URL">http://localhost/</item>
-      <item name="ABSOLUTE_ENDPOINT">http://localhost//CDPConnect/CDPConnect/public/gateway.php</item>
-      <item name="PHP_CLASS_NAME">ClientService</item>
-    </annotation>
-    <function name="getClientByID" return-type="ClientVO">
-      <annotation name="analyze group">
-        <item name="analyzed">true</item>
-      </annotation>
-      <annotation name="original signature">
-        <item name="returnType">ClientVO</item>
-      </annotation>
-      <annotation name="ValidProperties">
-        <item name="propertySpecifier">autoid,clientid,gpras,intake,discharge,followup,firstname,lastname,dob,ssn,intakestaff,createddate,notes</item>
-      </annotation>
-      <parameter name="autoid" type="integer"/>
-    </function>
-    <function name="getAllClientsArray" return-type="opaque[]">
-      <annotation name="analyze group">
-        <item name="analyzed">false</item>
-      </annotation>
-      <annotation name="original signature">
-        <item name="returnType">opaque</item>
-      </annotation>
-    </function>
-    <function name="createClient" return-type="ClientVO">
-      <annotation name="analyze group">
-        <item name="analyzed">true</item>
-      </annotation>
-      <annotation name="original signature">
-        <item name="returnType">ClientVO</item>
-      </annotation>
-      <annotation name="ValidProperties">
-        <item name="propertySpecifier">autoid,clientid,gpras,intake,discharge,followup,firstname,lastname,dob,ssn,intakestaff,createddate,notes</item>
-      </annotation>
-      <parameter name="item" type="ClientVO"/>
-    </function>
-    <function name="updateClient" return-type="ClientVO">
-      <annotation name="analyze group">
-        <item name="analyzed">true</item>
-      </annotation>
-      <annotation name="original signature">
-        <item name="returnType">ClientVO</item>
-      </annotation>
-      <annotation name="ValidProperties">
-        <item name="propertySpecifier">autoid,clientid,gpras,intake,discharge,followup,firstname,lastname,dob,ssn,intakestaff,createddate,notes</item>
-      </annotation>
-      <parameter name="item" type="ClientVO"/>
-    </function>
-    <function name="searchClients" return-type="opaque[]">
-      <annotation name="analyze group">
-        <item name="analyzed">false</item>
-      </annotation>
-      <annotation name="ValidProperties">
-        <item name="propertySpecifier">autoid,clientid,gpras,intake,discharge,followup,firstname,lastname,dob,ssn,intakestaff,createddate</item>
-      </annotation>
-      <annotation name="original signature">
-        <item name="inputParamNames">clientid,firstname,lastname,dob,ssn,intakestaff</item>
-        <item name="inputParams">string,string,string,string,string,string</item>
-        <item name="returnType">opaque</item>
-      </annotation>
-      <parameter name="clientid" type="string"/>
-      <parameter name="firstname" type="string"/>
-      <parameter name="lastname" type="string"/>
-      <parameter name="dob" type="string"/>
-      <parameter name="ssn" type="string"/>
-      <parameter name="intakestaff" type="string"/>
-    </function>
-    <function name="saveNotes" return-type="ClientVO">
-      <annotation name="analyze group">
-        <item name="analyzed">true</item>
-      </annotation>
-      <annotation name="original signature">
-        <item name="returnType">opaque</item>
-      </annotation>
-      <parameter name="item" type="ClientVO"/>
-    </function>
-  </service>
-  <entity name="GpraVO">
-    <annotation name="EntityProperties">
-      <item name="EntityOriginalName">GpraVO</item>
-      <item name="location">C:/wamp/www/CDPConnect/CDPConnect/services/GpraVO.php</item>
-    </annotation>
-    <annotation name="ServerProperties">
-      <item name="RemoteClass">GpraVO</item>
-      <item name="IncludeRemoteClass">nonempty</item>
-    </annotation>
-    <annotation name="service Group">
-      <item name="service">ClientService</item>
-    </annotation>
-    <annotation name="ActionScriptGeneration">
-      <item name="Package">valueObjects</item>
-    </annotation>
-    <property name="autoid" type="integer" required="true"/>
-    <property name="clientid" type="integer" required="true"/>
-    <property name="type" type="integer" required="true"/>
-    <property name="date" type="string" required="true"/>
-    <property name="status" type="integer" required="true"/>
-    <property name="data" type="opaque[]" required="true"/>
-  </entity>
-  <entity name="ClientVO">
-    <annotation name="EntityProperties">
-      <item name="EntityOriginalName">ClientVO</item>
-      <item name="location">C:/wamp/www/CDPConnect/CDPConnect/services/ClientVO.php</item>
-    </annotation>
-    <annotation name="ServerProperties">
-      <item name="RemoteClass">ClientVO</item>
-      <item name="IncludeRemoteClass">nonempty</item>
-    </annotation>
-    <annotation name="getClientByID">
-      <item name="propertySpecifier">autoid,clientid,gpras,intake,discharge,followup,firstname,lastname,dob,ssn,intakestaff,createddate,notes</item>
-    </annotation>
-    <annotation name="createClient">
-      <item name="propertySpecifier">autoid,clientid,gpras,intake,discharge,followup,firstname,lastname,dob,ssn,intakestaff,createddate,notes</item>
-    </annotation>
-    <annotation name="updateClient">
-      <item name="propertySpecifier">autoid,clientid,gpras,intake,discharge,followup,firstname,lastname,dob,ssn,intakestaff,createddate,notes</item>
-    </annotation>
-    <annotation name="service Group">
-      <item name="service">ClientService</item>
-    </annotation>
-    <annotation name="ActionScriptGeneration">
-      <item name="Package">valueObjects</item>
-    </annotation>
-    <annotation name="searchClients">
-      <item name="propertySpecifier">autoid,clientid,gpras,intake,discharge,followup,firstname,lastname,dob,ssn,intakestaff,createddate</item>
-    </annotation>
-    <annotation name="saveNotes">
-      <item name="propertySpecifier">autoid,clientid,gpras,intake,discharge,followup,firstname,lastname,dob,ssn,intakestaff,createddate,notes</item>
-    </annotation>
-    <property name="autoid" type="integer"/>
-    <property name="clientid" type="string"/>
-    <property name="gpras" type="opaque[]"/>
-    <property name="intake" type="GpraVO"/>
-    <property name="discharge" type="GpraVO"/>
-    <property name="followup" type="GpraVO"/>
-    <property name="firstname" type="string"/>
-    <property name="lastname" type="string"/>
-    <property name="dob" type="string"/>
-    <property name="ssn" type="string"/>
-    <property name="intakestaff" type="string"/>
-    <property name="createddate" type="string"/>
-    <property name="notes" type="string" required="true"/>
   </entity>
   <service name="EpisodeService">
     <annotation name="ActionScriptGeneration">
@@ -525,6 +269,129 @@
     <property name="complete" type="integer"/>
     <property name="notes" type="string"/>
   </entity>
+  <service name="ClientService">
+    <annotation name="ActionScriptGeneration">
+      <item name="Source">ClientService</item>
+      <item name="ServiceType">RemoteObject</item>
+      <item name="Package">services.clientservice</item>
+      <item name="Endpoint">http://localhost//CDPConnect/CDPConnect/public/gateway.php</item>
+      <item name="Destination">ClientService</item>
+    </annotation>
+    <annotation name="ServiceTypeGroup">
+      <item name="ServiceBackendType">com.zend.php.flashbuilder.php</item>
+    </annotation>
+    <annotation name="ServiceConfig">
+      <item name="PHP_RELATIVE_LOCATION">CDPConnect/CDPConnect/services/ClientService.php</item>
+      <item name="PHP_SERVER_ROOT">C:/wamp/www</item>
+      <item name="PHP_WORKSPACE_LOCATION">/CDPConnect/services/ClientService.php</item>
+      <item name="DEFAULT_ENTITY_PACKAGE">valueObjects</item>
+      <item name="PHP_SERVICES_FOLDER">C:/wamp/www/CDPConnect/CDPConnect/public/bin-debug/services</item>
+      <item name="PHP_LOCATION">C:/wamp/www/CDPConnect/CDPConnect/services/ClientService.php</item>
+      <item name="LINKED_FILE">ClientService.php</item>
+      <item name="PHP_SERVER_ROOT_URL">http://localhost/</item>
+      <item name="ABSOLUTE_ENDPOINT">http://localhost//CDPConnect/CDPConnect/public/gateway.php</item>
+      <item name="PHP_CLASS_NAME">ClientService</item>
+    </annotation>
+    <function name="getClientByID" return-type="ClientVO">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="returnType">opaque</item>
+      </annotation>
+      <parameter name="autoid" type="integer"/>
+    </function>
+    <function name="getAllClientsArray" return-type="opaque[]">
+      <annotation name="analyze group">
+        <item name="analyzed">false</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="returnType">opaque</item>
+      </annotation>
+    </function>
+    <function name="createClient" return-type="ClientVO">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="returnType">opaque</item>
+      </annotation>
+      <parameter name="item" type="ClientVO"/>
+    </function>
+    <function name="updateClient" return-type="ClientVO">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="returnType">opaque</item>
+      </annotation>
+      <parameter name="item" type="ClientVO"/>
+    </function>
+    <function name="saveNotes" return-type="ClientVO">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="returnType">opaque</item>
+      </annotation>
+      <parameter name="item" type="ClientVO"/>
+    </function>
+    <function name="searchClients" return-type="ClientVO[]">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="ValidProperties">
+        <item name="propertySpecifier">autoid,clientid,firstname,lastname,dob,ssn,createddate,notes</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="returnType">opaque</item>
+      </annotation>
+      <parameter name="clientid" type="string"/>
+      <parameter name="firstname" type="string"/>
+      <parameter name="lastname" type="string"/>
+      <parameter name="dob" type="string"/>
+      <parameter name="ssn" type="string"/>
+    </function>
+  </service>
+  <entity name="ClientVO">
+    <annotation name="EntityProperties">
+      <item name="EntityOriginalName">ClientVO</item>
+      <item name="location">C:/wamp/www/CDPConnect/CDPConnect/services/ClientVO.php</item>
+    </annotation>
+    <annotation name="ServerProperties">
+      <item name="RemoteClass">ClientVO</item>
+      <item name="IncludeRemoteClass">nonempty</item>
+    </annotation>
+    <annotation name="getClientByID">
+      <item name="propertySpecifier">autoid,clientid,firstname,lastname,dob,ssn,createddate,notes</item>
+    </annotation>
+    <annotation name="createClient">
+      <item name="propertySpecifier">autoid,clientid,firstname,lastname,dob,ssn,createddate,notes</item>
+    </annotation>
+    <annotation name="updateClient">
+      <item name="propertySpecifier">autoid,clientid,firstname,lastname,dob,ssn,createddate,notes</item>
+    </annotation>
+    <annotation name="saveNotes">
+      <item name="propertySpecifier">autoid,clientid,firstname,lastname,dob,ssn,createddate,notes</item>
+    </annotation>
+    <annotation name="service Group">
+      <item name="service">ClientService</item>
+    </annotation>
+    <annotation name="ActionScriptGeneration">
+      <item name="Package">valueObjects</item>
+    </annotation>
+    <annotation name="searchClients">
+      <item name="propertySpecifier">autoid,clientid,firstname,lastname,dob,ssn,createddate,notes</item>
+    </annotation>
+    <property name="autoid" type="integer" required="true"/>
+    <property name="clientid" type="string" required="true"/>
+    <property name="firstname" type="string" required="true"/>
+    <property name="lastname" type="string" required="true"/>
+    <property name="dob" type="string" required="true"/>
+    <property name="ssn" type="string" required="true"/>
+    <property name="createddate" type="string" required="true"/>
+    <property name="notes" type="string" required="true"/>
+  </entity>
   <service name="AssessmentService">
     <annotation name="ActionScriptGeneration">
       <item name="Source">AssessmentService</item>
@@ -552,11 +419,11 @@
       <annotation name="analyze group">
         <item name="analyzed">true</item>
       </annotation>
-      <annotation name="ValidProperties">
-        <item name="propertySpecifier">autoid,episode_autoid,type,subtype,date,complete,data</item>
-      </annotation>
       <annotation name="original signature">
         <item name="returnType">opaque</item>
+      </annotation>
+      <annotation name="ValidProperties">
+        <item name="propertySpecifier">autoid,episode_autoid,type,subtype,date,complete,data</item>
       </annotation>
       <parameter name="autoid" type="integer"/>
     </function>
@@ -566,6 +433,9 @@
       </annotation>
       <annotation name="original signature">
         <item name="returnType">opaque</item>
+      </annotation>
+      <annotation name="ValidProperties">
+        <item name="propertySpecifier">autoid,episode_autoid,type,subtype,date,complete,data</item>
       </annotation>
       <parameter name="item" type="AssessmentVO"/>
     </function>
@@ -587,6 +457,23 @@
       </annotation>
       <parameter name="item" type="AssessmentVO"/>
     </function>
+    <function name="checkFollowupEligibility" return-type="boolean">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="returnType">opaque</item>
+      </annotation>
+    </function>
+    <function name="setFollowupSelected" return-type="void">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="returnType">opaque</item>
+      </annotation>
+      <parameter name="autoid" type="integer"/>
+    </function>
   </service>
   <entity name="AssessmentVO">
     <annotation name="EntityProperties">
@@ -605,6 +492,9 @@
     </annotation>
     <annotation name="ActionScriptGeneration">
       <item name="Package">valueObjects</item>
+    </annotation>
+    <annotation name="getAssessmentData">
+      <item name="propertySpecifier">autoid,episode_autoid,type,subtype,date,complete,data</item>
     </annotation>
     <annotation name="getAssessmentsByEpisodeID">
       <item name="propertySpecifier">autoid,episode_autoid,type,subtype,date,complete,data</item>

@@ -27,7 +27,6 @@
 			import mx.validators.Validator;
 			
 			import valueObjects.ClientVO;
-			import valueObjects.GpraVO;
 			import valueObjects.UserVO;
 			
 			protected var global:CDPConnectFlex = FlexGlobals.topLevelApplication as CDPConnectFlex;

@@ -8,7 +8,7 @@
 					xmlns:clientservice="services.clientservice.*"
 					xmlns:dci="components.dci.*"
 					xmlns:assessmentservice="services.assessmentservice.*"
-					width="400" height="300">
+					width="715" height="600">
 	<fx:Script>
 		<![CDATA[
 			import com.adobe.serializers.utility.TypeUtility;
@@ -29,13 +29,13 @@
 			import mx.controls.DateField;
 			import mx.controls.tabBarClasses.Tab;
 			import mx.core.FlexGlobals;
+			import mx.events.CloseEvent;
 			import mx.events.ValidationResultEvent;
 			import mx.rpc.events.ResultEvent;
 			import mx.validators.ValidationResult;
 			
 			import valueObjects.AssessmentVO;
 			import valueObjects.ClientVO;
-			import valueObjects.GpraVO;
 			
 			protected var questionDict:Dictionary = new Dictionary();
 			
@@ -47,11 +47,23 @@
 			protected var activeFormIndexes:Array = new Array();
 			protected var created:Boolean = false;
 			public var interviewType:int;
+			public var intakeDCI:AssessmentVO;
+			public var intakeExists:Boolean = false;
+			public var followupExists:Boolean = false;
+			public var dischargeExists:Boolean = false;
+			protected var sbirt:Boolean = false;
 			
 			public function initializePage(type:int):void
 			{				
 				interviewType = type;
-				//viewStack.selectedChild = recordTab;
+				//Hide old page
+				if(viewStack.selectedIndex != 0)
+				{
+					var oldPage:Object = viewStack.selectedChild;
+					viewStack.selectedIndex = 0;
+					oldPage.visible = false;
+				}
+				validationTextArea.text = "";
 				
 				if(!created)
 				{
@@ -165,28 +177,26 @@
 				if(global.activeAssessment != null)
 				{
 					//Load data
-					for(i = 0; i < dciForms.length; i++)
-					{
-						//if this form is active
-						if(viewStack.contains(dciTabs[i]))
-							(dciForms[i] as DCIForm).loadData(global.activeAssessment.data.source);
-					}
-					
-					//Then validate
-					for(i = 0; i < dciForms.length; i++)
-					{
-						//if this form is active
-						if(viewStack.contains(dciTabs[i]))
-							(dciForms[i] as DCIForm).validateForm();
-					}
+					for each(i in activeFormIndexes)
+						(dciForms[i] as DCIForm).loadData(global.activeAssessment.data.source);
 					
 					//Then process skips
-					for(i = 0; i < dciForms.length; i++)
-					{
-						//if this form is active
-						if(viewStack.contains(dciTabs[i]))
-							(dciForms[i] as DCIForm).doAllSkips();
-					}
+					for each(i in activeFormIndexes)
+						(dciForms[i] as DCIForm).doAllSkips();
+						
+					//Then validate
+					for each(i in activeFormIndexes)
+						(dciForms[i] as DCIForm).validateForm();
+				}
+				else
+				{
+					//Do SBIRT-specific population
+					//services -> modality other = yes, other spec = SBIRT
+					services1Form.qSvcModOther.answer = "Yes";
+					services1Form.qSvcModOtherSpec.answer = "SBIRT";
+					//Treatment -> screening = yes, bi - yes
+					services1Form.qSvcScreening.answer = "Yes";
+					services1Form.qSvcBriefIntervention.answer = "Yes";
 				}
 				
 				//Reorder all tab buttons so that the invisible ones are at the bottom
@@ -206,6 +216,7 @@
 			
 			protected function enableSectionSBIRT(enabled:Boolean):void
 			{
+				sbirt = enabled;
 				sbirtForm.initForm();
 				enableTab(sbirtTab,enabled);
 			}
@@ -281,12 +292,14 @@
 				if(enabled)
 				{
 					//Skip based on answer in intake DCI, since gender question not asked in followup
-					if(global.activeClient.intake.data.source["Gender"] != 1)
+					if(intakeDCI.data.source["Gender"] != 0)
 						livingForm.qPregnant.enable();
+					else
+						livingForm.qPregnant.disable();
 					
 					//The followup date cannot be before the intake date
 					var dv:DateAgeValidator = recordForm.qInterviewDate.validator as DateAgeValidator;
-					dv.max = (new Date().time - DateField.stringToDate(global.activeClient.intake.date,"MM/DD/YYYY").time) / 1000 / 60 / 60 / 24;
+					dv.max = 1 + (new Date().time - DateField.stringToDate(intakeDCI.date,"MM/DD/YYYY").time) / 1000 / 60 / 60 / 24;
 				}
 			}
 			
@@ -297,138 +310,16 @@
 				if(enabled)
 				{
 					//Skip based on answer in intake DCI, since gender question not asked in followup
-					if(global.activeClient.intake.data.source["GenderCode"] != 1)
+					if(intakeDCI.data.source["Gender"] != 0)
 						livingForm.qPregnant.enable();
+					else
+						livingForm.qPregnant.disable();
 					
 					//The followup date cannot be before the intake date
 					var dv:DateAgeValidator = recordForm.qInterviewDate.validator as DateAgeValidator;
-					dv.max = 1 + (new Date().time - DateField.stringToDate(global.activeClient.intake.date,"MM/DD/YYYY").time) / 1000 / 60 / 60 / 24;
+					dv.max = 1 + (new Date().time - DateField.stringToDate(intakeDCI.date,"MM/DD/YYYY").time) / 1000 / 60 / 60 / 24;
 				}
 				dischargeForm.qDischargeDate.validator.enabled = enabled;
-			}
-			
-			
-			//Read GPRAVO, populate forms
-			public function populateForm(gpra:ArrayCollection):void
-			{
-				var gpraVO:Array = gpra.source;
-				var answer:String;
-				var answerNum:Number;
-				for each(var q:QuestionClass in questionDict)
-				{
-					if(["ServiceMemRelationship","ServiceMemExpOther","ServiceMemExpDeployed","ServiceMemExpInjured","ServiceMemExpCombatStress","ServiceMemExpDeceased"].indexOf(q.codeName) != -1)
-						continue;
-					answer = gpraVO[q.codeName];
-					answerNum = parseInt(answer);
-					if(q is QuestionTextRefusable)
-					{
-						var qr:QuestionTextRefusable = q as QuestionTextRefusable;
-						if(answerNum == -1)
-							q.disable(); //question is being skipped, put -1 for N/A, this may not be necessary
-						else if(answerNum < -6)
-							qr.refuseInput.selectedIndex = -6 - answerNum; //put -7 for Refused, -8 for DK, -9 for MI
-						else
-						{
-							q.answer = answer;
-							qr.refuseInput.selectedIndex = 0;
-						}
-						qr.refusedHandler(null);
-					}
-					else if(q is QuestionText)
-					{
-						if(answerNum == -1)
-							q.disable(); //question is being skipped, put -1 for N/A
-						else
-							q.answer = answer;
-					}
-					else if(q is QuestionList)
-					{
-						var ql:QuestionList = q as QuestionList;
-						if(ql.input.dataProvider.getItemAt(0) == "Yes" && ql.input.dataProvider.getItemAt(1) == "No")
-						{
-							if(answerNum == 1)
-								q.answer = "Yes";
-							else if(answerNum == 0)
-								q.answer = "No";
-						}
-						/*else if(["MilitaryServed","ActiveDuty","FamilyActiveDuty","EducationYears","PhysicallyHurt"].indexOf(q.codeName) != -1)
-						{
-							ql.input.selectedIndex = answerNum; //These codes count up from 0
-						}
-						else if(q.codeName == "EmployStatus" && answerNum == 0)
-						{
-							q.answer = "Other";
-						}*/
-						else if(answerNum > 0)
-							ql.input.selectedIndex = answerNum - 1;
-						
-						if(answerNum == -1)
-							q.disable();
-						else if(answerNum == -7)
-							q.answer = "Refused";
-						else if(answerNum == -8)
-							q.answer = "Don't Know";
-						else if(answerNum == -9)
-							q.answer = "Missing Data";	
-					}
-					for each(var skip:SkipPattern in q.skipPatterns)
-						skip.skipHandler(null);
-				}
-				
-				for each(var q2:QuestionClass in questionDict)
-				if(q2.validator != null)
-					if(!q2.isSkipped && q2.inputControl.enabled)
-						q2.validator.validate();
-				
-				military2Form.familyVeterans = new ArrayList();
-				for(var i:Number = 1; i<=6; i++)
-				{
-					var num:Number = Number(gpraVO["ServiceMemRelationship"+String(i)]);
-					if(num > 0)
-					{
-						var arr:Array = new Array();
-						if(num == -9)
-							arr.push("Missing Data");
-						else
-							arr.push(military2Form.qServiceMemRelationship.input.dataProvider.getItemAt(num -1));
-						arr.push(gpraVO["ServiceMemExpOther"+String(i)]);
-						
-						num = gpraVO["ServiceMemExpDeployed"+String(i)];
-						if(num == 1)
-							arr.push("Yes");
-						else if(num == 0)
-							arr.push("No");
-						else
-							arr.push(military2Form.qServiceMemExpDeployed.input.dataProvider.getItemAt(-5 - num));
-						
-						num = gpraVO["ServiceMemExpInjured"+String(i)];
-						if(num == 1)
-							arr.push("Yes");
-						else if(num == 0)
-							arr.push("No");
-						else
-							arr.push(military2Form.qServiceMemExpInjured.input.dataProvider.getItemAt(-5 - num));
-						
-						num = gpraVO["ServiceMemExpCombatStress"+String(i)];
-						if(num == 1)
-							arr.push("Yes");
-						else if(num == 0)
-							arr.push("No");
-						else
-							arr.push(military2Form.qServiceMemExpCombatStress.input.dataProvider.getItemAt(-5 - num));
-						
-						num = gpraVO["ServiceMemExpDeceased"+String(i)];
-						if(num == 1)
-							arr.push("Yes");
-						else if(num == 0)
-							arr.push("No");
-						else
-							arr.push(military2Form.qServiceMemExpDeceased.input.dataProvider.getItemAt(-5 - num));
-						
-						military2Form.familyVeterans.addItem(arr);
-					}
-				}
-				military2Form.updateFamilyValidator();
 			}
 			
 			/**
@@ -449,10 +340,14 @@
 				
 				if(results.length > 0)
 				{
-					Alert.show(results.join("\n"),"Validation Errors");
+					validationTextArea.text = results.join("\n");
+					Alert.show("Correct the errors shown in the area below and then click 'Save' again.","DCI NOT SAVED"); 
 				}
 				else
+				{
+					validationTextArea.text = "";
 					parseForm();
+				}
 			}
 			
 			//Parse Form Data, construct Assessment data
@@ -469,10 +364,10 @@
 				data["client_autoid"] = global.activeClient.autoid;
 				
 				//If doing discharge or followup, get gender from the intake
-				if([InterviewType.INTAKE_GENERAL,InterviewType.INTAKE_SBIRT_BI,InterviewType.INTAKE_SBIRT_NEG,InterviewType.INTAKE_SBIRT_RT].indexOf(interviewType) == -1)
+				if(!isIntake(interviewType))
 				{
-					data["Gender"] = global.activeClient.intake.data.source["Gender"];
-					data["IntakeDate"] = global.activeClient.intake.date;
+					data["Gender"] = intakeDCI.data.source["Gender"];
+					data["IntakeDate"] = intakeDCI.data.source["InterviewDate"];
 				}
 				
 				//Create
@@ -505,6 +400,20 @@
 				//Add in new autoid and put in assessments grid
 				global.activeAssessment = createAssessmentResult.lastResult;
 				global.pageClient.assessmentGroup.assessmentList.addItem(global.activeAssessment);
+				
+				if(isIntake(interviewType))
+				{
+					intakeExists = true;
+					intakeDCI = global.activeAssessment;
+					
+					//Check if client is followup eligible, must be a positive first
+					if(interviewType == InterviewType.INTAKE_SBIRT_BI || interviewType == InterviewType.INTAKE_SBIRT_RT)
+						checkFollowupEligibilityResult.token = assessmentService.checkFollowupEligibility();
+				}
+				else if(isDischarge(interviewType))
+					dischargeExists = true;
+				else if(isFollowup(interviewType))
+					followupExists = true;
 			}
 			
 			protected function updateAssessmentResult_resultHandler(event:ResultEvent):void
@@ -512,7 +421,23 @@
 				Alert.show("DCI updated.");
 			}
 			
+			protected function checkFollowupEligibilityResult_resultHandler(event:ResultEvent):void
+			{
+				if(checkFollowupEligibilityResult.lastResult)
+					Alert.show("Is the client willing to participate in follow-up?","Client is Follow-Up Eligible",Alert.YES|Alert.NO,null,agreeToFollowup);
+			}
 			
+			protected function agreeToFollowup(ev:CloseEvent):void
+			{
+				if(ev.detail == Alert.YES)
+				{
+					setFollowupSelectedResult.token = assessmentService.setFollowupSelected(global.activeAssessment.data.source["autoid"]);
+				}
+			}
+			protected function setFollowupSelectedResult_resultHandler(event:ResultEvent):void
+			{
+				Alert.show("Client has been selected for followup. Collect contact information.");
+			}
 			
 			protected function headerButton_clickHandler(event:MouseEvent):void
 			{
@@ -527,24 +452,37 @@
 				}
 				file.save(output,"CodeNames.csv");
 			}
+			
+			public function isIntake(subtype:int):Boolean
+			{
+				return subtype == InterviewType.INTAKE_GENERAL || subtype == InterviewType.INTAKE_SBIRT_BI || subtype == InterviewType.INTAKE_SBIRT_NEG || subtype == InterviewType.INTAKE_SBIRT_RT;
+			}
+			
+			public function isDischarge(subtype:int):Boolean
+			{
+				return subtype == InterviewType.DISCHARGE || subtype == InterviewType.DISCHARGE_NO_INTERVIEW;
+			}
+			
+			public function isFollowup(subtype:int):Boolean
+			{
+				return subtype == InterviewType.FOLLOWUP || subtype == InterviewType.FOLLOWUP_SBIRT_BI;
+			}
 		]]>
 	</fx:Script>
 	<fx:Declarations>
-		<gpraservice:GpraService id="gpraService"
-								 fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
-								 showBusyCursor="true"/>
 		<assessmentservice:AssessmentService id="assessmentService"
 											 fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
 											 showBusyCursor="true"/>
 		<s:CallResponder id="createAssessmentResult" result="createAssessmentResult_resultHandler(event)"/>
 		<s:CallResponder id="updateAssessmentDataResult" result="updateAssessmentResult_resultHandler(event)"/>
+		<s:CallResponder id="checkFollowupEligibilityResult" result="checkFollowupEligibilityResult_resultHandler(event)"/>
+		<s:CallResponder id="setFollowupSelectedResult" result="setFollowupSelectedResult_resultHandler(event)"/>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
-		
 	</fx:Declarations>
 	
 	<mx:TabBar id="tabBar" x="0" y="0" dataProvider="viewStack"
 			   direction="vertical"/>
-	<mx:ViewStack id="viewStack" x="105" y="10" width="603" height="650"
+	<mx:ViewStack id="viewStack" x="105" y="0" width="603" height="650"
 				  backgroundColor="#EAEAEA" creationPolicy="all" dropShadowVisible="true">
 		<s:NavigatorContent id="recordTab" width="100%" height="100%" label="Record">
 			<dci:RecordForm id="recordForm"/>
@@ -616,10 +554,12 @@
 			<dci:Services2DischargeForm id="dischargeServices2Form" />
 		</s:NavigatorContent>
 		<s:NavigatorContent id="saveTab" width="100%" height="100%" label="Save">
-			<s:Button id="saveButton" x="200" y="200" label="Validate and Save GPRA"
+			<s:Button id="saveButton" x="243" y="88" height="56" label="Validate and Save"
 					  click="saveButton_clickHandler(event)"/>
-			<s:Button id="headerButton" x="200" y="300" label="Get Headers"
+			<s:Button id="headerButton" x="200" y="300" label="Get Headers" visible="false"
 					  click="headerButton_clickHandler(event)"/>
+			<s:Label x="252" y="183" fontWeight="bold" text="Validation Results"/>
+			<s:TextArea id="validationTextArea" x="133" y="201" width="341" height="232" editable="false"/>
 		</s:NavigatorContent>
 	</mx:ViewStack>
 </s:NavigatorContent>

@@ -27,6 +27,7 @@ internal class _Super_ClientService extends com.adobe.fiber.services.wrapper.Rem
         _serviceControl = new mx.rpc.remoting.RemoteObject();
 
         // initialize RemoteClass alias for all entities returned by functions of this service
+        valueObjects.ClientVO._initRemoteClassAlias();
 
         var operations:Object = new Object();
         var operation:mx.rpc.remoting.Operation;
@@ -43,12 +44,12 @@ internal class _Super_ClientService extends com.adobe.fiber.services.wrapper.Rem
         operation = new mx.rpc.remoting.Operation(null, "updateClient");
          operation.resultType = valueObjects.ClientVO;
         operations["updateClient"] = operation;
-        operation = new mx.rpc.remoting.Operation(null, "searchClients");
-         operation.resultElementType = Object;
-        operations["searchClients"] = operation;
         operation = new mx.rpc.remoting.Operation(null, "saveNotes");
          operation.resultType = valueObjects.ClientVO;
         operations["saveNotes"] = operation;
+        operation = new mx.rpc.remoting.Operation(null, "searchClients");
+         operation.resultElementType = valueObjects.ClientVO;
+        operations["searchClients"] = operation;
 
         _serviceControl.operations = operations;
         _serviceControl.convertResultHandler = com.adobe.serializers.utility.TypeUtility.convertResultHandler;
@@ -141,24 +142,6 @@ internal class _Super_ClientService extends com.adobe.fiber.services.wrapper.Rem
     }
      
     /**
-      * This method is a generated wrapper used to call the 'searchClients' operation. It returns an mx.rpc.AsyncToken whose 
-      * result property will be populated with the result of the operation when the server response is received. 
-      * To use this result from MXML code, define a CallResponder component and assign its token property to this method's return value. 
-      * You can then bind to CallResponder.lastResult or listen for the CallResponder.result or fault events.
-      *
-      * @see mx.rpc.AsyncToken
-      * @see mx.rpc.CallResponder 
-      *
-      * @return an mx.rpc.AsyncToken whose result property will be populated with the result of the operation when the server response is received.
-      */
-    public function searchClients(clientid:String, firstname:String, lastname:String, dob:String, ssn:String, intakestaff:String) : mx.rpc.AsyncToken
-    {
-        var _internal_operation:mx.rpc.AbstractOperation = _serviceControl.getOperation("searchClients");
-		var _internal_token:mx.rpc.AsyncToken = _internal_operation.send(clientid,firstname,lastname,dob,ssn,intakestaff) ;
-        return _internal_token;
-    }
-     
-    /**
       * This method is a generated wrapper used to call the 'saveNotes' operation. It returns an mx.rpc.AsyncToken whose 
       * result property will be populated with the result of the operation when the server response is received. 
       * To use this result from MXML code, define a CallResponder component and assign its token property to this method's return value. 
@@ -173,6 +156,24 @@ internal class _Super_ClientService extends com.adobe.fiber.services.wrapper.Rem
     {
         var _internal_operation:mx.rpc.AbstractOperation = _serviceControl.getOperation("saveNotes");
 		var _internal_token:mx.rpc.AsyncToken = _internal_operation.send(item) ;
+        return _internal_token;
+    }
+     
+    /**
+      * This method is a generated wrapper used to call the 'searchClients' operation. It returns an mx.rpc.AsyncToken whose 
+      * result property will be populated with the result of the operation when the server response is received. 
+      * To use this result from MXML code, define a CallResponder component and assign its token property to this method's return value. 
+      * You can then bind to CallResponder.lastResult or listen for the CallResponder.result or fault events.
+      *
+      * @see mx.rpc.AsyncToken
+      * @see mx.rpc.CallResponder 
+      *
+      * @return an mx.rpc.AsyncToken whose result property will be populated with the result of the operation when the server response is received.
+      */
+    public function searchClients(clientid:String, firstname:String, lastname:String, dob:String, ssn:String) : mx.rpc.AsyncToken
+    {
+        var _internal_operation:mx.rpc.AbstractOperation = _serviceControl.getOperation("searchClients");
+		var _internal_token:mx.rpc.AsyncToken = _internal_operation.send(clientid,firstname,lastname,dob,ssn) ;
         return _internal_token;
     }
      

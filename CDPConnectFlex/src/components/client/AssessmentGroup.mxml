@@ -23,15 +23,9 @@
 			
 			public function initializeGroup():void
 			{
-				if(!created)
-				{
-
-				}
-				//setIsCreatingEpisode(false);
-				//If client loaded, find all episodes
+				//If episode loaded, find all assessments
 				if(global.activeEpisode != null)
 				{
-					//getEpisodesByClientIDResult.token = episodeService.getEpisodesByClientID(global.activeClient.autoid);
 					getAssessmentsByEpisodeIDResult.token = assessmentService.getAssessmentsByEpisodeID(global.activeEpisode.autoid);
 					enabled = true;
 				}
@@ -42,9 +36,42 @@
 				}
 			}
 			
+			/**
+			 * Populate assessments list
+			 * Record the existance of each type of DCIs.
+			 * Get intake DCI data if it exists.
+			 * */
 			protected function getAssessmentsByEpisodeIDResult_resultHandler(event:ResultEvent):void
 			{
 				assessmentList = getAssessmentsByEpisodeIDResult.lastResult;
+				
+				//Pull out and identify any DCI intake/discharge/followup
+				global.pageDCI.intakeExists = false;
+				global.pageDCI.dischargeExists = false;
+				global.pageDCI.followupExists = false;
+				global.pageDCI.intakeDCI = null;
+				
+				for each(var assess:AssessmentVO in assessmentList)
+				{
+					if(assess.type == AssessType.DCI)
+					{
+						if([InterviewType.INTAKE_GENERAL,InterviewType.INTAKE_SBIRT_BI,InterviewType.INTAKE_SBIRT_NEG,InterviewType.INTAKE_SBIRT_RT].indexOf(assess.subtype) > 0)
+						{
+							global.pageDCI.intakeExists = true;
+							global.pageDCI.intakeDCI = assess;
+							getAssessmentDataResult2.token = assessmentService.getAssessmentData(assess);
+						}
+						else if([InterviewType.DISCHARGE,InterviewType.DISCHARGE_NO_INTERVIEW].indexOf(assess.subtype) > 0)
+							global.pageDCI.dischargeExists = true;
+						else if([InterviewType.FOLLOWUP,InterviewType.FOLLOWUP_SBIRT_BI].indexOf(assess.subtype) > 0)
+							global.pageDCI.followupExists = true;
+					}
+				}
+			}
+			
+			protected function getAssessmentDataResult2_resultHandler(event:ResultEvent):void
+			{
+				global.pageDCI.intakeDCI.data = getAssessmentDataResult2.lastResult;
 			}
 			
 			/**
@@ -59,8 +86,18 @@
 			protected function getAssessmentDataResult_resultHandler(event:ResultEvent):void
 			{
 				global.activeAssessment.data = getAssessmentDataResult.lastResult;
-				global.pageAssessment.initAssessment(global.activeAssessment.type);
-				global.pageViewstack.selectedChild = global.pageAssessment;
+				if(global.activeAssessment.type == AssessType.DCI)
+				{
+					global.enableLeftButtonsOnly(global.pageDCIButton);
+					global.pageDCI.initializePage(global.activeAssessment.subtype);
+					global.pageViewstack.selectedChild = global.pageDCI;
+				}
+				else
+				{
+					global.enableLeftButtonsOnly(global.pageAssessButton);
+					global.pageAssessment.initAssessment(global.activeAssessment.type);
+					global.pageViewstack.selectedChild = global.pageAssessment;
+				}
 			}
 			
 			/**
@@ -68,12 +105,7 @@
 			 * */
 			private function createAssessment(type:int):void
 			{
-				//switch out the assessment and DCI pages
-				if(global.pageViewstack.contains(global.pageDCI))
-				{
-					global.pageViewstack.removeChild(global.pageDCI);
-					global.pageViewstack.addChild(global.pageAssessment);
-				}
+				global.enableLeftButtonsOnly(global.pageAssessButton);
 				global.activeAssessment = null;
 				global.pageAssessment.initAssessment(type);
 				global.pageViewstack.selectedChild = global.pageAssessment;
@@ -101,19 +133,24 @@
 			 * */
 			private function createDCI(subtype:int):void
 			{
-				//switch out the assessment and DCI pages, this may generate more work, visible button maybe
-				if(global.pageViewstack.contains(global.pageAssessment))
+				//Check that this type of interview doesn't already exist
+				if((global.pageDCI.isIntake(subtype) && global.pageDCI.intakeExists) || (global.pageDCI.isDischarge(subtype) && global.pageDCI.dischargeExists) || (global.pageDCI.isFollowup(subtype) && global.pageDCI.followupExists))
 				{
-					global.pageViewstack.removeChild(global.pageAssessment);
-					global.pageViewstack.addChild(global.pageDCI);
+					Alert.show("This type of DCI assessment has already been created.");
 				}
-				global.activeAssessment = null;
-				var oldPage:Object = global.pageDCI.viewStack.selectedChild;
-				global.pageDCI.viewStack.selectedIndex = 0;
-				oldPage.visible = false;
-				global.pageDCI.initializePage(subtype);
-				global.pageViewstack.selectedChild = global.pageDCI;
+				//Check that an Intake exists before creating a discharge or followup
+				else if((global.pageDCI.isDischarge(subtype) || global.pageDCI.isFollowup(subtype)) && !global.pageDCI.intakeExists)
+				{
+					Alert.show("You must create an Intake DCI before creating a Discharge or Follow-up.");
+				}
+				else
+				{
+					global.enableLeftButtonsOnly(global.pageDCIButton);
+					global.activeAssessment = null;
 					
+					global.pageDCI.initializePage(subtype);
+					global.pageViewstack.selectedChild = global.pageDCI;
+				}
 			}
 			
 			protected function intakeGeneralButton_clickHandler(event:MouseEvent):void
@@ -131,7 +168,24 @@
 			protected function sbirtIntakeBIButton_clickHandler(event:MouseEvent):void
 			{
 				createDCI(InterviewType.INTAKE_SBIRT_BI);
-			}
+			}			
+			protected function dischargeGeneralButton_clickHandler(event:MouseEvent):void
+			{
+				createDCI(InterviewType.DISCHARGE);
+			}			
+			protected function dischargeNoInterviewButton_clickHandler(event:MouseEvent):void
+			{
+				createDCI(InterviewType.DISCHARGE_NO_INTERVIEW);
+			}			
+			protected function followupGeneralButton_clickHandler(event:MouseEvent):void
+			{
+				createDCI(InterviewType.FOLLOWUP);
+			}			
+			protected function sbirtFollowupButton_clickHandler(event:MouseEvent):void
+			{
+				createDCI(InterviewType.FOLLOWUP_SBIRT_BI);
+			}	
+
 			
 		]]>
 	</fx:Script>
@@ -141,6 +195,7 @@
 											 fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
 											 showBusyCursor="true"/>
 		<s:CallResponder id="getAssessmentDataResult" result="getAssessmentDataResult_resultHandler(event)"/>
+		<s:CallResponder id="getAssessmentDataResult2" result="getAssessmentDataResult2_resultHandler(event)"/>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
 	<s:Label x="102" y="17" fontWeight="bold" text="Assessments List"/>
@@ -149,9 +204,9 @@
 				requestedRowCount="3" resizableColumns="false">
 		<s:columns>
 			<s:ArrayList>
-				<s:GridColumn dataField="type" headerText="Type" width="100"></s:GridColumn>
+				<s:GridColumn dataField="type" headerText="Type" width="135"></s:GridColumn>
 				<s:GridColumn dataField="date" headerText="Date" width="75"></s:GridColumn>
-				<s:GridColumn dataField="complete" headerText="Done" width="45"></s:GridColumn>
+				<!--<s:GridColumn dataField="complete" headerText="Done" width="45"></s:GridColumn>-->
 				<s:GridColumn dataField="load" headerText="Load" width="60">
 					<s:itemRenderer>
 						<fx:Component>
@@ -184,14 +239,11 @@
 	
 	<mx:VRule x="513" y="0" width="14" height="231"/>
 	<s:Label x="533" y="14" fontWeight="bold" text="DCI Discharge"/>
-	<s:Button id="dischargeGeneralButton" x="536" y="42"
-			  label="General"/>
-	<s:Button id="dischargeNoInterviewButton" x="528" y="78" label="No Interview"/>
+	<s:Button id="dischargeGeneralButton" x="536" y="42" label="General" click="dischargeGeneralButton_clickHandler(event)"/>
+	<s:Button id="dischargeNoInterviewButton" x="528" y="78" label="No Interview" click="dischargeNoInterviewButton_clickHandler(event)"/>
 	
 	<mx:VRule x="617" y="0" width="14" height="231"/>
 	<s:Label x="634" y="15" fontWeight="bold" text="DCI Followup"/>
-	<s:Button id="followupGeneralButton" x="633" y="42"
-			  label="General" />
-	<s:Button id="sbirtFollowupButton" x="631" y="78"
-			  label="SBIRT - BI" />
+	<s:Button id="followupGeneralButton" x="633" y="42" label="General" click="followupGeneralButton_clickHandler(event)"/>
+	<s:Button id="sbirtFollowupButton" x="631" y="78" label="SBIRT - BI" click="sbirtFollowupButton_clickHandler(event)"/>
 </s:Group>

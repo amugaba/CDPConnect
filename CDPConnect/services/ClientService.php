@@ -1,7 +1,6 @@
 <?php
 
 include_once 'ClientVO.php';
-include_once 'GpraVO.php';
 include_once 'ConnectionManager.php';
 
 /**
@@ -42,9 +41,8 @@ class ClientService
 	 */
     public function getClientByID ($autoid)
     {
-
         $stmt = mysqli_prepare($this->connection, "SELECT autoid, clientid, firstname, lastname,
-        	dob, ssn, intakestaff, createddate, notes FROM client_tbl where autoid=?");
+        	dob, ssn, createddate, notes FROM client_tbl where autoid=?");
         $this->throwExceptionOnError();
 
         $stmt->bind_param('i', $autoid);
@@ -55,32 +53,10 @@ class ClientService
 
         $client = new ClientVO();
         $stmt->bind_result($client->autoid, $client->clientid, $client->firstname, $client->lastname, $client->dob,
-        	$client->ssn, $client->intakestaff, $client->createddate, $client->notes);
+        	$client->ssn, $client->createddate, $client->notes);
 
         if ($stmt->fetch())
         {
-            mysqli_stmt_free_result($stmt);
-	        $stmt = mysqli_prepare($this->connection, "SELECT autoid,ClientID,InterviewTypeCode,InterviewDate FROM gpra_tbl where ClientID=?");
-	        $this->throwExceptionOnError();
-	
-	        $stmt->bind_param('i', $client->autoid);
-	        $this->throwExceptionOnError();
-	
-	        $stmt->execute();
-	        $this->throwExceptionOnError();
-	        
-	        $gpra = new GpraVO();
-	        $stmt->bind_result($gpra->autoid, $gpra->clientid, $gpra->type, $gpra->date);
-	        
-	        $gpras = array();
-	        while($stmt->fetch())
-	        {
-	        	array_push($gpras, $gpra);
-	        	$gpra = new GpraVO();
-	        	$stmt->bind_result($gpra->autoid, $gpra->clientid, $gpra->type, $gpra->date);
-	        }
-	        $client->gpras = $gpras;
-	
 	        $stmt->free_result();
 	        $this->connection->close();     
         	return $client;
@@ -115,11 +91,11 @@ class ClientService
     public function createClient ($client)
     {        
         $stmt = $this->connection->prepare("INSERT IGNORE INTO client_tbl 
-        (clientid, firstname, lastname, dob, ssn, intakestaff, createddate) VALUES (?,?,?,?,?,?,?)");
+        (clientid, firstname, lastname, dob, ssn, createddate) VALUES (?,?,?,?,?,?)");
         $this->throwExceptionOnError();
 
-        $stmt->bind_param('sssssss', $client->clientid, $client->firstname, $client->lastname, $client->dob,
-        	$client->ssn, $client->intakestaff, $client->createddate);
+        $stmt->bind_param('ssssss', $client->clientid, $client->firstname, $client->lastname, $client->dob,
+        	$client->ssn, $client->createddate);
         $this->throwExceptionOnError();
 
         $rs = $stmt->execute();
@@ -142,12 +118,12 @@ class ClientService
     public function updateClient ($client)
     {        
         $stmt = $this->connection->prepare("UPDATE client_tbl SET
-        clientid=?, firstname=?, lastname=?, dob=?, ssn=?, intakestaff=?, createddate=?
+        clientid=?, firstname=?, lastname=?, dob=?, ssn=?, createddate=?
         WHERE autoid=?");
         $this->throwExceptionOnError();
 
-        $stmt->bind_param('sssssssi', $client->clientid, $client->firstname, $client->lastname, $client->dob,
-        	$client->ssn, $client->intakestaff, $client->createddate, $client->autoid);
+        $stmt->bind_param('ssssssi', $client->clientid, $client->firstname, $client->lastname, $client->dob,
+        	$client->ssn, $client->createddate, $client->autoid);
         $this->throwExceptionOnError();
 
         $rs = $stmt->execute();
@@ -193,14 +169,13 @@ class ClientService
 	 * @param string $lastname
 	 * @param string $dob
 	 * @param string $ssn
-	 * @param string $intakestaff
 	 * @return ClientVO[]
 	 */
     
-    public function searchClients ($clientid, $firstname, $lastname, $dob, $ssn, $intakestaff)
+    public function searchClients ($clientid, $firstname, $lastname, $dob, $ssn)
     {    	
-    	$stmt = $this->connection->prepare("SELECT autoid, clientid, firstname, lastname, dob, ssn, intakestaff, createddate FROM client_tbl WHERE
-        	clientid LIKE ? and firstname LIKE ? and lastname LIKE ? and dob LIKE ? and ssn LIKE ? and intakestaff LIKE ?");
+    	$stmt = $this->connection->prepare("SELECT autoid, clientid, firstname, lastname, dob, ssn, createddate FROM client_tbl WHERE
+        	clientid LIKE ? and firstname LIKE ? and lastname LIKE ? and dob LIKE ? and ssn LIKE ?");
         $this->throwExceptionOnError();
         
         $clientid = str_replace("*", "%", $clientid);
@@ -218,11 +193,8 @@ class ClientService
         $ssn = str_replace("*", "%", $ssn);
         if(strlen($ssn) == 0)
         	$ssn = "%";
-        $intakestaff = str_replace("*", "%", $intakestaff);
-        if(strlen($intakestaff) == 0)
-        	$intakestaff = "%";
 
-        $stmt->bind_param('ssssss', $clientid, $firstname, $lastname, $dob, $ssn, $intakestaff);
+        $stmt->bind_param('sssss', $clientid, $firstname, $lastname, $dob, $ssn);
         $this->throwExceptionOnError();
 		
         $stmt->execute();
@@ -231,14 +203,14 @@ class ClientService
         $clients = array();
     	$client = new ClientVO();
         $stmt->bind_result($client->autoid, $client->clientid, $client->firstname, $client->lastname, $client->dob,
-        	$client->ssn, $client->intakestaff, $client->createddate);
+        	$client->ssn, $client->createddate);
 		
         while($stmt->fetch())
         {
 	        array_push($clients, $client);
 	        $client = new ClientVO();
 	        $stmt->bind_result($client->autoid, $client->clientid, $client->firstname, $client->lastname, $client->dob,
-        		$client->ssn, $client->intakestaff, $client->createddate);
+        		$client->ssn, $client->createddate);
 	    }
         
         $stmt->free_result();
@@ -248,31 +220,18 @@ class ClientService
 
 
     /**
-
      * Utitity function to throw an exception if an error occurs
-
      * while running a mysql command.
-
      */
-
     private function throwExceptionOnError ($link = null)
-
     {
-
         if ($link == null) {
-
             $link = $this->connection;
-
         }
 
         if (mysqli_error($link)) {
-
             $msg = mysqli_errno($link) . ": " . mysqli_error($link);
-
             throw new Exception('MySQL Error - ' . $msg);
-
         }
-
     }
-
 }

@@ -16,7 +16,7 @@
 			import mx.collections.ArrayList;
 			
 			public var qClientID:QuestionText = new QuestionText("ClientID","Client ID","",false);
-			public var qInterviewTypeCode:QuestionList = new QuestionList("InterviewTypeCode","Interview Type",new ArrayList(["Intake","6 Month Followup","12 Month Followup","3 Month Followup","Discharge", "Discharge: Administrative"]),0,false);
+			public var qInterviewTypeCode:QuestionList = new QuestionList("InterviewTypeCode","Interview Type",new ArrayList(["Intake","6 Month Followup","12 Month Followup","3 Month Followup","Discharge", "Discharge: Administrative"]),0);
 			public var qConductedInterview:QuestionList = new QuestionList("ConductedInterview","Was the interview conducted?",yn,0);
 			public var qInterviewDate:QuestionText = new QuestionText("InterviewDate","Interview Date","");
 			public var qCooccurringScreen:QuestionList = new QuestionList("CooccurringScreen","Was the client screened by your program for co-occurring mental health and substance use disorders?",new ArrayList(["Yes","No","Missing Data"]),0);
@@ -58,13 +58,13 @@
 			private function populateForm():void
 			{
 				qClientID.answer = String(global.activeClient.clientid);
-				if([InterviewType.INTAKE_GENERAL,InterviewType.INTAKE_SBIRT_BI,InterviewType.INTAKE_SBIRT_NEG,InterviewType.INTAKE_SBIRT_RT].indexOf(global.pageDCI.interviewType) != -1)
+				if(global.pageDCI.isIntake(global.pageDCI.interviewType))
 					qInterviewTypeCode.answer = "Intake";
-				else if([InterviewType.FOLLOWUP,InterviewType.FOLLOWUP_SBIRT_BI].indexOf(global.pageDCI.interviewType) != -1)
+				else if(global.pageDCI.isFollowup(global.pageDCI.interviewType))
 					qInterviewTypeCode.answer = "6 Month Followup";
 				else if(InterviewType.DISCHARGE == global.pageDCI.interviewType)
 					qInterviewTypeCode.answer = "Discharge";
-				else if(InterviewType.DISCHARGE == global.pageDCI.interviewType)
+				else if(InterviewType.DISCHARGE_NO_INTERVIEW == global.pageDCI.interviewType)
 					qInterviewTypeCode.answer = "Discharge: Administrative";
 				qInterviewDate.answer = dateFormatter.format(new Date());
 			}

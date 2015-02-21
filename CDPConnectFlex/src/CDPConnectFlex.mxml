@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 CDP Connect
-GPRA Upload System
+DCI Upload System
 By David Tidd
 
 -->
@@ -35,7 +35,6 @@ By David Tidd
 			import valueObjects.AssessmentVO;
 			import valueObjects.ClientVO;
 			import valueObjects.EpisodeVO;
-			import valueObjects.GpraVO;
 			import valueObjects.GrantVO;
 			import valueObjects.UserVO;			
 
@@ -47,7 +46,8 @@ By David Tidd
 			
 			public var pageHomeButton:ButtonBarButton;
 			public var pageClientButton:ButtonBarButton;
-			public var pageGpraButton:ButtonBarButton;
+			public var pageAssessButton:ButtonBarButton;
+			public var pageDCIButton:ButtonBarButton;
 			public var pageAdminButton:ButtonBarButton;
 			
 			public var userList:ArrayList = new ArrayList();
@@ -83,11 +83,10 @@ By David Tidd
 				//Set up button bar
 				pageHomeButton = pageButtonBar.getChildAt(0) as ButtonBarButton;
 				pageClientButton = pageButtonBar.getChildAt(1) as ButtonBarButton;
-				pageGpraButton = pageButtonBar.getChildAt(2) as ButtonBarButton;
-				pageAdminButton = pageButtonBar.getChildAt(3) as ButtonBarButton;
-				pageHomeButton.enabled = true;
-				pageClientButton.enabled = false;
-				pageGpraButton.enabled = false;
+				pageAssessButton = pageButtonBar.getChildAt(2) as ButtonBarButton;
+				pageDCIButton = pageButtonBar.getChildAt(3) as ButtonBarButton;
+				pageAdminButton = pageButtonBar.getChildAt(4) as ButtonBarButton;
+				enableLeftButtonsOnly(pageHomeButton);
 				adminButton.visible = adminMode;
 				pageAdminButton.visible = adminMode;
 				
@@ -157,7 +156,8 @@ By David Tidd
 				activeAssessment = null;
 				pageHomeButton.enabled = false;
 				pageClientButton.enabled = false;
-				pageGpraButton.enabled = false;
+				pageAssessButton.enabled = false;
+				pageDCIButton.enabled = false;
 				pageHome.resetPage();
 				pageLogin.resetPage();
 				currentState = "Login";
@@ -175,6 +175,54 @@ By David Tidd
 				attemptHomePage();
 			}
 			
+			//Disable all buttons except the currently selected one
+			public function disableAllOtherButtons(b:ButtonBarButton):void
+			{
+				b.enabled = true;
+				for(var i:int = 0; i < pageButtonBar.getChildren().length; i++)
+				{
+					if(b != pageButtonBar.getChildAt(i))
+						(pageButtonBar.getChildAt(i) as ButtonBarButton).enabled = false;
+				}
+			}
+			
+			//Enable all buttons to the left (higher in hierarchy) of the current one
+			public function enableLeftButtonsOnly(b:ButtonBarButton):void
+			{
+				if(b == pageHomeButton)
+				{
+					pageHomeButton.enabled = true;
+					pageAdminButton.enabled = true;
+					pageClientButton.enabled = false;
+					pageAssessButton.enabled = false;
+					pageDCIButton.enabled = false;
+				}
+				else if(b == pageClientButton)
+				{
+					pageHomeButton.enabled = true;
+					pageAdminButton.enabled = true;
+					pageClientButton.enabled = true;
+					pageAssessButton.enabled = false;
+					pageDCIButton.enabled = false;
+				}
+				else if(b == pageAssessButton)
+				{
+					pageHomeButton.enabled = true;
+					pageClientButton.enabled = true;
+					pageAdminButton.enabled = true;
+					pageAssessButton.enabled = true;
+					pageDCIButton.enabled = false;
+				}
+				else if(b == pageDCIButton)
+				{
+					pageHomeButton.enabled = true;
+					pageClientButton.enabled = true;
+					pageAdminButton.enabled = true;
+					pageAssessButton.enabled = false;
+					pageDCIButton.enabled = true;
+				}
+			}
+			
 		]]>
 	</fx:Script>
 	<s:states>
@@ -182,9 +230,6 @@ By David Tidd
 		<s:State name="Login"/>
 	</s:states>
 	<fx:Declarations>
-		<gpraservice:GpraService id="gpraService"
-								 fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
-								 showBusyCursor="true"/>
 		<clientservice:ClientService id="clientService"
 									 fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
 									 showBusyCursor="true"/>
@@ -205,9 +250,9 @@ By David Tidd
 				  contentBackgroundColor="#FFFFFF" creationPolicy="all" creationComplete="pageViewstack_creationCompleteHandler(event)">
 		<pages:HomePage id="pageHome" width="100%" height="100%" label="Home" />
 		<pages:ClientPage id="pageClient" width="100%" height="100%" label="Client" />
+		<pages:AssessmentPage id="pageAssessment" width="100%" height="100%" label="Screen"/>
+		<pages:DciPage id="pageDCI" width="100%" height="100%" label="DCI"/>
 		<pages:AdminPage id="pageAdmin" width="100%" height="100%" label="Admin"/>
-		<pages:DciPage id="pageDCI" width="100%" height="100%" label="GPRA"/>
-		<pages:AssessmentPage id="pageAssessment" width="100%" height="100%" label="Assess"/>
 	</mx:ViewStack>
 	<s:Image x="0" y="0" source="assets/ConnectBanner.png"/>
 	<s:Group includeIn="State1" x="10" y="3" width="695" height="90"
