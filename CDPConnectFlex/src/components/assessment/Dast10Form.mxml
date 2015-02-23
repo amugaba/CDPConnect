@@ -17,7 +17,7 @@
 			public var q3:QuestionList = new QuestionList("Q3","3. Are you always able to stop using drugs when you want to?",yn,0);
 			public var q4:QuestionList = new QuestionList("Q4","4. Have you had 'blackouts' or 'flashbacks' as a result of drug use?",yn,0);
 			public var q5:QuestionList = new QuestionList("Q5","5. Do you ever feel bad or guilty about your drug use?",yn,0);
-			public var q6:QuestionList = new QuestionList("Q6","6. Does your spouse (or parents) ever complain about your involvement with drugs?",yn,0);
+			public var q6:QuestionList = new QuestionList("Q6","6. Does your spouse (or parent) ever complain about your involvement with drugs?",yn,0);
 			public var q7:QuestionList = new QuestionList("Q7","7. Have you neglected your family because of your use of drugs?",yn,0);
 			public var q8:QuestionList = new QuestionList("Q8","8. Have you engaged in illegal activities in order to obtain drugs?",yn,0);
 			public var q9:QuestionList = new QuestionList("Q9","9. Have you ever experienced withdrawal symptoms (felt sick) when you stopped taking drugs?",yn,0);

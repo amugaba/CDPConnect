@@ -55,22 +55,6 @@ package components.questions
 			return null;
 		}
 		
-		public function doSkip():void
-		{
-			for each (var q:QuestionClass in skipQuestions)
-			{
-				q.restoreDefault();
-				q.disable();
-			}
-		}
-		public function undoSkip():void
-		{
-			for each (var q:QuestionClass in skipQuestions)
-			{
-				q.enable();
-			}
-		}
-		
 		public function enable():void
 		{
 			isSkipped = false;
@@ -78,6 +62,12 @@ package components.questions
 		public function disable():void
 		{
 			isSkipped = true;	
+		}
+		
+		public function refreshSkips():void
+		{
+			for each(var s:SkipPattern in skipPatterns)
+				s.skipHandler(null);
 		}
 	}
 }

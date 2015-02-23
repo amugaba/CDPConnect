@@ -158,6 +158,8 @@
 					enableSectionI(false);
 					enableSectionJ(true);
 					enableSectionK(true);
+					dischargeForm.qDischargeDate.answer = global.dateFormatter.format(new Date());
+					dischargeForm.qLastServiceDate.answer = global.dateFormatter.format(new Date());
 				}
 				
 				//Determine which items are active
@@ -188,16 +190,6 @@
 					for each(i in activeFormIndexes)
 						(dciForms[i] as DCIForm).validateForm();
 				}
-				else
-				{
-					//Do SBIRT-specific population
-					//services -> modality other = yes, other spec = SBIRT
-					services1Form.qSvcModOther.answer = "Yes";
-					services1Form.qSvcModOtherSpec.answer = "SBIRT";
-					//Treatment -> screening = yes, bi - yes
-					services1Form.qSvcScreening.answer = "Yes";
-					services1Form.qSvcBriefIntervention.answer = "Yes";
-				}
 				
 				//Reorder all tab buttons so that the invisible ones are at the bottom
 				//Have to reorder the tabs in the viewstack to correspond to the new order too though
@@ -219,6 +211,32 @@
 				sbirt = enabled;
 				sbirtForm.initForm();
 				enableTab(sbirtTab,enabled);
+			}
+			
+			protected function enableSectionA(enabled:Boolean):void
+			{
+				services1Form.initForm();
+				services2Form.initForm();
+				demoForm.initForm();
+				demo2Form.initForm();
+				military1Form.initForm();
+				military2Form.initForm();
+				
+				enableTab(services1Tab,enabled);
+				enableTab(services2Tab,enabled);
+				enableTab(demoTab,enabled);
+				enableTab(demo2Tab,enabled);
+				enableTab(military1Tab,enabled);
+				enableTab(military2Tab,enabled);
+				
+				if(enabled)
+				{
+					var dv:DateAgeValidator = recordForm.qInterviewDate.validator as DateAgeValidator;
+					dv.max = 365;
+				}
+				
+				demoForm.qDateOfBirth.validator.enabled = enabled;
+				demoForm.qDateOfBirth.answer = global.activeClient.dob;
 			}
 			
 			protected function enableSectionB(enabled:Boolean):void
@@ -258,31 +276,6 @@
 				dischargeServices2Form.initForm();
 				enableTab(dischargeServices1Tab,enabled);
 				enableTab(dischargeServices2Tab,enabled);
-			}
-			
-			protected function enableSectionA(enabled:Boolean):void
-			{
-				services1Form.initForm();
-				services2Form.initForm();
-				demoForm.initForm();
-				demo2Form.initForm();
-				military1Form.initForm();
-				military2Form.initForm();
-				
-				enableTab(services1Tab,enabled);
-				enableTab(services2Tab,enabled);
-				enableTab(demoTab,enabled);
-				enableTab(demo2Tab,enabled);
-				enableTab(military1Tab,enabled);
-				enableTab(military2Tab,enabled);
-				
-				if(enabled)
-				{
-					var dv:DateAgeValidator = recordForm.qInterviewDate.validator as DateAgeValidator;
-					dv.max = 365;
-				}
-
-				demoForm.qDateOfBirth.validator.enabled = enabled;
 			}
 			
 			protected function enableSectionI(enabled:Boolean):void
@@ -414,6 +407,8 @@
 					dischargeExists = true;
 				else if(isFollowup(interviewType))
 					followupExists = true;
+				
+				global.rulesManager.dciCreated();
 			}
 			
 			protected function updateAssessmentResult_resultHandler(event:ResultEvent):void

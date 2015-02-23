@@ -91,7 +91,7 @@
 				addGroupedQuestion(qSvcAfterCare,g);
 				addGroupedQuestion(qSvcRecoverySupport,g);
 				addGroupedQuestion(qSvcModOther,g);
-				addGroupedQuestion(qSvcModOtherSpec,g);
+				addGroupedQuestion(qSvcModOtherSpec,g, false);
 				qSvcModOtherSpec.answerType = String;
 				//qSvcModOtherSpec.inputControl.width = 90;
 				
@@ -117,7 +117,7 @@
 				addGroupedQuestion(qSvcHIVCounseling,g);
 				addGroupedQuestion(qSvcMentalHealth,g);
 				addGroupedQuestion(qSvcOtherClinical,g);
-				addGroupedQuestion(qSvcOtherClinicalSpec,g);
+				addGroupedQuestion(qSvcOtherClinicalSpec,g, false);
 				qSvcOtherClinicalSpec.answerType = String;
 				
 				//Validators
@@ -129,12 +129,13 @@
 				addSkipDropDown(qSvcOtherClinical,["0"],[qSvcOtherClinicalSpec]);
 			}
 			
-			private function addGroupedQuestion(q:QuestionClass, g:TileGroup):void
+			private function addGroupedQuestion(q:QuestionClass, g:TileGroup, isNumber:Boolean = true):void
 			{
 				questions.push(q);
 				q.inputControl.width = 60;
 				g.addElement(q);
-				Valid.addNumberValidator(q,0,999,true);
+				if(isNumber)
+					Valid.addNumberValidator(q,0,999,true);
 			}
 			
 			protected function addHeader(text:String, g:TileGroup):void

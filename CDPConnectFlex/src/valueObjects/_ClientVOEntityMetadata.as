@@ -22,14 +22,14 @@ internal class _ClientVOEntityMetadata extends com.adobe.fiber.valueobjects.Abst
 {
     private static var emptyArray:Array = new Array();
 
-    model_internal static var allProperties:Array = new Array("autoid", "clientid", "firstname", "lastname", "dob", "ssn", "createddate", "notes");
+    model_internal static var allProperties:Array = new Array("autoid", "clientid", "firstname", "lastname", "dob", "ssn", "gender", "notes");
     model_internal static var allAssociationProperties:Array = new Array();
-    model_internal static var allRequiredProperties:Array = new Array("autoid", "clientid", "firstname", "lastname", "dob", "ssn", "createddate", "notes");
-    model_internal static var allAlwaysAvailableProperties:Array = new Array("autoid", "clientid", "firstname", "lastname", "dob", "ssn", "createddate", "notes");
+    model_internal static var allRequiredProperties:Array = new Array("autoid", "clientid", "firstname", "lastname", "dob", "ssn", "gender", "notes");
+    model_internal static var allAlwaysAvailableProperties:Array = new Array("autoid", "clientid", "firstname", "lastname", "dob", "ssn", "gender", "notes");
     model_internal static var guardedProperties:Array = new Array();
-    model_internal static var dataProperties:Array = new Array("autoid", "clientid", "firstname", "lastname", "dob", "ssn", "createddate", "notes");
+    model_internal static var dataProperties:Array = new Array("autoid", "clientid", "firstname", "lastname", "dob", "ssn", "gender", "notes");
     model_internal static var sourceProperties:Array = emptyArray
-    model_internal static var nonDerivedProperties:Array = new Array("autoid", "clientid", "firstname", "lastname", "dob", "ssn", "createddate", "notes");
+    model_internal static var nonDerivedProperties:Array = new Array("autoid", "clientid", "firstname", "lastname", "dob", "ssn", "gender", "notes");
     model_internal static var derivedProperties:Array = new Array();
     model_internal static var collectionProperties:Array = new Array();
     model_internal static var collectionBaseMap:Object;
@@ -64,11 +64,6 @@ internal class _ClientVOEntityMetadata extends com.adobe.fiber.valueobjects.Abst
     model_internal var _ssnIsValidCacheInitialized:Boolean = false;
     model_internal var _ssnValidationFailureMessages:Array;
     
-    model_internal var _createddateIsValid:Boolean;
-    model_internal var _createddateValidator:com.adobe.fiber.styles.StyleValidator;
-    model_internal var _createddateIsValidCacheInitialized:Boolean = false;
-    model_internal var _createddateValidationFailureMessages:Array;
-    
     model_internal var _notesIsValid:Boolean;
     model_internal var _notesValidator:com.adobe.fiber.styles.StyleValidator;
     model_internal var _notesIsValidCacheInitialized:Boolean = false;
@@ -90,7 +85,7 @@ internal class _ClientVOEntityMetadata extends com.adobe.fiber.valueobjects.Abst
             model_internal::dependentsOnMap["lastname"] = new Array();
             model_internal::dependentsOnMap["dob"] = new Array();
             model_internal::dependentsOnMap["ssn"] = new Array();
-            model_internal::dependentsOnMap["createddate"] = new Array();
+            model_internal::dependentsOnMap["gender"] = new Array();
             model_internal::dependentsOnMap["notes"] = new Array();
 
             // collection base map
@@ -105,7 +100,7 @@ internal class _ClientVOEntityMetadata extends com.adobe.fiber.valueobjects.Abst
         model_internal::propertyTypeMap["lastname"] = "String";
         model_internal::propertyTypeMap["dob"] = "String";
         model_internal::propertyTypeMap["ssn"] = "String";
-        model_internal::propertyTypeMap["createddate"] = "String";
+        model_internal::propertyTypeMap["gender"] = "int";
         model_internal::propertyTypeMap["notes"] = "String";
 
         model_internal::_instance = value;
@@ -134,11 +129,6 @@ internal class _ClientVOEntityMetadata extends com.adobe.fiber.valueobjects.Abst
         model_internal::_ssnValidator.requiredFieldError = "ssn is required";
         //model_internal::_ssnValidator.source = model_internal::_instance;
         //model_internal::_ssnValidator.property = "ssn";
-        model_internal::_createddateValidator = new StyleValidator(model_internal::_instance.model_internal::_doValidationForCreateddate);
-        model_internal::_createddateValidator.required = true;
-        model_internal::_createddateValidator.requiredFieldError = "createddate is required";
-        //model_internal::_createddateValidator.source = model_internal::_instance;
-        //model_internal::_createddateValidator.property = "createddate";
         model_internal::_notesValidator = new StyleValidator(model_internal::_instance.model_internal::_doValidationForNotes);
         model_internal::_notesValidator.required = true;
         model_internal::_notesValidator.requiredFieldError = "notes is required";
@@ -407,7 +397,7 @@ internal class _ClientVOEntityMetadata extends com.adobe.fiber.valueobjects.Abst
     }
 
     [Bindable(event="propertyChange")]
-    public function get isCreateddateAvailable():Boolean
+    public function get isGenderAvailable():Boolean
     {
         return true;
     }
@@ -460,14 +450,6 @@ internal class _ClientVOEntityMetadata extends com.adobe.fiber.valueobjects.Abst
         {
             model_internal::_instance.model_internal::_doValidationCacheOfSsn = null;
             model_internal::calculateSsnIsValid();
-        }
-    }
-    public function invalidateDependentOnCreateddate():void
-    {
-        if (model_internal::_createddateIsValidCacheInitialized )
-        {
-            model_internal::_instance.model_internal::_doValidationCacheOfCreateddate = null;
-            model_internal::calculateCreateddateIsValid();
         }
     }
     public function invalidateDependentOnNotes():void
@@ -991,103 +973,9 @@ internal class _ClientVOEntityMetadata extends com.adobe.fiber.valueobjects.Abst
     }
 
     [Bindable(event="propertyChange")]   
-    public function get createddateStyle():com.adobe.fiber.styles.Style
+    public function get genderStyle():com.adobe.fiber.styles.Style
     {
         return model_internal::_nullStyle;
-    }
-
-    public function get createddateValidator() : StyleValidator
-    {
-        return model_internal::_createddateValidator;
-    }
-
-    model_internal function set _createddateIsValid_der(value:Boolean):void 
-    {
-        var oldValue:Boolean = model_internal::_createddateIsValid;         
-        if (oldValue !== value)
-        {
-            model_internal::_createddateIsValid = value;
-            this.dispatchEvent(mx.events.PropertyChangeEvent.createUpdateEvent(this, "createddateIsValid", oldValue, value));
-        }                             
-    }
-
-    [Bindable(event="propertyChange")]
-    public function get createddateIsValid():Boolean
-    {
-        if (!model_internal::_createddateIsValidCacheInitialized)
-        {
-            model_internal::calculateCreateddateIsValid();
-        }
-
-        return model_internal::_createddateIsValid;
-    }
-
-    model_internal function calculateCreateddateIsValid():void
-    {
-        var valRes:ValidationResultEvent = model_internal::_createddateValidator.validate(model_internal::_instance.createddate)
-        model_internal::_createddateIsValid_der = (valRes.results == null);
-        model_internal::_createddateIsValidCacheInitialized = true;
-        if (valRes.results == null)
-             model_internal::createddateValidationFailureMessages_der = emptyArray;
-        else
-        {
-            var _valFailures:Array = new Array();
-            for (var a:int = 0 ; a<valRes.results.length ; a++)
-            {
-                _valFailures.push(valRes.results[a].errorMessage);
-            }
-            model_internal::createddateValidationFailureMessages_der = _valFailures;
-        }
-    }
-
-    [Bindable(event="propertyChange")]
-    public function get createddateValidationFailureMessages():Array
-    {
-        if (model_internal::_createddateValidationFailureMessages == null)
-            model_internal::calculateCreateddateIsValid();
-
-        return _createddateValidationFailureMessages;
-    }
-
-    model_internal function set createddateValidationFailureMessages_der(value:Array) : void
-    {
-        var oldValue:Array = model_internal::_createddateValidationFailureMessages;
-
-        var needUpdate : Boolean = false;
-        if (oldValue == null)
-            needUpdate = true;
-    
-        // avoid firing the event when old and new value are different empty arrays
-        if (!needUpdate && (oldValue !== value && (oldValue.length > 0 || value.length > 0)))
-        {
-            if (oldValue.length == value.length)
-            {
-                for (var a:int=0; a < oldValue.length; a++)
-                {
-                    if (oldValue[a] !== value[a])
-                    {
-                        needUpdate = true;
-                        break;
-                    }
-                }
-            }
-            else
-            {
-                needUpdate = true;
-            }
-        }
-
-        if (needUpdate)
-        {
-            model_internal::_createddateValidationFailureMessages = value;   
-            this.dispatchEvent(mx.events.PropertyChangeEvent.createUpdateEvent(this, "createddateValidationFailureMessages", oldValue, value));
-            // Only execute calculateIsValid if it has been called before, to update the validationFailureMessages for
-            // the entire entity.
-            if (model_internal::_instance.model_internal::_cacheInitialized_isValid)
-            {
-                model_internal::_instance.model_internal::isValid_der = model_internal::_instance.model_internal::calculateIsValid();
-            }
-        }
     }
 
     [Bindable(event="propertyChange")]   
@@ -1234,10 +1122,6 @@ internal class _ClientVOEntityMetadata extends com.adobe.fiber.valueobjects.Abst
             case("ssn"):
             {
                 return ssnValidationFailureMessages;
-            }
-            case("createddate"):
-            {
-                return createddateValidationFailureMessages;
             }
             case("notes"):
             {

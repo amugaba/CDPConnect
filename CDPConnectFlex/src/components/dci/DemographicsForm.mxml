@@ -19,14 +19,14 @@
 			import spark.components.TileGroup;
 			
 			public var qDateOfBirth:QuestionText = new QuestionText("DateOfBirth","Date of Birth","");
-			public var qHispanicLatino:QuestionList = new QuestionList("HispanicLatino","Are you Hispanic or Latino?",ynrm,1);
+			public var qHispanicLatino:QuestionList = new QuestionList("HispanicLatino","Are you Hispanic, Latino/a, or Spanish origin?",ynrm,1);
 			public var qEthnicCentralAmerican:QuestionList = new QuestionList("EthnicCentralAmerican","Central American",ynrm,1);
 			public var qEthnicCuban:QuestionList = new QuestionList("EthnicCuban","Cuban",ynrm,1);
 			public var qEthnicDominican:QuestionList = new QuestionList("EthnicDominican","Dominican",ynrm,1);
-			public var qEthnicMexican:QuestionList = new QuestionList("EthnicMexican","Mexican",ynrm,1);
+			public var qEthnicMexican:QuestionList = new QuestionList("EthnicMexican","Mexican, Chicano/a",ynrm,1);
 			public var qEthnicPuertoRican:QuestionList = new QuestionList("EthnicPuertoRican","Puerto Rican",ynrm,1);
 			public var qEthnicSouthAmerican:QuestionList = new QuestionList("EthnicSouthAmerican","South American",ynrm,1);
-			public var qEthnicOther:QuestionList = new QuestionList("EthnicOther","Other",ynrm,1);
+			public var qEthnicOther:QuestionList = new QuestionList("EthnicOther","Other Hispanic",ynrm,1);
 			public var qEthnicOtherSpecify:QuestionText = new QuestionText("EthnicOtherSpec","Other, specify","");
 			
 			public var qRaceWhite:QuestionList = new QuestionList("RaceWhite","White",ynrm,1);

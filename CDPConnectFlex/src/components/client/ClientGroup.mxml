@@ -7,6 +7,7 @@
 	<fx:Script>
 		<![CDATA[
 			import components.questions.QuestionClass;
+			import components.questions.QuestionList;
 			import components.questions.QuestionText;
 			import components.validators.DateAgeValidator;
 			import components.validators.Valid;
@@ -27,9 +28,9 @@
 			public var qLastName:QuestionText = new QuestionText("","Last Name","");
 			public var qDOB:QuestionText = new QuestionText("","Date of Birth","");
 			public var qSSN:QuestionText = new QuestionText("","SSN","");
-			public var qCreationDate:QuestionText = new QuestionText("","Created Date","",false);
+			public var qGender:QuestionList = new QuestionList("","Gender",new ArrayList(["Male","Female","Other"]),0);
 			
-			private var questions:Array = new Array(qClientID,qFirstName,qLastName,qDOB,qSSN,qCreationDate);
+			private var questions:Array = new Array(qClientID,qFirstName,qLastName,qDOB,qSSN);
 			
 			private var created:Boolean = false;
 			
@@ -42,10 +43,9 @@
 					clientForm.addElement(qLastName);
 					clientForm.addElement(qDOB);
 					clientForm.addElement(qSSN);
-					clientForm.addElement(qCreationDate);
+					clientForm.addElement(qGender);
 					
 					Valid.addDateAgeValidator(qDOB, 3, DateAgeValidator.YEAR, 100, DateAgeValidator.YEAR);
-					//Valid.addDateAgeValidator(qCreationDate, 0, DateAgeValidator.DAY, 1, DateAgeValidator.YEAR);
 					Valid.addRequiredValidator(qFirstName);
 					Valid.addRequiredValidator(qLastName);
 					Valid.addNumberValidator(qSSN, Number.NaN, Number.NaN, true);
@@ -64,7 +64,6 @@
 					resetGroup();
 					setIsCreatingClient(true);
 					qClientID.input.editable = true;
-					qCreationDate.answer = global.dateFormatter.format(new Date());
 				}
 			}
 			
@@ -85,7 +84,7 @@
 				global.activeClient.lastname = qLastName.answer;
 				global.activeClient.ssn = qSSN.answer;
 				global.activeClient.dob = qDOB.answer;
-				global.activeClient.createddate = qCreationDate.answer;
+				global.activeClient.gender = qGender.getAnswerIndex();
 				//global.activeClient.notes = notesArea.text;
 			}
 			
@@ -100,7 +99,7 @@
 					qLastName.answer = global.activeClient.lastname;
 					qDOB.answer = global.activeClient.dob;
 					qSSN.answer = global.activeClient.ssn;
-					qCreationDate.answer = global.activeClient.createddate;
+					qGender.setAnswerIndex(global.activeClient.gender);
 					notesArea.text = global.activeClient.notes;
 				}
 			}
@@ -157,6 +156,7 @@
 			
 			protected function createClientButton_clickHandler(event:MouseEvent):void
 			{
+				global.rulesManager.createClient();
 				if(validate())
 				{		
 					sendFormDataToGlobalObject();

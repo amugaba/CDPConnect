@@ -29,7 +29,6 @@
 			public var qDate:QuestionText = new QuestionText("","Date","",false);
 			public var qStaff:QuestionList = new QuestionList("","Intake Staff",global.staffList,0);
 			public var qFacility:QuestionList = new QuestionList("","Facility",global.facilityList,0);
-			public var qComplete:QuestionList = new QuestionList("","Complete?",new ArrayList(["Yes","No"]),1);
 			
 			private var questions:Array = new Array(qNumber,qNumber,qStaff,qStaff,qStaff);
 			private var created:Boolean = false;
@@ -44,7 +43,6 @@
 					episodeForm.addElement(qDate);
 					episodeForm.addElement(qStaff);
 					episodeForm.addElement(qFacility);
-					episodeForm.addElement(qComplete);
 					qStaff.inputControl.width = 130;
 					qFacility.inputControl.width = 130;
 				}
@@ -100,7 +98,6 @@
 				global.activeEpisode.date = qDate.answer;
 				global.activeEpisode.staff = qStaff.answer;
 				global.activeEpisode.facility = qFacility.answer;
-				global.activeEpisode.complete = qComplete.input.selectedIndex;
 				global.activeEpisode.client_autoid = global.activeClient.autoid;
 				//global.activeEpisode.notes = notesArea.text;
 			}
@@ -115,7 +112,6 @@
 					qDate.answer = global.activeEpisode.date;
 					qStaff.answer = global.activeEpisode.staff;
 					qFacility.answer = global.activeEpisode.facility;
-					qComplete.input.selectedIndex = global.activeEpisode.complete;
 					notesArea.text = global.activeEpisode.notes;
 				}
 			}
@@ -143,6 +139,8 @@
 				global.pageDCI.dischargeExists = false;
 				global.pageDCI.followupExists = false;
 				global.pageDCI.intakeDCI = null;
+				
+				global.rulesManager.episodeCreated();
 			}
 			
 			protected function setIsCreatingEpisode(creating:Boolean):void

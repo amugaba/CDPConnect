@@ -58,6 +58,7 @@
 			private function populateForm():void
 			{
 				qClientID.answer = String(global.activeClient.clientid);
+				qInterviewDate.answer = dateFormatter.format(new Date());
 				if(global.pageDCI.isIntake(global.pageDCI.interviewType))
 					qInterviewTypeCode.answer = "Intake";
 				else if(global.pageDCI.isFollowup(global.pageDCI.interviewType))
@@ -65,8 +66,11 @@
 				else if(InterviewType.DISCHARGE == global.pageDCI.interviewType)
 					qInterviewTypeCode.answer = "Discharge";
 				else if(InterviewType.DISCHARGE_NO_INTERVIEW == global.pageDCI.interviewType)
+				{
 					qInterviewTypeCode.answer = "Discharge: Administrative";
-				qInterviewDate.answer = dateFormatter.format(new Date());
+					qConductedInterview.answer = "No";
+					qConductedInterview.refreshSkips();
+				}
 			}
 			
 			

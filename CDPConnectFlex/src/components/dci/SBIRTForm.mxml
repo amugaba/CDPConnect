@@ -20,7 +20,7 @@
 			public var qASSIST:QuestionText = new QuestionText("ASSIST","ASSIST/Alcohol Subscore","");
 			public var qOtherScreen:QuestionText = new QuestionText("OtherScreen","Other","");
 			public var qOtherScreenSpec:QuestionText = new QuestionText("OtherScreenSpec","Other (Specify)","");
-			public var qSBIRTContinue:QuestionList = new QuestionList("SBIRTContinue","Was he/she willing to continue his/her participation in the SBIRT program",new ArrayList(["Yes","No"]),0);
+			public var qSBIRTContinue:QuestionList = new QuestionList("SBIRTContinue","Was he/she willing to continue his/her participation in the SBIRT program",new ArrayList(["Yes","No"]),1);
 		
 			private var scoreWidth:int = 50;
 		

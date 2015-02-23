@@ -92,11 +92,13 @@
 				//Add in new autoid and put in assessments grid
 				global.activeAssessment = createAssessmentResult.lastResult;
 				global.pageClient.assessmentGroup.assessmentList.addItem(global.activeAssessment);
+				global.rulesManager.assessmentCreated();
 			}
 			
 			protected function updateAssessmentResult_resultHandler(event:ResultEvent):void
 			{
 				Alert.show("Assessment updated.");
+				global.rulesManager.assessmentChanged();
 			}
 			
 		]]>

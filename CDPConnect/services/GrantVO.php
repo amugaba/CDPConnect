@@ -6,6 +6,7 @@ class GrantVO
 	public $samhsaCenter;
 	public $programType;
 	public $grantCode;
+	public $sbirt;
 
 	public function __construct()
 	{
@@ -14,6 +15,7 @@ class GrantVO
 		$this->samhsaCenter = 0;
 		$this->programType = 0;
 		$this->grantCode = "";
+		$this->sbirt = 0;
 	}
 }
 ?>

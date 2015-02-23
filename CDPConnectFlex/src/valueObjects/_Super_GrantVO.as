@@ -6,14 +6,10 @@
 package valueObjects
 {
 import com.adobe.fiber.services.IFiberManagingService;
-import com.adobe.fiber.util.FiberUtils;
 import com.adobe.fiber.valueobjects.IValueObject;
-import flash.events.Event;
 import flash.events.EventDispatcher;
-import mx.binding.utils.ChangeWatcher;
 import mx.collections.ArrayCollection;
 import mx.events.PropertyChangeEvent;
-import mx.validators.ValidationResult;
 
 import flash.net.registerClassAlias;
 import flash.net.getClassByAlias;
@@ -67,6 +63,7 @@ public class _Super_GrantVO extends flash.events.EventDispatcher implements com.
     private var _internal_samhsaCenter : int;
     private var _internal_programType : int;
     private var _internal_grantCode : String;
+    private var _internal_sbirt : int;
 
     private static var emptyArray:Array = new Array();
 
@@ -83,8 +80,6 @@ public class _Super_GrantVO extends flash.events.EventDispatcher implements com.
         _model = new _GrantVOEntityMetadata(this);
 
         // Bind to own data or source properties for cache invalidation triggering
-        model_internal::_changeWatcherArray.push(mx.binding.utils.ChangeWatcher.watch(this, "name", model_internal::setterListenerName));
-        model_internal::_changeWatcherArray.push(mx.binding.utils.ChangeWatcher.watch(this, "grantCode", model_internal::setterListenerGrantCode));
 
     }
 
@@ -120,6 +115,12 @@ public class _Super_GrantVO extends flash.events.EventDispatcher implements com.
     public function get grantCode() : String
     {
         return _internal_grantCode;
+    }
+
+    [Bindable(event="propertyChange")]
+    public function get sbirt() : int
+    {
+        return _internal_sbirt;
     }
 
     public function clearAssociations() : void
@@ -180,6 +181,16 @@ public class _Super_GrantVO extends flash.events.EventDispatcher implements com.
         }
     }
 
+    public function set sbirt(value:int) : void
+    {
+        var oldValue:int = _internal_sbirt;
+        if (oldValue !== value)
+        {
+            _internal_sbirt = value;
+            this.dispatchEvent(mx.events.PropertyChangeEvent.createUpdateEvent(this, "sbirt", oldValue, _internal_sbirt));
+        }
+    }
+
     /**
      * Data/source property setter listeners
      *
@@ -191,16 +202,6 @@ public class _Super_GrantVO extends flash.events.EventDispatcher implements com.
      *  - the validity of the property (and the containing entity) if the given data property has a length restriction.
      *  - the validity of the property (and the containing entity) if the given data property is required.
      */
-
-    model_internal function setterListenerName(value:flash.events.Event):void
-    {
-        _model.invalidateDependentOnName();
-    }
-
-    model_internal function setterListenerGrantCode(value:flash.events.Event):void
-    {
-        _model.invalidateDependentOnGrantCode();
-    }
 
 
     /**
@@ -223,16 +224,6 @@ public class _Super_GrantVO extends flash.events.EventDispatcher implements com.
         var validationFailureMessages:Array = new Array();
 
         var propertyValidity:Boolean = true;
-        if (!_model.nameIsValid)
-        {
-            propertyValidity = false;
-            com.adobe.fiber.util.FiberUtils.arrayAdd(validationFailureMessages, _model.model_internal::_nameValidationFailureMessages);
-        }
-        if (!_model.grantCodeIsValid)
-        {
-            propertyValidity = false;
-            com.adobe.fiber.util.FiberUtils.arrayAdd(validationFailureMessages, _model.model_internal::_grantCodeValidationFailureMessages);
-        }
 
         model_internal::_cacheInitialized_isValid = true;
         model_internal::invalidConstraints_der = violatedConsts;
@@ -312,60 +303,6 @@ public class _Super_GrantVO extends flash.events.EventDispatcher implements com.
         }
     }
 
-    model_internal var _doValidationCacheOfName : Array = null;
-    model_internal var _doValidationLastValOfName : String;
-
-    model_internal function _doValidationForName(valueIn:Object):Array
-    {
-        var value : String = valueIn as String;
-
-        if (model_internal::_doValidationCacheOfName != null && model_internal::_doValidationLastValOfName == value)
-           return model_internal::_doValidationCacheOfName ;
-
-        _model.model_internal::_nameIsValidCacheInitialized = true;
-        var validationFailures:Array = new Array();
-        var errorMessage:String;
-        var failure:Boolean;
-
-        var valRes:ValidationResult;
-        if (_model.isNameAvailable && _internal_name == null)
-        {
-            validationFailures.push(new ValidationResult(true, "", "", "name is required"));
-        }
-
-        model_internal::_doValidationCacheOfName = validationFailures;
-        model_internal::_doValidationLastValOfName = value;
-
-        return validationFailures;
-    }
-    
-    model_internal var _doValidationCacheOfGrantCode : Array = null;
-    model_internal var _doValidationLastValOfGrantCode : String;
-
-    model_internal function _doValidationForGrantCode(valueIn:Object):Array
-    {
-        var value : String = valueIn as String;
-
-        if (model_internal::_doValidationCacheOfGrantCode != null && model_internal::_doValidationLastValOfGrantCode == value)
-           return model_internal::_doValidationCacheOfGrantCode ;
-
-        _model.model_internal::_grantCodeIsValidCacheInitialized = true;
-        var validationFailures:Array = new Array();
-        var errorMessage:String;
-        var failure:Boolean;
-
-        var valRes:ValidationResult;
-        if (_model.isGrantCodeAvailable && _internal_grantCode == null)
-        {
-            validationFailures.push(new ValidationResult(true, "", "", "grantCode is required"));
-        }
-
-        model_internal::_doValidationCacheOfGrantCode = validationFailures;
-        model_internal::_doValidationLastValOfGrantCode = value;
-
-        return validationFailures;
-    }
-    
 
 }
 

@@ -55,14 +55,32 @@ class AssessmentService
         $stmt->bind_result($item->autoid, $item->episode_autoid, $item->type, $item->subtype, $item->date, $item->complete);
         
         $items = array();
-        while($stmt->fetch())
+        while ($stmt->fetch()) 
         {
-        	array_push($items, $item);
+            array_push($items, $item);
         	$item = new AssessmentVO();
         	$stmt->bind_result($item->autoid, $item->episode_autoid, $item->type, $item->subtype, $item->date, $item->complete);
         }
 
-	    $stmt->free_result();
+        $stmt->free_result();
+        
+        //Now get data from subtable for each assessment
+        foreach($items as $item)
+        {
+        	//Get data from subtable
+        	$table = $this->tableByType[$item->type];
+	        $rs = mysqli_query($this->connection, "SELECT * FROM $table where assessment_autoid=$item->autoid");
+			$this->throwExceptionOnError();
+			
+			$res = mysqli_fetch_assoc($rs);
+		    
+		    $res["autoid"] = intval($res["autoid"]);
+		    $res["assessment_autoid"] = intval($res["assessment_autoid"]);
+		    $item->data = $res;
+		    
+		    $rs->free_result();
+        }
+	    
 	    $this->connection->close();     
         return $items;
     }

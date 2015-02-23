@@ -58,7 +58,7 @@ class MiscService
 	 */
     public function getGrant($grantID)
     {
-    	$stmt = $this->connection->prepare("SELECT autoid, name, samhsaCenter, programType, grantCode FROM grant_tbl WHERE autoid=?");
+    	$stmt = $this->connection->prepare("SELECT autoid, name, samhsaCenter, programType, grantCode, sbirt FROM grant_tbl WHERE autoid=?");
     	$this->throwExceptionOnError();
     	
     	$stmt->bind_param('i', $grantID);
@@ -69,7 +69,7 @@ class MiscService
     	
     	$grant = new GrantVO();
     	
-    	$stmt->bind_result($grant->autoid, $grant->name, $grant->samhsaCenter, $grant->programType, $grant->grantCode);
+    	$stmt->bind_result($grant->autoid, $grant->name, $grant->samhsaCenter, $grant->programType, $grant->grantCode, $grant->sbirt);
     	
     	if ($stmt->fetch()) 
     	{

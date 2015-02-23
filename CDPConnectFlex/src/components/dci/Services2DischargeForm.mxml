@@ -61,7 +61,7 @@
 				addGroupedQuestion(qSvcAlcDrugTesting,g);
 				addGroupedQuestion(qSvcHIVTesting,g);
 				addGroupedQuestion(qSvcOtherMed,g);
-				addGroupedQuestion(qSvcOtherMedSpec,g);
+				addGroupedQuestion(qSvcOtherMedSpec,g, false);
 				
 				createText("Case Management Services","h1");
 				g = new TileGroup();
@@ -81,7 +81,7 @@
 				addGroupedQuestion(qSvcDrugFreeHousing,g);
 				addGroupedQuestion(qSvcCareCoordination,g);
 				addGroupedQuestion(qSvcOtherCaseMgmt,g);
-				addGroupedQuestion(qSvcOtherCaseMgmtSpec,g);
+				addGroupedQuestion(qSvcOtherCaseMgmtSpec,g, false);
 				
 				createText("After Care Services","h1");
 				g = new TileGroup();
@@ -96,7 +96,7 @@
 				addGroupedQuestion(qSvcSelfHelp,g);
 				addGroupedQuestion(qSvcSpiritualSupport,g);
 				addGroupedQuestion(qSvcOtherAfterCare,g);
-				addGroupedQuestion(qSvcOtherAfterCareSpec,g);
+				addGroupedQuestion(qSvcOtherAfterCareSpec,g, false);
 				
 				createText("Education Services","h1");
 				g = new TileGroup();
@@ -108,7 +108,7 @@
 				addGroupedQuestion(qSvcSubstanceEduc,g);
 				addGroupedQuestion(qSvcHIVEduc,g);
 				addGroupedQuestion(qSvcOtherEduc,g);
-				addGroupedQuestion(qSvcOtherEducSpec,g);
+				addGroupedQuestion(qSvcOtherEducSpec,g, false);
 				
 				createText("Peer-To-Peer Recovery Support Services","h1");
 				g = new TileGroup();
@@ -122,7 +122,7 @@
 				addGroupedQuestion(qSvcAlcDrugSocial,g);
 				addGroupedQuestion(SvcInfoReferral,g);
 				addGroupedQuestion(qSvcOtherPeer,g);
-				addGroupedQuestion(qSvcOtherPeerSpec,g);
+				addGroupedQuestion(qSvcOtherPeerSpec,g, false);
 				
 				//Validators
 				Valid.addRequiredValidator(qSvcOtherMedSpec);
@@ -144,12 +144,13 @@
 				addSkipDropDown(qSvcOtherPeer,["0"],[qSvcOtherPeerSpec]);
 			}
 			
-			private function addGroupedQuestion(q:QuestionClass, g:TileGroup):void
+			private function addGroupedQuestion(q:QuestionClass, g:TileGroup, isNumber:Boolean = true):void
 			{
 				questions.push(q);
 				q.inputControl.width = 60;
 				g.addElement(q);
-				Valid.addNumberValidator(q,0,999,true);
+				if(isNumber)
+					Valid.addNumberValidator(q,0,999,true);
 			}
 			
 			protected function addHeader(text:String, g:TileGroup):void

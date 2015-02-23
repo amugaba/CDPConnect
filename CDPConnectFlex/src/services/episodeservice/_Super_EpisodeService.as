@@ -32,12 +32,12 @@ internal class _Super_EpisodeService extends com.adobe.fiber.services.wrapper.Re
         var operations:Object = new Object();
         var operation:mx.rpc.remoting.Operation;
 
-        operation = new mx.rpc.remoting.Operation(null, "createEpisode");
-         operation.resultType = valueObjects.EpisodeVO;
-        operations["createEpisode"] = operation;
         operation = new mx.rpc.remoting.Operation(null, "getEpisodesByClientID");
          operation.resultElementType = valueObjects.EpisodeVO;
         operations["getEpisodesByClientID"] = operation;
+        operation = new mx.rpc.remoting.Operation(null, "createEpisode");
+         operation.resultType = valueObjects.EpisodeVO;
+        operations["createEpisode"] = operation;
         operation = new mx.rpc.remoting.Operation(null, "updateEpisode");
          operation.resultType = valueObjects.EpisodeVO;
         operations["updateEpisode"] = operation;
@@ -64,24 +64,6 @@ internal class _Super_EpisodeService extends com.adobe.fiber.services.wrapper.Re
     
 
     /**
-      * This method is a generated wrapper used to call the 'createEpisode' operation. It returns an mx.rpc.AsyncToken whose 
-      * result property will be populated with the result of the operation when the server response is received. 
-      * To use this result from MXML code, define a CallResponder component and assign its token property to this method's return value. 
-      * You can then bind to CallResponder.lastResult or listen for the CallResponder.result or fault events.
-      *
-      * @see mx.rpc.AsyncToken
-      * @see mx.rpc.CallResponder 
-      *
-      * @return an mx.rpc.AsyncToken whose result property will be populated with the result of the operation when the server response is received.
-      */
-    public function createEpisode(episode:valueObjects.EpisodeVO) : mx.rpc.AsyncToken
-    {
-        var _internal_operation:mx.rpc.AbstractOperation = _serviceControl.getOperation("createEpisode");
-		var _internal_token:mx.rpc.AsyncToken = _internal_operation.send(episode) ;
-        return _internal_token;
-    }
-     
-    /**
       * This method is a generated wrapper used to call the 'getEpisodesByClientID' operation. It returns an mx.rpc.AsyncToken whose 
       * result property will be populated with the result of the operation when the server response is received. 
       * To use this result from MXML code, define a CallResponder component and assign its token property to this method's return value. 
@@ -96,6 +78,24 @@ internal class _Super_EpisodeService extends com.adobe.fiber.services.wrapper.Re
     {
         var _internal_operation:mx.rpc.AbstractOperation = _serviceControl.getOperation("getEpisodesByClientID");
 		var _internal_token:mx.rpc.AsyncToken = _internal_operation.send(autoid) ;
+        return _internal_token;
+    }
+     
+    /**
+      * This method is a generated wrapper used to call the 'createEpisode' operation. It returns an mx.rpc.AsyncToken whose 
+      * result property will be populated with the result of the operation when the server response is received. 
+      * To use this result from MXML code, define a CallResponder component and assign its token property to this method's return value. 
+      * You can then bind to CallResponder.lastResult or listen for the CallResponder.result or fault events.
+      *
+      * @see mx.rpc.AsyncToken
+      * @see mx.rpc.CallResponder 
+      *
+      * @return an mx.rpc.AsyncToken whose result property will be populated with the result of the operation when the server response is received.
+      */
+    public function createEpisode(episode:valueObjects.EpisodeVO) : mx.rpc.AsyncToken
+    {
+        var _internal_operation:mx.rpc.AbstractOperation = _serviceControl.getOperation("createEpisode");
+		var _internal_token:mx.rpc.AsyncToken = _internal_operation.send(episode) ;
         return _internal_token;
     }
      

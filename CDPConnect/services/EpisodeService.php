@@ -33,7 +33,7 @@ class EpisodeService
 	 */
     public function getEpisodesByClientID ($autoid)
     {
-        $stmt = mysqli_prepare($this->connection, "SELECT autoid, number, date, staff, facility, complete, notes FROM $this->tablename where client_autoid=?");
+        $stmt = mysqli_prepare($this->connection, "SELECT autoid, number, date, staff, facility, notes FROM $this->tablename where client_autoid=?");
         $this->throwExceptionOnError();
 
         $stmt->bind_param('i', $autoid);
@@ -43,7 +43,7 @@ class EpisodeService
         $this->throwExceptionOnError();
 
         $episode = new EpisodeVO();
-        $stmt->bind_result($episode->autoid, $episode->number, $episode->date, $episode->staff, $episode->facility, $episode->complete, $episode->notes);
+        $stmt->bind_result($episode->autoid, $episode->number, $episode->date, $episode->staff, $episode->facility, $episode->notes);
         
         $episodes = array();
         while($stmt->fetch())
@@ -51,7 +51,7 @@ class EpisodeService
         	$episode->client_autoid = $autoid;
         	array_push($episodes, $episode);
         	$episode = new EpisodeVO();
-        	$stmt->bind_result($episode->autoid, $episode->number, $episode->date, $episode->staff, $episode->facility, $episode->complete, $episode->notes);
+        	$stmt->bind_result($episode->autoid, $episode->number, $episode->date, $episode->staff, $episode->facility, $episode->notes);
         }
 
 	    $stmt->free_result();
@@ -67,10 +67,10 @@ class EpisodeService
 	 */
     public function createEpisode ($episode)
     {
-        $stmt = mysqli_prepare($this->connection, "INSERT IGNORE INTO $this->tablename (client_autoid, number, date, staff, facility, complete) VALUES (?,?,?,?,?,?)");
+        $stmt = mysqli_prepare($this->connection, "INSERT IGNORE INTO $this->tablename (client_autoid, number, date, staff, facility) VALUES (?,?,?,?,?)");
         $this->throwExceptionOnError();
 
-        $stmt->bind_param('iisssi', $episode->client_autoid, $episode->number, $episode->date, $episode->staff, $episode->facility, $episode->complete);
+        $stmt->bind_param('iisss', $episode->client_autoid, $episode->number, $episode->date, $episode->staff, $episode->facility);
         $this->throwExceptionOnError();
 
         $stmt->execute();
@@ -92,12 +92,12 @@ class EpisodeService
     public function updateEpisode ($item)
     {        
         $stmt = $this->connection->prepare("UPDATE $this->tablename SET
-        client_autoid=?, number=?, date=?, staff=?, facility=?, complete=?
+        client_autoid=?, number=?, date=?, staff=?, facility=?
         WHERE autoid=?");
         $this->throwExceptionOnError();
 
-        $stmt->bind_param('iisssii', $item->client_autoid, $item->number, $item->date, $item->staff,
-        	$item->facility, $item->complete, $item->autoid);
+        $stmt->bind_param('iisssi', $item->client_autoid, $item->number, $item->date, $item->staff,
+        	$item->facility, $item->autoid);
         $this->throwExceptionOnError();
 
         $rs = $stmt->execute();

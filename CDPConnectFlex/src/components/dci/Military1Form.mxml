@@ -17,7 +17,7 @@
 			public var qMilitaryBranch:QuestionList = new QuestionList("MilitaryBranch","In what branch of the military/uniformed services did you serve?",new ArrayList(["Army","Marine Corps","Navy","Air Force","Coast Guard","PHS","NOAA","Refused","Don't Know","Missing Data"]),0);
 			public var qMilitaryComponent:QuestionList = new QuestionList("MilitaryComponent","In which component did you serve?",new ArrayList(["Active","Reserve","National Guard","Refused","Don't Know","Missing Data"]),0);
 			public var qActiveDuty:QuestionList = new QuestionList("ActiveDuty","Are you currently on active duty or are you separated or retired?",new ArrayList(["On active duty","Separated","Retired","Refused","Don't Know","Missing Data"]),0);
-			public var qNeverDeployed:QuestionList = new QuestionList("NeverDeployed","Never Deployed",ynrdm,0);
+			public var qNeverDeployed:QuestionList = new QuestionList("NeverDeployed","Have you ever been deployed to a combat zone?",ynrdm,1);//Change this to EverDeployed
 			public var qIraqAfghanistan:QuestionList = new QuestionList("IraqAfghanistan","Iraq or Afghanistan",new ArrayList(["Yes","No"]),1);
 			public var qPersianGulf:QuestionList = new QuestionList("PersianGulf","Persian Gulf",new ArrayList(["Yes","No"]),1);
 			public var qVietnamSoutheastAsia:QuestionList = new QuestionList("VietnamSoutheastAsia","Vietnam/Southeast Asia",new ArrayList(["Yes","No"]),1);
@@ -36,8 +36,8 @@
 				addQuestion(qMilitaryBranch, 175);
 				addQuestion(qMilitaryComponent, 175);
 				addQuestion(qActiveDuty, 175);
-				createText("Have you ever been deployed to a combat zone? Check all that apply.","h1");
 				addQuestion(qNeverDeployed);
+				createText("IF YES, which combat zones?","h1");
 				addQuestion(qIraqAfghanistan);
 				addQuestion(qPersianGulf);
 				addQuestion(qVietnamSoutheastAsia);
@@ -52,7 +52,7 @@
 				
 				//Control Logic
 				addSkipDropDown(qMilitaryServed,["No","Refused","Don't Know","Missing Data"],[qMilitaryBranch,qMilitaryComponent,qActiveDuty,qNeverDeployed]);
-				addSkipDropDown(qNeverDeployed,["Yes","Refused","Don't Know","Missing Data"],[qIraqAfghanistan,qPersianGulf,qVietnamSoutheastAsia,qKorea,qWWII,qDeployedOther]);
+				addSkipDropDown(qNeverDeployed,["Yes"],[qIraqAfghanistan,qPersianGulf,qVietnamSoutheastAsia,qKorea,qWWII,qDeployedOther],true);
 				//var handler:SkipMultipleHandler = createSkipMultipleHandler([qIraqAfghanistan,qPersianGulf,qVietnamSoutheastAsia,qKorea,qWWII,qDeployedOther]);
 				addSkipDropDown(qDeployedOther,["No"],[qDeployedOtherSpec]);
 				//addSkipTextNumberMultiple(handler,qNeverDeployed,["Yes","Refused","Don't Know","Missing Data"]);

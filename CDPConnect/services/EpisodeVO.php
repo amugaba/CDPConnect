@@ -32,11 +32,6 @@ class EpisodeVO
 	public $facility;
 	
 	/**
-	 * @var int
-	 */
-	public $complete;
-	
-	/**
 	 * @var string
 	 */
 	public $notes;
@@ -49,7 +44,6 @@ class EpisodeVO
 		$this->date = "";
 		$this->staff = "";
 		$this->facility = "";
-		$this->complete = 0;
 		$this->notes = "";
 	}
 }

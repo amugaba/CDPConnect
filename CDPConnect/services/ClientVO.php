@@ -32,9 +32,9 @@ class ClientVO
 	public $ssn;
 	
 	/**
-	 * @var string
+	 * @var int
 	 */
-	public $createddate;
+	public $gender;
 	
 	/**
 	 * @var string
@@ -49,7 +49,7 @@ class ClientVO
 		$this->lastname = "";
 		$this->dob = "";
 		$this->ssn = "";
-		$this->createddate = "";
+		$this->gender = 0;
 		$this->notes = "";
 	}
 }

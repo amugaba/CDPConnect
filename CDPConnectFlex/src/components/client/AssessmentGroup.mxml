@@ -17,8 +17,6 @@
 			import spark.components.NavigatorContent;
 			
 			protected var global:CDPConnectFlex = FlexGlobals.topLevelApplication as CDPConnectFlex;
-			private var created:Boolean = false;
-			
 			[Bindable] public var assessmentList:ArrayCollection = new ArrayCollection();
 			
 			public function initializeGroup():void
@@ -34,6 +32,8 @@
 					assessmentList.removeAll();
 					enabled = false;
 				}
+				
+				global.rulesManager.initAssessments();
 			}
 			
 			/**
@@ -59,7 +59,6 @@
 						{
 							global.pageDCI.intakeExists = true;
 							global.pageDCI.intakeDCI = assess;
-							getAssessmentDataResult2.token = assessmentService.getAssessmentData(assess);
 						}
 						else if([InterviewType.DISCHARGE,InterviewType.DISCHARGE_NO_INTERVIEW].indexOf(assess.subtype) > 0)
 							global.pageDCI.dischargeExists = true;
@@ -67,11 +66,8 @@
 							global.pageDCI.followupExists = true;
 					}
 				}
-			}
-			
-			protected function getAssessmentDataResult2_resultHandler(event:ResultEvent):void
-			{
-				global.pageDCI.intakeDCI.data = getAssessmentDataResult2.lastResult;
+				
+				global.rulesManager.loadAssessments();
 			}
 			
 			/**
@@ -80,7 +76,19 @@
 			public function loadButton_clickHandler():void
 			{
 				global.activeAssessment = assessmentGrid.selectedItem as AssessmentVO;
-				getAssessmentDataResult.token = assessmentService.getAssessmentData(global.activeAssessment);
+				
+				if(global.activeAssessment.type == AssessType.DCI)
+				{
+					global.enableLeftButtonsOnly(global.pageDCIButton);
+					global.pageDCI.initializePage(global.activeAssessment.subtype);
+					global.pageViewstack.selectedChild = global.pageDCI;
+				}
+				else
+				{
+					global.enableLeftButtonsOnly(global.pageAssessButton);
+					global.pageAssessment.initAssessment(global.activeAssessment.type);
+					global.pageViewstack.selectedChild = global.pageAssessment;
+				}
 			}
 			
 			protected function getAssessmentDataResult_resultHandler(event:ResultEvent):void
@@ -103,7 +111,7 @@
 			/**
 			 * Create Screening Assessments
 			 * */
-			private function createAssessment(type:int):void
+			public function createAssessment(type:int):void
 			{
 				global.enableLeftButtonsOnly(global.pageAssessButton);
 				global.activeAssessment = null;
@@ -131,7 +139,7 @@
 			/**
 			 * Create DCI Interviews
 			 * */
-			private function createDCI(subtype:int):void
+			public function createDCI(subtype:int):void
 			{
 				//Check that this type of interview doesn't already exist
 				if((global.pageDCI.isIntake(subtype) && global.pageDCI.intakeExists) || (global.pageDCI.isDischarge(subtype) && global.pageDCI.dischargeExists) || (global.pageDCI.isFollowup(subtype) && global.pageDCI.followupExists))
@@ -150,6 +158,7 @@
 					
 					global.pageDCI.initializePage(subtype);
 					global.pageViewstack.selectedChild = global.pageDCI;
+					global.rulesManager.createDCI();
 				}
 			}
 			
@@ -195,7 +204,6 @@
 											 fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
 											 showBusyCursor="true"/>
 		<s:CallResponder id="getAssessmentDataResult" result="getAssessmentDataResult_resultHandler(event)"/>
-		<s:CallResponder id="getAssessmentDataResult2" result="getAssessmentDataResult2_resultHandler(event)"/>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
 	<s:Label x="102" y="17" fontWeight="bold" text="Assessments List"/>

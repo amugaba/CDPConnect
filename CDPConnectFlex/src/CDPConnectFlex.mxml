@@ -20,6 +20,8 @@ By David Tidd
 	<fx:Script>
 		<![CDATA[
 			import components.assessment.AssessType;
+			import components.specialrules.RulesManager;
+			import components.specialrules.SbirtRules;
 			
 			import flash.globalization.DateTimeFormatter;
 			import flash.globalization.LocaleID;
@@ -28,6 +30,7 @@ By David Tidd
 			import mx.collections.ArrayList;
 			import mx.controls.Alert;
 			import mx.controls.buttonBarClasses.ButtonBarButton;
+			import mx.core.FlexGlobals;
 			import mx.events.CloseEvent;
 			import mx.events.FlexEvent;
 			import mx.rpc.events.ResultEvent;
@@ -59,6 +62,9 @@ By David Tidd
 			private var creationComplete:Boolean = false;
 			public static var DEBUG_MODE:int = 2;//0 = release, 1 = remote debug, 2 = local debug
 			public var preparationStepsLeft:int = 3;
+			
+			//Project type switches
+			public var rulesManager:RulesManager;
 			
 			protected function loginCompleteHandler(event:FlexEvent):void
 			{
@@ -93,6 +99,7 @@ By David Tidd
 				//Misc
 				dateFormatter.setDateTimePattern("MM/dd/yyyy");
 				creationComplete = true;
+				rulesManager = new RulesManager(FlexGlobals.topLevelApplication as CDPConnectFlex)
 			}
 			
 			protected function headerClientText(activeClient:ClientVO):String
@@ -172,6 +179,7 @@ By David Tidd
 			protected function getGrantResult_resultHandler(event:ResultEvent):void
 			{
 				activeGrant = getGrantResult.lastResult;
+				rulesManager.sbirtEnabled = activeGrant.sbirt == 1;
 				attemptHomePage();
 			}
 			

@@ -68,7 +68,7 @@ public class _Super_ClientVO extends flash.events.EventDispatcher implements com
     private var _internal_lastname : String;
     private var _internal_dob : String;
     private var _internal_ssn : String;
-    private var _internal_createddate : String;
+    private var _internal_gender : int;
     private var _internal_notes : String;
 
     private static var emptyArray:Array = new Array();
@@ -91,7 +91,6 @@ public class _Super_ClientVO extends flash.events.EventDispatcher implements com
         model_internal::_changeWatcherArray.push(mx.binding.utils.ChangeWatcher.watch(this, "lastname", model_internal::setterListenerLastname));
         model_internal::_changeWatcherArray.push(mx.binding.utils.ChangeWatcher.watch(this, "dob", model_internal::setterListenerDob));
         model_internal::_changeWatcherArray.push(mx.binding.utils.ChangeWatcher.watch(this, "ssn", model_internal::setterListenerSsn));
-        model_internal::_changeWatcherArray.push(mx.binding.utils.ChangeWatcher.watch(this, "createddate", model_internal::setterListenerCreateddate));
         model_internal::_changeWatcherArray.push(mx.binding.utils.ChangeWatcher.watch(this, "notes", model_internal::setterListenerNotes));
 
     }
@@ -137,9 +136,9 @@ public class _Super_ClientVO extends flash.events.EventDispatcher implements com
     }
 
     [Bindable(event="propertyChange")]
-    public function get createddate() : String
+    public function get gender() : int
     {
-        return _internal_createddate;
+        return _internal_gender;
     }
 
     [Bindable(event="propertyChange")]
@@ -216,13 +215,13 @@ public class _Super_ClientVO extends flash.events.EventDispatcher implements com
         }
     }
 
-    public function set createddate(value:String) : void
+    public function set gender(value:int) : void
     {
-        var oldValue:String = _internal_createddate;
+        var oldValue:int = _internal_gender;
         if (oldValue !== value)
         {
-            _internal_createddate = value;
-            this.dispatchEvent(mx.events.PropertyChangeEvent.createUpdateEvent(this, "createddate", oldValue, _internal_createddate));
+            _internal_gender = value;
+            this.dispatchEvent(mx.events.PropertyChangeEvent.createUpdateEvent(this, "gender", oldValue, _internal_gender));
         }
     }
 
@@ -271,11 +270,6 @@ public class _Super_ClientVO extends flash.events.EventDispatcher implements com
     model_internal function setterListenerSsn(value:flash.events.Event):void
     {
         _model.invalidateDependentOnSsn();
-    }
-
-    model_internal function setterListenerCreateddate(value:flash.events.Event):void
-    {
-        _model.invalidateDependentOnCreateddate();
     }
 
     model_internal function setterListenerNotes(value:flash.events.Event):void
@@ -328,11 +322,6 @@ public class _Super_ClientVO extends flash.events.EventDispatcher implements com
         {
             propertyValidity = false;
             com.adobe.fiber.util.FiberUtils.arrayAdd(validationFailureMessages, _model.model_internal::_ssnValidationFailureMessages);
-        }
-        if (!_model.createddateIsValid)
-        {
-            propertyValidity = false;
-            com.adobe.fiber.util.FiberUtils.arrayAdd(validationFailureMessages, _model.model_internal::_createddateValidationFailureMessages);
         }
         if (!_model.notesIsValid)
         {
@@ -549,33 +538,6 @@ public class _Super_ClientVO extends flash.events.EventDispatcher implements com
 
         model_internal::_doValidationCacheOfSsn = validationFailures;
         model_internal::_doValidationLastValOfSsn = value;
-
-        return validationFailures;
-    }
-    
-    model_internal var _doValidationCacheOfCreateddate : Array = null;
-    model_internal var _doValidationLastValOfCreateddate : String;
-
-    model_internal function _doValidationForCreateddate(valueIn:Object):Array
-    {
-        var value : String = valueIn as String;
-
-        if (model_internal::_doValidationCacheOfCreateddate != null && model_internal::_doValidationLastValOfCreateddate == value)
-           return model_internal::_doValidationCacheOfCreateddate ;
-
-        _model.model_internal::_createddateIsValidCacheInitialized = true;
-        var validationFailures:Array = new Array();
-        var errorMessage:String;
-        var failure:Boolean;
-
-        var valRes:ValidationResult;
-        if (_model.isCreateddateAvailable && _internal_createddate == null)
-        {
-            validationFailures.push(new ValidationResult(true, "", "", "createddate is required"));
-        }
-
-        model_internal::_doValidationCacheOfCreateddate = validationFailures;
-        model_internal::_doValidationLastValOfCreateddate = value;
 
         return validationFailures;
     }
