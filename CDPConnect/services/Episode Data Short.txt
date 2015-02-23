@@ -1,0 +1,3 @@
+unique client number	intake date	Case Number	Alcohol Prescreen	Drug Prescreen	PHQ Prescreen	AUDIT Score	DAST Score	PHQ 9 Score	S	BI	BT	RT	Intake Created by	Facility	Discharge GPRA Exist?	Follow Up Agreement Ind	Record Status	Intake GPRA Interview	Intake GPRA Created
+B169597CM297121	9/25/2013	1	No	No	Yes				T	F	F	F	Rachael Trimbur	Cottage Corner	0		A	9/25/2013	9/27/2013
+B179397AM398120	9/12/2012	1	Yes	No	Yes	0		14	T	F	F	F	Marjorie Troutner	PCC1	0		A	9/12/2012	9/12/2012

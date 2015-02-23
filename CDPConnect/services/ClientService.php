@@ -67,6 +67,38 @@ class ClientService
 	        return null;
         }
     }
+
+	/**
+	 * 
+	 * Get client ID by WITS ID
+	 * 
+	 * @param string $witsid
+	 * @return int
+	 */
+    public function getClientIDByWitsID ($witsid)
+    {
+        $stmt = mysqli_prepare($this->connection, "SELECT autoid FROM client_tbl where clientid=?");
+        $this->throwExceptionOnError();
+
+        $stmt->bind_param('s', $witsid);
+        $this->throwExceptionOnError();
+
+        $stmt->execute();
+        $this->throwExceptionOnError();
+
+        $stmt->bind_result($autoid);
+
+        if ($stmt->fetch())
+        {
+	        $stmt->free_result();
+        	return $autoid;
+        }
+        else 
+        {
+	        return null;
+        }
+    }
+
     
 	public function getAllClientsArray()
 	{		

@@ -28,6 +28,11 @@
 			<location>C:/wamp/www/CDPConnect/CDPConnect/public/bin-debug</location>
 		</link>
 		<link>
+			<name>bin-release</name>
+			<type>2</type>
+			<location>C:/wamp/www/CDPConnectRelease</location>
+		</link>
+		<link>
 			<name>services/AssessmentService.php</name>
 			<type>1</type>
 			<location>C:/wamp/www/CDPConnect/CDPConnect/services/AssessmentService.php</location>

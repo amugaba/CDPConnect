@@ -17,6 +17,11 @@ public class EpisodeService extends _Super_EpisodeService
     {
         super.preInitializeService();
         // Initialization customization goes here
+		if(CDPConnectFlex.DEBUG_MODE == 0)
+			serviceControl.endpoint = "http://www.iprctech.org/cdpconnect/indiana/gateway.php";
+		else if(CDPConnectFlex.DEBUG_MODE == 1)
+			serviceControl.endpoint = "http://www.iprctech.org/cdpconnect/indianatest/gateway.php";
+		serviceControl.requestTimeout = 5;
     }
                
 }

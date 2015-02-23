@@ -18,6 +18,6 @@ class ConnectionManager
     public $username = "root";
     public $password = "asdf2423";
     public $server = "127.0.0.1";
-    public $databasename = "gpra_db";
+    public $databasename = "cdpconnect_test";
     public $port = "3306";
 }
