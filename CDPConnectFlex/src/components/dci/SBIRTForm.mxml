@@ -42,9 +42,9 @@
 				//Validators
 				Valid.addNumberValidator(qAUDIT,0,40,true,false);
 				Valid.addNumberValidator(qCAGE,0,4,true,false);
-				Valid.addNumberValidator(qDAST,0,28,true,false);
+				Valid.addNumberValidator(qDAST10,0,28,true,false);
 				Valid.addNumberValidator(qDAST,0,10,true,false);
-				Valid.addNumberValidator(qNIAAA,0,10,true,false);//what even is this score?
+				Valid.addNumberValidator(qNIAAA,0,100,true,false);//what even is this score?
 				Valid.addNumberValidator(qASSIST,0,33,true,false);
 				Valid.addNumberValidator(qOtherScreen,0,1000,true,false);
 				Valid.addRequiredValidator(qOtherScreenSpec);

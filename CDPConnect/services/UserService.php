@@ -30,7 +30,7 @@ class UserService
     public function loginUser($username, $password)
     {
     	$stmt = $this->connection->prepare("SELECT
-        	username, name, password, initials, facility, admin, grantid
+        	autoid, username, name, password, initials, facility, email, admin, grantid, eulaSigned, passwordChangedDate
            FROM $this->tablename WHERE username=? AND password=?");
         $this->throwExceptionOnError();
         
@@ -42,7 +42,7 @@ class UserService
 
         $obj = new UserVO();
         
-        $stmt->bind_result($obj->username, $obj->name, $obj->password, $obj->initials, $obj->facility, $obj->admin, $obj->grantid);
+        $stmt->bind_result($obj->autoid, $obj->username, $obj->name, $obj->password, $obj->initials, $obj->facility, $obj->email, $obj->admin, $obj->grantid, $obj->eulaSigned, $obj->passwordChangedDate);
         
         $auth = $stmt->fetch();
         
@@ -62,12 +62,12 @@ class UserService
 	 * @param UserVO $user
 	 * @return bool
 	 */
-    public function updateUser($user)
+    public function updatePassword($user)
     {
-    	$stmt = $this->connection->prepare("UPDATE $this->tablename SET password=?, facility=? WHERE username=?");
+    	$stmt = $this->connection->prepare("UPDATE $this->tablename SET password=?, passwordChangedDate=NOW() WHERE autoid=?");
     	$this->throwExceptionOnError();
     	
-    	$stmt->bind_param('sss', $user->password, $user->facility, $user->username);
+    	$stmt->bind_param('si', $user->password, $user->autoid);
     	$this->throwExceptionOnError();
     	
     	$rs = $stmt->execute();
@@ -154,13 +154,36 @@ class UserService
 
     		$mail = new Zend_Mail();
 		    $mail->setBodyText('Your password is '.$pw.'.');
-		    $mail->setFrom('indiana.sated@gmail.com', 'Indiana SATED System');
+		    $mail->setFrom('indiana.sated@gmail.com', 'CDPConnect System');
 		    $mail->addTo($email, 'BHS');
-		    $mail->setSubject('Indiana SATED System: Password Recovery');
+		    $mail->setSubject('CDPConnect System: Password Recovery');
 		    $mail->send($transport);
 		    return true;
         }
         else return false;
+    }
+    
+    /**
+     * Sign EULA
+     * 
+     * @param int $userid
+     * @return bool
+     */
+    public function signEULA($userid)
+    {
+    	$stmt = $this->connection->prepare("UPDATE $this->tablename SET eulaSigned=1 WHERE autoid=?");
+    	$this->throwExceptionOnError();
+    	
+    	$stmt->bind_param('i', $userid);
+        $this->throwExceptionOnError();
+    	
+    	$rs = $stmt->execute();
+    	$this->throwExceptionOnError();
+    	
+    	mysqli_stmt_free_result($stmt);
+        mysqli_close($this->connection);
+        
+        return $rs != null;
     }
     
 	/**

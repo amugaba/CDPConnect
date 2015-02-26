@@ -6,11 +6,13 @@
 					xmlns:userservice="services.userservice.*"
 					xmlns:styles="com.adobe.fiber.styles.*"
 					xmlns:clientservice="services.clientservice.*"
-					width="715" height="800">
+					width="715" height="800" creationComplete="navigatorcontent1_creationCompleteHandler(event)">
 	<fx:Script>
 		<![CDATA[
 			import flash.globalization.DateTimeFormatter;
 			import flash.globalization.LocaleID;
+			
+			import flashx.textLayout.conversion.TextConverter;
 			
 			import mx.collections.ArrayCollection;
 			import mx.collections.ArrayList;
@@ -19,6 +21,7 @@
 			import mx.controls.Text;
 			import mx.core.FlexGlobals;
 			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
 			import mx.events.ValidationResultEvent;
 			import mx.rpc.events.ResultEvent;
 			import mx.validators.NumberValidator;
@@ -30,27 +33,85 @@
 			import valueObjects.UserVO;
 			
 			protected var global:CDPConnectFlex = FlexGlobals.topLevelApplication as CDPConnectFlex;
-			protected var updateAccount:Boolean;
+			protected var MIN_PASSWORD_LEN:int = 8;
 			
-			public function creationCompleteHandler():void
-			{
-			}
+			private var eulaString:String = "<b>End-User License Agreement (EULA)</b><br /><br />" +
+				"Software license terms and conditions<br /><br />" +
+				"BY INSTALLING OR USING THE LICENSED SOFTWARE FROM ANGSTROM SOFTWARE, INC. (“ANGSTROM”), THE INDIVIDUAL IF ACTING ON BEHALF OF HIMSELF OR HERSELF " +
+				"(“INDIVIDUAL CUSTOMER“) OR THE INDIVIDUAL WHO IS ACTING ON BEHALF OF AN EDUCATIONAL OR NONPROFIT INSTITUTION, GOVERNMENTAL AGENCY, OR OTHER " +
+				"(“ENTITY CUSTOMER”, THE INDIVIDUAL CUSTOMER AND ENTITY CUSTOMER TOGETHER ARE ”CUSTOMER”) IS AGREEING TO BE BOUND BY THIS SOFTWARE LICENSE AGREEMENT " +
+				"(“AGREEMENT”).<br /><br />" +
+				"IF CUSTOMER DOES NOT AGREE TO THIS AGREEMENT, CUSTOMER MAY NOT INSTALL, COPY, OR USE THE LICENSED SOFTWARE.<br /><br />" +
+				"THE “EFFECTIVE DATE” FOR THIS AGREEMENT IS THE DAY CUSTOMER INSTALLS THE SOFTWARE.<br /><br />" +
+				"1. DEFINITIONS.<br /><br />" +
+				"“Authorized User” means an employee, contractor, registered student, research assistant, or agent of Entity Customer authorized " +
+				"by Entity Customer to use the Licensed Software.<br /><br />" +
+				"“Documentation” means the user manuals and supporting documentation in electronic form provided " +
+				"with the Licensed Software under this Agreement.<br /><br />" +
+				"“License” means the statement issued by Angstrom that names the specific software to which this " +
+				"EULA will apply (see section 2.1).<br /><br />" +
+				"“Licensed Software” means the specific software licensed to Customer under the terms of this Agreement (as specified " +
+				"in the License issued to Customer), including any Updates and Upgrades thereto.<br /><br />" +
+				"2. LICENSE, LICENSE GRANTS, AND OWNERSHIP.<br /><br />" +
+				"2.1 License.<br /><br />" +
+				"Angstrom shall issue Customer a “License” via email that sets forth the specific Licensed Software. The License is hereby incorporated by " +
+				"reference into this Agreement.<br /><br />" +
+				"2.2 Licenses.<br /><br />" +
+				"Subject to the terms and conditions of this Agreement, Angstrom grants to Customer a non-assignable, nontransferable license, without the right to sublicense, to " +
+				"use the Licensed Software, in object-code form only, for Customer’s business, research, or educational purposes. Customer is authorized by Angstrom to install and/or " +
+				"host the Licensed Software on an unlimited number of machines, servers, or cloud storage systems.<br /><br />" +
+				"2.3 Restrictions.<br /><br />" +
+				"Customer shall not, nor permit any person (including any Authorized User) to: (i) reverse engineer, reverse compile, decrypt, disassemble, or otherwise attempt to " +
+				"derive the source code of the Licensed Software (except to the extent that this restriction is expressly prohibited by law); (ii) modify, translate, or create " +
+				"derivative works of the Licensed Software; (iii) sublicense, resell, rent, lease, distribute, market, commercialize, or otherwise transfer rights or usage to the " +
+				"Licensed Software (except as expressly permitted under this Agreement); (iv) remove, modify, or obscure any copyright notices or other proprietary notices or legends " +
+				"appearing on or in the Licensed Software, or any portion thereof; (v) transfer, use, or export the Licensed Software in violation of any applicable laws, rules, or " +
+				"regulations of any government or governmental agency; (vi) use the Licensed Software or any system services accessed through the Licensed Software to disrupt, disable, " +
+				"or otherwise harm the operations, software, hardware, equipment, and/or systems of a business, institution, or other entity, including, without limitation, exposing " +
+				"the business, institution, or other entity to any computer virus, trojan horse, or other harmful, disruptive, or unauthorized component; or (vii) embed the Licensed " +
+				"Software in any third-party applications, unless otherwise authorized in writing in advance by an officer of Angstrom.<br /><br />" +
+				"2.4 Ownership.<br /><br />" +
+				"The Licensed Software and Documentation contain copyrighted material and other proprietary material and information of Angstrom and/or its licensors. Angstrom and/or " +
+				"its licensors shall retain all right, title, and interest, including all intellectual property rights, in and to the Licensed Software and Documentation. Customer will " +
+				"not remove, alter, or destroy any form of copyright notice, proprietary markings, or confidential legends placed upon or contained within the Licensed Software or " +
+				"Documentation, or any component thereof.<br /><br />" +
+				"3. WARRANTY DISCLAIMER.<br /><br />" +
+				"3.1 No Warranty.<br /><br />" +
+				"THE LICENSED SOFTWARE, DOCUMENTATION, AND SUPPORT SERVICES ARE PROVIDED TO CUSTOMER ON AN ‘AS IS’ AND ‘WHERE IS’ BASIS AND WITHOUT WARRANTY OF ANY TYPE OR KIND. ANGSTROM " +
+				"HEREBY EXPRESSLY DISCLAIMS AND EXCLUDES ON BEHALF OF ITSELF AND ITS LICENSORS ALL WARRANTIES AND CONDITIONS, WHETHER STATUTORY, EXPRESS, IMPLIED, OR OTHERWISE, WITH " +
+				"RESPECT TO THE LICENSED SOFTWARE AND SUPPORT SERVICES, INCLUDING, BUT NOT LIMITED TO, ANY IMPLIED WARRANTY OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND " +
+				"NONINFRINGEMENT OF THIRD PARTY RIGHTS.<br /><br />" +
+				"4. LIMITATION OF LIABILITY.<br /><br />" +
+				"4.1 Consequential Damages Waiver.<br /><br />" +
+				"IN NO EVENT SHALL ANGSTROM HAVE ANY LIABILITY FOR ANY INCIDENTAL, CONSEQUENTIAL, INDIRECT, SPECIAL, OR PUNITIVE DAMAGES ARISING OUT OF OR IN CONNECTION WITH THIS AGREEMENT, " +
+				"REGARDLESS OF THE FORM OF THE ACTION, WHETHER IN CONTRACT, TORT (INCLUDING NEGLIGENCE), STRICT PRODUCT LIABILITY, OR OTHERWISE, EVEN IF ANY REPRESENTATIVE OF ANGSTROM HAS " +
+				"BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES AND NOTWITHSTANDING THE FAILURE OF THE ESSENTIAL PURPOSE OF THIS AGREEMENT OR ANY LIMITED REMEDY HEREUNDER.<br /><br />" +
+				"4.2 Consequential Damages Waiver for Data Access.<br /><br />" +
+				"IN THE EVENT THAT LICENSED SOFTWARE IS A DATA ENTRY PORTAL OR DATABASE, ANGSTROM SHALL NOT BE LIABLE FOR ANY INCIDENTAL, CONSEQUENTIAL, INDIRECT, SPECIAL, OR PUNITIVE " +
+				"DAMAGES ARISING FROM ACCESS OF DATA ENTERED INTO THE SOFTWARE AND/OR HOSTED BY A SERVER OR STORAGE UNIT RUNNING THE SOFTWARE, REGARDLESS OF THE FORM OF THE ACTION, WHETHER " +
+				"IN CONTRACT, TORT (INCLUDING NEGLIGENCE), STRICT PRODUCT LIABILITY, OR OTHERWISE, EVEN IF ANY REPRESENTATIVE OF ANGSTROM HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES " +
+				"AND NOTWITHSTANDING THE FAILURE OF THE ESSENTIAL PURPOSE OF THIS AGREEMENT OR ANY LIMITED REMEDY HEREUNDER.<br /><br />" +
+				"4.3 Limitation of Liability.<br /><br />" +
+				"IN NO EVENT SHALL ANGSTROM’S LIABILITY ARISING OUT OF OR RELATED TO THIS AGREEMENT EXCEED THE LICENSE FEES PAID BY CUSTOMER TO ANGSTROM FOR THE LICENSED SOFTWARE. IN NO " +
+				"EVENT SHALL ANGSTROM BE REQUIRED TO PAY ATTORNEY’S FEES FOR ANY DISPUTE ARISING IN CONNECTION WITH THIS AGREEMENT.  IN NO EVENT WILL ANGSTROM’S LICENSORS HAVE ANY LIABILITY " +
+				"FOR ANY CLAIM ARISING IN CONNECTION WITH THIS AGREEMENT.<br /><br />" +
+				"4.4 Limitation of Remedies.<br /><br />" +
+				"THE PARTIES AGREE THAT THESE LIMITATIONS SHALL APPLY NOTWITHSTANDING THE FAILURE OF THE ESSENTIAL PURPOSE OF THIS AGREEMENT OR ANY LIMITED REMEDY HEREUNDER.<br /><br />" +
+				"5. GENERAL.<br /><br />" +
+				"The failure of either party to require performance by the other party of any provision hereof shall not affect the full right to require such performance at any time " +
+				"thereafter, nor shall the waiver by either party of a breach of any provision hereof be taken or held to be a waiver of the provision itself. If any provision of this " +
+				"Agreement is found void and unenforceable, it will be replaced to the extent possible by Angstrom with a provision that comes closest to the meaning of the original " +
+				"provision. This Agreement and the documents referenced in this Agreement constitute the entire agreement between Customer and Angstrom relating to its subject matter " +
+				"and all terms herein and supersede all prior or contemporaneous agreements or understandings. This Agreement may be modified or changed only in writing signed by authorized " +
+				"representatives of Customer and Angstrom.";
 			
 			protected function loginButton_clickHandler(event:MouseEvent):void
 			{
-				updateAccount = false;
-				loginUserResult.token = userService.loginUser(usernameInput.text, passwordInput.text);
-			}
-			
-			protected function updateAccountButton_clickHandler(event:MouseEvent):void
-			{
-				updateAccount = true;
 				loginUserResult.token = userService.loginUser(usernameInput.text, passwordInput.text);
 			}
 			
 			protected function loginUserResult_resultHandler(event:ResultEvent):void
 			{
-				//Alert.show(ObjectUtil.toString(loginUserResult.lastResult));
 				if(loginUserResult.lastResult == null)
 				{
 					Alert.show("Username and password are incorrect.", "Login Failed");
@@ -58,51 +119,41 @@
 				else
 				{
 					global.activeUser = loginUserResult.lastResult as UserVO;
-					if(updateAccount)
-					{
-						accountFacility.dataProvider = global.facilityList;
-						accountFacility.selectedItem = global.activeUser.facility;
-						updateAccountPanel.visible = true;
-						loginPanel.visible = false;
-					}
-					else
-					{
-						global.adminMode = global.activeUser.admin == 1;
-						global.currentState = "State1";
-					}
+					tryToGoHome();
 				}
 			}			
 			
-			
 			protected function changePasswordButton_clickHandler(event:MouseEvent):void
 			{
-				if(newPasswordInput.text == confirmPassowrdInput.text && newPasswordInput.text.length > 4)
+				if(newPasswordInput.text != confirmPassowrdInput.text)
+				{
+					Alert.show("The passwords you entered do not match.", "Password NOT changed");
+				}
+				else if(newPasswordInput.text.length < MIN_PASSWORD_LEN)
+				{
+					Alert.show("The password must be " + MIN_PASSWORD_LEN + " or more characters.", "Password NOT changed");
+				}
+				else if(newPasswordInput.text == global.activeUser.password)
+				{
+					Alert.show("The password must be different from your old password.", "Password NOT changed");
+				}
+				else
 				{
 					global.activeUser.password = newPasswordInput.text;
-					updateUserResult.token = userService.updateUser(global.activeUser);
+					updatePasswordResult.token = userService.updatePassword(global.activeUser);
 				}
-				else
-					Alert.show("The passwords must match and be 5 or more characters.", "Password NOT changed");
 			}
 			
-			protected function changeFacilityButton_clickHandler(event:MouseEvent):void
+			protected function updatePasswordResult_resultHandler(event:ResultEvent):void
 			{
-				if(accountFacility.selectedIndex >= 0)
+				if(!updatePasswordResult.lastResult)
+					Alert.show("Password NOT updated.", "ERROR");
+				else
 				{
-					global.activeUser.facility = accountFacility.selectedItem;
-					updateUserResult.token = userService.updateUser(global.activeUser);
+					Alert.show("Password updated.");
+					global.activeUser.passwordChangedDate = DateField.dateToString(new Date(), "YYYY-MM-DD");
+					tryToGoHome();
 				}
-				else
-					Alert.show("Select a Facility first.","Facility NOT changed");
-			}
-			
-			protected function updateUserResult_resultHandler(event:ResultEvent):void
-			{
-				resetPage();
-				if(updateUserResult.lastResult == null)
-					Alert.show("Account NOT updated.", "ERROR");
-				else
-					Alert.show("Account updated.", "SUCCESS");
 			}
 			
 			protected function forgotPasswordButton_clickHandler(event:MouseEvent):void
@@ -122,17 +173,62 @@
 			public function resetPage():void
 			{
 				updateAccountPanel.visible = false;
+				eulaPanel.visible = false;
 				loginPanel.visible = true;
 				usernameInput.text = "";
 				passwordInput.text = "";
 				newPasswordInput.text = "";
 				confirmPassowrdInput.text = "";
-				accountFacility.selectedIndex = -1;
 			}
 	
 			protected function cancelButton_clickHandler(event:MouseEvent):void
 			{
 				resetPage();
+			}
+			
+			protected function agreeButton_clickHandler(event:MouseEvent):void
+			{
+				signEULAResult.token = userService.signEULA(global.activeUser.autoid);
+				global.activeUser.eulaSigned = 1;
+				tryToGoHome();
+			}
+			
+			protected function navigatorcontent1_creationCompleteHandler(event:FlexEvent):void
+			{
+				eulaText.textFlow =  TextConverter.importToFlow(eulaString, TextConverter.TEXT_FIELD_HTML_FORMAT);
+			}
+			
+			/**
+			 * Enter the home page UNLESS...
+			 * 1. EULA needs to be signed
+			 * 2. Password needs to be updated
+			 * */
+			protected function tryToGoHome():void
+			{
+				resetPage();
+				//if user hasn't accepted EULA yet, show it
+				if(global.activeUser.eulaSigned == 0)
+				{
+					loginPanel.visible = false;
+					eulaPanel.visible = true;
+				}
+				else
+				{
+					//Check if the password hasn't been updated in the past 3 months
+					var now:Date = new Date();
+					var threeMonthsAgo:Date = new Date(now.fullYear, now.month - 3,	now.date); 
+					var updateDate:Date = DateField.stringToDate(global.activeUser.passwordChangedDate,"YYYY-MM-DD");
+					if(updateDate < threeMonthsAgo)
+					{
+						loginPanel.visible = false;
+						updateAccountPanel.visible = true;
+					}
+					else
+					{
+						global.adminMode = global.activeUser.admin == 1;
+						global.currentState = "State1";
+					}
+				}
 			}
 			
 		]]>
@@ -145,18 +241,17 @@
 	</fx:Style>
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
-		<s:CallResponder id="loginUserResult"
-						 result="loginUserResult_resultHandler(event)"/>
-		<s:CallResponder id="emailPasswordResult"
-						 result="emailPasswordResult_resultHandler(event)"/>
-		<s:CallResponder id="updateUserResult" result="updateUserResult_resultHandler(event)"/>
+		<s:CallResponder id="loginUserResult" result="loginUserResult_resultHandler(event)"/>
+		<s:CallResponder id="emailPasswordResult" result="emailPasswordResult_resultHandler(event)"/>
 		<userservice:UserService id="userService"
 								 fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
 								 showBusyCursor="true"/>
+		<s:CallResponder id="signEULAResult"/>
+		<s:CallResponder id="updatePasswordResult" result="updatePasswordResult_resultHandler(event)"/>
 	</fx:Declarations>
 	<s:Group x="0" y="0" width="1024" height="768" chromeColor="#6376A5" >
 		<s:Image x="-93" y="-137" source="assets/blueWallpaperCropped.jpg"/>
-		<s:Panel id="loginPanel" y="326" width="277" height="236"
+		<s:Panel id="loginPanel" y="326" width="277" height="227"
 				 horizontalCenter="-155" title="Log In">
 			<s:Form id="logingForm" x="10" y="6" width="258" height="187"
 					defaultButton="{loginButton}">
@@ -167,36 +262,40 @@
 					<s:TextInput id="passwordInput" displayAsPassword="true"/>
 				</s:FormItem>
 				<s:Group width="248" height="76">
-					<s:Button id="loginButton" x="3" y="8" label="Login"
+					<s:Button id="loginButton" x="81" y="3" label="Login"
 							  click="loginButton_clickHandler(event)"/>
-					<s:Button id="updateAccountButton" x="138" y="8" label="Update Account"
-							  click="updateAccountButton_clickHandler(event)"/>
-					<s:Button id="forgotPasswordButton" x="129" y="54" label="Forgot Password"
+					<s:Button id="forgotPasswordButton" x="60" y="43" label="Forgot Password"
 							  click="forgotPasswordButton_clickHandler(event)"/>
 				</s:Group>
 			</s:Form>
 		</s:Panel>
-		<s:Panel id="updateAccountPanel" x="204" y="326" width="295" height="283" visible="false"
-				 title="Update Account">
+		<s:Panel id="updateAccountPanel" x="188" y="326" width="339" height="236" visible="false"
+				 title="Password Update Required">
 			<s:Form x="10" y="10">
+				<s:Label text="It has been 3 months since you updated you password."/>
+				<s:Label text="Please enter a new password now."/>
 				<s:FormItem label="New password:">
 					<s:TextInput id="newPasswordInput" displayAsPassword="true"/>
 				</s:FormItem>
 				<s:FormItem label="Confirm password:">
 					<s:TextInput id="confirmPassowrdInput" displayAsPassword="true"/>
 				</s:FormItem>
-				<s:Button id="changePasswordButton" label="Change Password" click="changePasswordButton_clickHandler(event)"/>
 			</s:Form>
-			<s:Form x="10" y="157">
-				<s:FormItem label="Default facility:">
-					<s:DropDownList id="accountFacility"/>
-				</s:FormItem>
-				<s:Button label="Change Facility" id="changeFacilityButton" click="changeFacilityButton_clickHandler(event)"/>
-			</s:Form>
-			<s:Button id="cancelButton" x="210" y="215" label="Cancel"
-					  click="cancelButton_clickHandler(event)"/>
+			<s:Button id="changePasswordButton" x="106" y="155" label="Change Password"
+					  click="changePasswordButton_clickHandler(event)"/>
 		</s:Panel>	
 		<s:Image y="10" horizontalCenter="-155" source="assets/ConnectLogoMedium.png"/>
+		<s:Panel id="eulaPanel" width="530" height="350" x="92" y="326"
+				 title="End User License Agreement (EULA)" visible="false">
+			<s:Label x="10" y="10" width="505" height="28"
+					 text="To use CDPConnect, you must accept the terms of the End User License Agreement (EULA)."/>
+			<s:BorderContainer x="12" y="48" width="490" height="220">
+				<s:Scroller x="0" y="0" width="490" height="220">
+					<s:RichEditableText id="eulaText" paddingBottom="5"	paddingLeft="5" paddingRight="5" paddingTop="5"/>
+				</s:Scroller>
+			</s:BorderContainer>
+			<s:Button id="cancelButton" x="261" y="280" label="Cancel" click="cancelButton_clickHandler(event)"/>
+			<s:Button id="agreeButton" x="356" y="280" label="I Agree" click="agreeButton_clickHandler(event)"/>
+		</s:Panel>
 	</s:Group>
-	
 </s:NavigatorContent>

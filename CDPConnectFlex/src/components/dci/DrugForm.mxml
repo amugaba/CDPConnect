@@ -95,7 +95,8 @@
 				addSkipTextNumberMultiple(handler,qIllegalDrugsDays,["0"]);
 				handler.allMustSkip = true;
 				addSkipTextNumber(qOtherIllegalDrugsDays,[qOtherIllegalDrugsSpec],["0"]);
-				addSkipTextNumber(qIllegalDrugsDays,[qAlcoholIntoxDays,qAlcoholDrugBothDays],["0"]);
+				//Skip all drugs except marijuana if drugDays = 0
+				addSkipTextNumber(qIllegalDrugsDays,[qCocaineCrackDays,qPrescriptionStimDays,qMethamDays,qInhalantsDays,qSedativesDays,qHallucinogensDays,qOpioidsDays,qPrescriptionOpioidsDays],["0"]);
 			}
 			
 			protected function addDrugQuestion(daysQ:QuestionTextRefusable, routeQ:QuestionList, height:int=22):void

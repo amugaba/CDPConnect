@@ -93,7 +93,6 @@ By David Tidd
 				pageDCIButton = pageButtonBar.getChildAt(3) as ButtonBarButton;
 				pageAdminButton = pageButtonBar.getChildAt(4) as ButtonBarButton;
 				enableLeftButtonsOnly(pageHomeButton);
-				adminButton.visible = adminMode;
 				pageAdminButton.visible = adminMode;
 				
 				//Misc
@@ -105,24 +104,15 @@ By David Tidd
 			protected function headerClientText(activeClient:ClientVO):String
 			{
 				var s:String = "";
-				if(activeClient.autoid == 0)
-					s = "New Client";
-				else
-					s = "ID: "+activeClient.autoid+" Name: "+activeClient.lastname+", "+activeClient.firstname;
+				if(activeClient != null)
+					s = "ID: "+activeClient.clientid+"   Name: "+activeClient.lastname+", "+activeClient.firstname;
 				return s;
 			}
-			protected function headerAssessmentText(assessment:AssessmentVO):String
+			protected function headerEpisodeText(episode:EpisodeVO):String
 			{
 				var s:String = "";
-				if(assessment != null) //distinguish between none and new
-				{
-					s = "Type: ";
-					if(assessment.type == AssessType.DCI) s += "DCI";
-					if(assessment.type == AssessType.AUDIT) s += "AUDIT";
-					if(assessment.type == AssessType.DAST10) s += "DAST-10";
-					if(assessment.type == AssessType.PHQ9) s += "PHQ-9";
-					if(assessment.type == AssessType.PRESCREEN) s += "Prescreen";
-				}
+				if(episode != null)
+					s = "#" + episode.number + "   Facility: " + episode.facility + "   Staff: " + episode.staff;
 				return s;
 			}
 			protected function getFacilities_resultHandler(event:ResultEvent):void
@@ -150,14 +140,12 @@ By David Tidd
 				if(preparationStepsLeft == 0)
 				{
 					pageHome.creationCompleteHandler();
-					//pageClient.initializePage();
 					pageViewstack.selectedChild = pageHome;
 				}
 			}
 
 			protected function logoutButton_clickHandler(event:MouseEvent):void
 			{
-				// TODO Auto-generated method stub
 				activeUser = null;
 				activeClient = null;
 				activeAssessment = null;
@@ -170,16 +158,11 @@ By David Tidd
 				currentState = "Login";
 			}
 			
-			protected function adminButton_clickHandler(event:MouseEvent):void
-			{
-				pageViewstack.selectedChild = pageAdmin;
-				pageAdmin.populateSettings();
-			}
-			
 			protected function getGrantResult_resultHandler(event:ResultEvent):void
 			{
 				activeGrant = getGrantResult.lastResult;
 				rulesManager.sbirtEnabled = activeGrant.sbirt == 1;
+				pageAdmin.populateSettings();
 				attemptHomePage();
 			}
 			
@@ -263,21 +246,18 @@ By David Tidd
 		<pages:AdminPage id="pageAdmin" width="100%" height="100%" label="Admin"/>
 	</mx:ViewStack>
 	<s:Image x="0" y="0" source="assets/ConnectBanner.png"/>
-	<s:Group includeIn="State1" x="10" y="3" width="695" height="90"
-					   >
+	<s:Group includeIn="State1" x="10" y="3" width="695" height="90" >
 		<s:layout>
 			<s:BasicLayout/>
 		</s:layout>
-		<s:FormItem x="156" y="27" label="Open Client:">
+		<s:FormItem x="150" y="27" label="Open Client:">
 			<s:Label id="headerClientLabel" text="{headerClientText(activeClient)}"/>
 		</s:FormItem>
-		<s:FormItem x="156" y="46" label="Open Assessment:">
-			<s:Label id="headerGpraLabel" text="{headerAssessmentText(activeAssessment)}"/>
+		<s:FormItem x="150" y="46" label="Open Episode:">
+			<s:Label id="headerEpisodeLabel" text="{headerEpisodeText(activeEpisode)}"/>
 		</s:FormItem>
 		<s:Button id="logoutButton" x="606" y="5" label="Logout"
 				  click="logoutButton_clickHandler(event)"/>
-		<s:Button id="adminButton" x="512" y="4" width="86" height="49" label="Admin"
-				  click="adminButton_clickHandler(event)"/>
 	</s:Group>
 	<mx:ToggleButtonBar id="pageButtonBar" x="171" y="10" dataProvider="{pageViewstack}" includeIn="State1"/>
 	

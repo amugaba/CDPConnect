@@ -9,6 +9,7 @@
 			import components.questions.QuestionText;
 			import components.skips.SkipMultipleHandler;
 			
+			import mx.binding.utils.BindingUtils;
 			import mx.collections.ArrayList;
 			import mx.controls.Alert;
 			import mx.rpc.events.ResultEvent;
@@ -36,15 +37,15 @@
 				createText("Over the last 2 weeks, how often have you been bothered by any of the following problems?","h1");
 				var width1:int = 140;
 				var width2:int = 210;
-				addQuestion(q1,width1);
-				addQuestion(q2,width1);
-				addQuestion(q3,width1);
-				addQuestion(q4,width1);
-				addQuestion(q5,width1);
-				addQuestion(q6,width1);
-				addQuestion(q7,width1);
-				addQuestion(q8,width1);
-				addQuestion(q9,width1);
+				addScreeningQuestion(q1,width1);
+				addScreeningQuestion(q2,width1);
+				addScreeningQuestion(q3,width1);
+				addScreeningQuestion(q4,width1);
+				addScreeningQuestion(q5,width1);
+				addScreeningQuestion(q6,width1);
+				addScreeningQuestion(q7,width1);
+				addScreeningQuestion(q8,width1);
+				addScreeningQuestion(q9,width1);
 				addQuestion(q10,width1);
 				createText("Results","h1");
 				addQuestion(qScore,80);
@@ -53,11 +54,22 @@
 				qModality.input.enabled = false
 			}
 			
-			protected function saveButton_clickHandler(event:MouseEvent):void
+			public function addScreeningQuestion(q:QuestionList, width:int=-1):void
+			{
+				addQuestion(q,width);
+				//Refresh score after answering a question
+				BindingUtils.bindSetter(refreshScore, q.input, "selectedIndex");
+			}
+			
+			private function refreshScore(val:String):void
 			{
 				var score:int = calculateScore();
 				qScore.answer = score.toString();
 				qModality.input.selectedIndex = getScoreModality(score);
+			}
+			
+			protected function saveButton_clickHandler(event:MouseEvent):void
+			{
 				global.pageAssessment.saveAssessment();
 			}
 			

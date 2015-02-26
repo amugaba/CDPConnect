@@ -44,11 +44,11 @@
 				addTreatmentQuestion(qInpatientPhysical,qInpatientPhysicalNights,30);
 				addTreatmentQuestion(qInpatientMental,qInpatientMentalNights,30);
 				addTreatmentQuestion(qInpatientAlcoholSA,qInpatientAlcoholSANights,30);
-				createText("Outpatient Treatment for _____. [IF YES] For how many times?","h1");
+				createText("Outpatient Treatment for _____. [IF YES] For how many nights?","h1");
 				addTreatmentQuestion(qOutpatientPhysical,qOutpatientPhysicalTimes,99);
 				addTreatmentQuestion(qOutpatientMental,qOutpatientMentalTimes,99);
 				addTreatmentQuestion(qOutpatientAlcoholSA,qOutpatientAlcoholSATimes,99);
-				createText("Emergency Room Treatment for _____. [IF YES] For how many times?","h1");
+				createText("Emergency Room Treatment for _____. [IF YES] For how many nights?","h1");
 				addTreatmentQuestion(qERPhysical,qERPhysicalTimes,99);
 				addTreatmentQuestion(qERMental,qERMentalTimes,99);
 				addTreatmentQuestion(qERAlcoholSA,qERAlcoholSATimes,99);

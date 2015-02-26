@@ -37,6 +37,7 @@
 				addQuestion(qImpactStress);
 				addQuestion(qImpactActivity);
 				addQuestion(qImpactEmotional);
+				addDivider();
 				addQuestion(qPregnant);
 				addQuestion(qChildren);
 				addQuestion(qChildrenNr);

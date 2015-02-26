@@ -8,13 +8,14 @@
 			import components.questions.QuestionList;
 			import components.questions.QuestionText;
 			
+			import mx.binding.utils.BindingUtils;
 			import mx.collections.ArrayList;
 			
 			protected static var yn:ArrayList = new ArrayList(["No","Yes"]);
 			
 			public var q1:QuestionList = new QuestionList("Q1","1. Have you used drugs other than those required for medical reasons?",yn,0);
 			public var q2:QuestionList = new QuestionList("Q2","2. Do you abuse more than one drug at a time?",yn,0);
-			public var q3:QuestionList = new QuestionList("Q3","3. Are you always able to stop using drugs when you want to?",yn,0);
+			public var q3:QuestionList = new QuestionList("Q3","3. Are you always able to stop using drugs when you want to?",yn,1);
 			public var q4:QuestionList = new QuestionList("Q4","4. Have you had 'blackouts' or 'flashbacks' as a result of drug use?",yn,0);
 			public var q5:QuestionList = new QuestionList("Q5","5. Do you ever feel bad or guilty about your drug use?",yn,0);
 			public var q6:QuestionList = new QuestionList("Q6","6. Does your spouse (or parent) ever complain about your involvement with drugs?",yn,0);
@@ -30,16 +31,16 @@
 				createText("DAST-10 - Drug Abuse Screening Test","h1");
 				var width1:int = 80;
 				var width2:int = 210;
-				addQuestion(q1,width1);
-				addQuestion(q2,width1);
-				addQuestion(q3,width1);
-				addQuestion(q4,width1);
-				addQuestion(q5,width1);
-				addQuestion(q6,width1);
-				addQuestion(q7,width1);
-				addQuestion(q8,width1);
-				addQuestion(q9,width1);
-				addQuestion(q10,width1);
+				addScreeningQuestion(q1,width1);
+				addScreeningQuestion(q2,width1);
+				addScreeningQuestion(q3,width1);
+				addScreeningQuestion(q4,width1);
+				addScreeningQuestion(q5,width1);
+				addScreeningQuestion(q6,width1);
+				addScreeningQuestion(q7,width1);
+				addScreeningQuestion(q8,width1);
+				addScreeningQuestion(q9,width1);
+				addScreeningQuestion(q10,width1);
 				createText("Results","h1");
 				addQuestion(qScore,80);
 				addQuestion(qModality,width2);
@@ -47,11 +48,22 @@
 				qModality.input.enabled = false
 			}
 			
-			protected function saveButton_clickHandler(event:MouseEvent):void
+			public function addScreeningQuestion(q:QuestionList, width:int=-1):void
+			{
+				addQuestion(q,width);
+				//Refresh score after answering a question
+				BindingUtils.bindSetter(refreshScore, q.input, "selectedIndex");
+			}
+			
+			private function refreshScore(val:String):void
 			{
 				var score:int = calculateScore();
 				qScore.answer = score.toString();
 				qModality.input.selectedIndex = getScoreModality(score);
+			}
+			
+			protected function saveButton_clickHandler(event:MouseEvent):void
+			{
 				global.pageAssessment.saveAssessment();
 			}
 			

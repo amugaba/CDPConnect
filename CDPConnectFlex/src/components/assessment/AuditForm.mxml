@@ -6,10 +6,12 @@
 						 labelWidth="400">
 	<fx:Script>
 		<![CDATA[
+			import components.questions.QuestionClass;
 			import components.questions.QuestionList;
 			import components.questions.QuestionText;
 			import components.skips.SkipMultipleHandler;
 			
+			import mx.binding.utils.BindingUtils;
 			import mx.collections.ArrayList;
 			import mx.controls.Alert;
 			import mx.rpc.events.ResultEvent;
@@ -35,18 +37,18 @@
 			public override function createForm():void
 			{
 				createText("AUDIT - Alcohol Use Disorders Identification Test","h1");
-				var width1:int = 120;
+				var width1:int = 130;
 				var width2:int = 210;
-				addQuestion(q1,width2);
-				addQuestion(q2);
-				addQuestion(q3,width1);
-				addQuestion(q4,width1);
-				addQuestion(q5,width1);
-				addQuestion(q6,width1);
-				addQuestion(q7,width1);
-				addQuestion(q8,width1);
-				addQuestion(q9,width2);
-				addQuestion(q10,width2);
+				addScreeningQuestion(q1,width2);
+				addScreeningQuestion(q2);
+				addScreeningQuestion(q3,width1);
+				addScreeningQuestion(q4,width1);
+				addScreeningQuestion(q5,width1);
+				addScreeningQuestion(q6,width1);
+				addScreeningQuestion(q7,width1);
+				addScreeningQuestion(q8,width1);
+				addScreeningQuestion(q9,width2);
+				addScreeningQuestion(q10,width2);
 				createText("Results","h1");
 				addQuestion(qScore,80);
 				addQuestion(qModality,width2);
@@ -61,11 +63,22 @@
 				addSkipDropDownMultiple(smh, q3, ["Never"]);
 			}
 			
-			protected function saveButton_clickHandler(event:MouseEvent):void
+			public function addScreeningQuestion(q:QuestionList, width:int=-1):void
+			{
+				addQuestion(q,width);
+				//Refresh score after answering a question
+				BindingUtils.bindSetter(refreshScore, q.input, "selectedIndex");
+			}
+			
+			private function refreshScore(val:String):void
 			{
 				var score:int = calculateScore();
 				qScore.answer = score.toString();
 				qModality.input.selectedIndex = getScoreModality(score);
+			}
+			
+			protected function saveButton_clickHandler(event:MouseEvent):void
+			{
 				global.pageAssessment.saveAssessment();
 			}
 			

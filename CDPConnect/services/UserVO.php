@@ -2,6 +2,10 @@
 class UserVO
 {
 	/**
+	 * @var int
+	 */
+	public $autoid;
+	/**
 	 * @var string
 	 */
 	public $username;
@@ -33,9 +37,18 @@ class UserVO
 	
 	public $admin;
 	public $grantid;
+	/**
+	 * @var int
+	 */
+	public $eulaSigned;
+	/**
+	 * @var string
+	 */
+	public $passwordChangedDate;
 
 	public function __construct()
 	{
+		$this->autoid = 0;
 		$this->username = "";
 		$this->name = "";
 		$this->password = "";
@@ -44,6 +57,8 @@ class UserVO
 		$this->email = "";
 		$this->admin = 0;
 		$this->grantid = 0;
+		$this->eulaSigned = 0;
+		$this->passwordChangedDate = "";
 	}
 }
 ?>

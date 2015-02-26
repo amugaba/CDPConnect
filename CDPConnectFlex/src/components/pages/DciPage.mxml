@@ -51,7 +51,6 @@
 			public var intakeExists:Boolean = false;
 			public var followupExists:Boolean = false;
 			public var dischargeExists:Boolean = false;
-			protected var sbirt:Boolean = false;
 			
 			public function initializePage(type:int):void
 			{				
@@ -208,7 +207,6 @@
 			
 			protected function enableSectionSBIRT(enabled:Boolean):void
 			{
-				sbirt = enabled;
 				sbirtForm.initForm();
 				enableTab(sbirtTab,enabled);
 			}
@@ -237,6 +235,8 @@
 				
 				demoForm.qDateOfBirth.validator.enabled = enabled;
 				demoForm.qDateOfBirth.answer = global.activeClient.dob;
+				demo2Form.qGender.setAnswerIndex(global.activeClient.gender);
+				demo2Form.qGender.refreshSkips();
 			}
 			
 			protected function enableSectionB(enabled:Boolean):void
