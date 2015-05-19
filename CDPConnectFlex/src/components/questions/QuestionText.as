@@ -4,6 +4,8 @@ package components.questions
 	
 	import mx.collections.ArrayList;
 	import mx.core.UIComponent;
+	import mx.events.ValidationResultEvent;
+	import mx.validators.Validator;
 	
 	import spark.components.DropDownList;
 	import spark.components.TextInput;
@@ -56,7 +58,9 @@ package components.questions
 			if(!inline)
 				enabled = false;
 			else
-				input.enabled = false;			
+				input.enabled = false;
+			for each(var val:Validator in validators)
+				val.dispatchEvent(new ValidationResultEvent(ValidationResultEvent.VALID));
 		}
 	}
 }

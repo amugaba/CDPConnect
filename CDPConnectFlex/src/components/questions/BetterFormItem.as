@@ -20,15 +20,12 @@ package components.questions
 			if (multiline) {
 				itemLabel.visible = false;
 				text = new Text();
-				
+				text.tabEnabled = false;
+				text.tabFocusEnabled = false;
 				text.setStyle("textAlign", "right");
+				text.setStyle("paddingTop",4);
 				text.selectable = selectable;
 				
-				/*var labelStyleName:String = getStyle("labelStyleName");
-				if (labelStyleName) {
-					var styleDecl:CSSStyleDeclaration = StyleManager.getStyleDeclaration("." + labelStyleName);
-					if (styleDecl) text.styleDeclaration = styleDecl;
-				}*/
 				rawChildren.addChild(text);
 			} else {
 				itemLabel.selectable = selectable;

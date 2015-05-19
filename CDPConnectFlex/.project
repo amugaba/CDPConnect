@@ -53,6 +53,11 @@
 			<location>C:/wamp/www/CDPConnect/CDPConnect/services/MiscService.php</location>
 		</link>
 		<link>
+			<name>services/ReportService.php</name>
+			<type>1</type>
+			<location>C:/wamp/www/CDPConnect/CDPConnect/services/ReportService.php</location>
+		</link>
+		<link>
 			<name>services/UserService.php</name>
 			<type>1</type>
 			<location>C:/wamp/www/CDPConnect/CDPConnect/services/UserService.php</location>

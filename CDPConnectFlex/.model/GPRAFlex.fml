@@ -536,4 +536,36 @@
     <property name="eulaSigned" type="integer"/>
     <property name="passwordChangedDate" type="string"/>
   </entity>
+  <service name="ReportService">
+    <annotation name="ActionScriptGeneration">
+      <item name="Source">ReportService</item>
+      <item name="ServiceType">RemoteObject</item>
+      <item name="Package">services.reportservice</item>
+      <item name="Endpoint">http://localhost//CDPConnect/CDPConnect/public/gateway.php</item>
+      <item name="Destination">ReportService</item>
+    </annotation>
+    <annotation name="ServiceTypeGroup">
+      <item name="ServiceBackendType">com.zend.php.flashbuilder.php</item>
+    </annotation>
+    <annotation name="ServiceConfig">
+      <item name="PHP_RELATIVE_LOCATION">CDPConnect/CDPConnect/services/ReportService.php</item>
+      <item name="PHP_SERVER_ROOT">C:/wamp/www</item>
+      <item name="PHP_WORKSPACE_LOCATION">/CDPConnect/services/ReportService.php</item>
+      <item name="DEFAULT_ENTITY_PACKAGE">valueObjects</item>
+      <item name="PHP_SERVICES_FOLDER">C:/wamp/www/CDPConnect/CDPConnect/public/bin-debug/services</item>
+      <item name="PHP_LOCATION">C:/wamp/www/CDPConnect/CDPConnect/services/ReportService.php</item>
+      <item name="LINKED_FILE">ReportService.php</item>
+      <item name="PHP_SERVER_ROOT_URL">http://localhost/</item>
+      <item name="ABSOLUTE_ENDPOINT">http://localhost//CDPConnect/CDPConnect/public/gateway.php</item>
+      <item name="PHP_CLASS_NAME">ReportService</item>
+    </annotation>
+    <function name="getDCIFrequencies" return-type="opaque">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="returnType">opaque</item>
+      </annotation>
+    </function>
+  </service>
 </model>

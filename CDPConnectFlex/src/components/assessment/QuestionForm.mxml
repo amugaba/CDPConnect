@@ -80,7 +80,8 @@
 			{
 				for each(var q:QuestionClass in questions)
 				{
-					q.inputControl.errorString = ""; //remove validation markers
+					for each(var val:Validator in q.validators)
+						val.dispatchEvent(new ValidationResultEvent(ValidationResultEvent.VALID));
 				}
 			}
 			

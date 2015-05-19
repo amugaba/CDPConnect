@@ -49,7 +49,7 @@
 					Valid.addRequiredValidator(qFirstName);
 					Valid.addRequiredValidator(qLastName);
 					Valid.addNumberValidator(qSSN, Number.NaN, Number.NaN, true);
-					Valid.addStringValidator(qSSN, 4, 11);//Make this flexible
+					Valid.addStringValidator(qSSN, 4, 9);//Make this flexible
 				}
 
 				//Loading client

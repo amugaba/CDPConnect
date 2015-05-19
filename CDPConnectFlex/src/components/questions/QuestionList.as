@@ -1,6 +1,5 @@
 package components.questions
 {
-	import components.dci.DCIForm;
 	
 	import flash.display.InteractiveObject;
 	
@@ -72,6 +71,11 @@ package components.questions
 				enabled = false;
 			else
 				input.enabled = false;			
+		}
+		
+		public function setChoices(choices:ArrayList):void
+		{
+			input.dataProvider = choices;
 		}
 	}
 }

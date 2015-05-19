@@ -1,14 +1,14 @@
 /**
- * This is a generated sub-class of _ClientService.as and is intended for behavior
+ * This is a generated sub-class of _ReportService.as and is intended for behavior
  * customization.  This class is only generated when there is no file already present
  * at its target location.  Thus custom behavior that you add here will survive regeneration
  * of the super-class. 
  **/
  
-package services.clientservice
+package services.reportservice
 {
 
-public class ClientService extends _Super_ClientService
+public class ReportService extends _Super_ReportService
 {
     /**
      * Override super.init() to provide any initialization customization if needed.

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<assessment:QuestionForm xmlns:fx="http://ns.adobe.com/mxml/2009"
+					xmlns:s="library://ns.adobe.com/flex/spark"
+					xmlns:mx="library://ns.adobe.com/flex/mx" 
+					xmlns:reports="components.reports.*"
+					xmlns:reportservice="services.reportservice.*"
+					xmlns:assessment="components.assessment.*"
+					width="100%" height="100%">
+	<fx:Script>
+		<![CDATA[
+			import components.dci.InterviewType;
+			import components.questions.QuestionList;
+			import components.questions.QuestionText;
+			import components.validators.DateAgeValidator;
+			import components.validators.Valid;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.rpc.events.ResultEvent;
+			
+			public var qStartDate:QuestionText = new QuestionText("","Start Date", "");
+			public var qEndDate:QuestionText = new QuestionText("","End Date", "");
+			
+			[Bindable] protected var dciFrequencies:ArrayCollection = new ArrayCollection();
+			
+			public override function createForm():void
+			{
+				//Questions
+				createText("DCI Counts and Frequencies","h1");
+				createText("Specify a date range, or leave the values blank to include all dates.","h1");
+				addQuestion(qStartDate);
+				addQuestion(qEndDate);
+				addDivider();
+				
+				//Validators
+				Valid.addDateAgeValidator(qStartDate,Number.NaN,DateAgeValidator.DAY,Number.NaN,DateAgeValidator.DAY);
+				Valid.addDateAgeValidator(qEndDate,Number.NaN,DateAgeValidator.DAY,Number.NaN,DateAgeValidator.DAY);
+			}
+			
+			protected function runButton_clickHandler(event:MouseEvent):void
+			{
+				getDCIFrequenciesResult.token = reportService.getDCIFrequencies();
+			}
+			
+			protected function getDCIFrequenciesResult_resultHandler(event:ResultEvent):void
+			{
+				dciFrequencies.removeAll();
+				
+				//loop through the DCI subtypes and add them to the table, then add the total
+				//calculate percentages along the way?
+				var counts:ArrayCollection = getDCIFrequenciesResult.lastResult;
+				var intakeCount:int = 0;
+				if(counts[InterviewType.INTAKE_GENERAL] != null)
+					intakeCount += counts[InterviewType.INTAKE_GENERAL];
+				
+				var obj:Object = new Object();
+				obj.type = "Intake";
+				obj.count = intakeCount;
+				obj.percent = "100%";
+				dciFrequencies.addItem(obj);
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<s:CallResponder id="getDCIFrequenciesResult" result="getDCIFrequenciesResult_resultHandler(event)"/>
+		<reportservice:ReportService id="reportService"
+									 fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
+									 showBusyCursor="true"/>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<s:Button id="runButton" label="Run" click="runButton_clickHandler(event)"/>
+	<s:Button id="exportButton" label="Export"/>
+	<s:Group id="resultsGroup" width="357" height="201">
+		<s:DataGrid x="14" y="34" dataProvider="{dciFrequencies}" requestedRowCount="4">
+			<s:columns>
+				<s:ArrayList>
+					<s:GridColumn dataField="type" headerText="Interview Type" width="120"></s:GridColumn>
+					<s:GridColumn dataField="count" headerText="Count" width="80"></s:GridColumn>
+					<s:GridColumn dataField="percent" headerText="Percent" width="80"></s:GridColumn>
+				</s:ArrayList>
+			</s:columns>
+			<s:typicalItem>
+				<fx:Object dataField1="Sample Data" dataField2="100" dataField3="100%"></fx:Object>
+			</s:typicalItem>
+		</s:DataGrid>
+	</s:Group>
+</assessment:QuestionForm>

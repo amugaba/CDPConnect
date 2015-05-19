@@ -60,7 +60,7 @@ By David Tidd
 			public var dateFormatter:DateTimeFormatter = new DateTimeFormatter(LocaleID.DEFAULT);
 			public var adminMode:Boolean = false;
 			private var creationComplete:Boolean = false;
-			public static var DEBUG_MODE:int = 2;//0 = release, 1 = remote debug, 2 = local debug
+			public static var DEBUG_MODE:int = 1;//0 = release, 1 = remote debug, 2 = local debug
 			public var preparationStepsLeft:int = 3;
 			
 			//Project type switches
@@ -117,6 +117,7 @@ By David Tidd
 			}
 			protected function getFacilities_resultHandler(event:ResultEvent):void
 			{
+				facilityList = new ArrayList();
 				for each(var f:String in getFacilities.lastResult)
 					facilityList.addItem(f);
 				attemptHomePage();
@@ -124,6 +125,8 @@ By David Tidd
 			
 			protected function getUsers_resultHandler(event:ResultEvent):void
 			{
+				userList = new ArrayList();
+				staffList = new ArrayList();
 				//initialize BHS name and intials arrays
 				for each(var user:UserVO in getUsers.lastResult)
 				{
@@ -153,6 +156,8 @@ By David Tidd
 				pageClientButton.enabled = false;
 				pageAssessButton.enabled = false;
 				pageDCIButton.enabled = false;
+				enableLeftButtonsOnly(pageHomeButton);
+				pageViewstack.selectedChild = pageHome;
 				pageHome.resetPage();
 				pageLogin.resetPage();
 				currentState = "Login";
@@ -244,6 +249,7 @@ By David Tidd
 		<pages:AssessmentPage id="pageAssessment" width="100%" height="100%" label="Screen"/>
 		<pages:DciPage id="pageDCI" width="100%" height="100%" label="DCI"/>
 		<pages:AdminPage id="pageAdmin" width="100%" height="100%" label="Admin"/>
+		<!--<pages:ReportPage id="pageReport" width="100%" height="100%" label="Reports"/>-->
 	</mx:ViewStack>
 	<s:Image x="0" y="0" source="assets/ConnectBanner.png"/>
 	<s:Group includeIn="State1" x="10" y="3" width="695" height="90" >

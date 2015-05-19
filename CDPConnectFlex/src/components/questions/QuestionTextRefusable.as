@@ -3,6 +3,8 @@ package components.questions
 	import flash.display.InteractiveObject;
 	
 	import mx.collections.ArrayList;
+	import mx.events.ValidationResultEvent;
+	import mx.validators.Validator;
 	
 	import spark.components.DropDownList;
 	import spark.components.TextInput;
@@ -37,6 +39,8 @@ package components.questions
 			{
 				input.text = defaultValue;
 				input.enabled = false;
+				for each(var val:Validator in validators)
+					val.dispatchEvent(new ValidationResultEvent(ValidationResultEvent.VALID));
 			}
 			else
 			{
@@ -59,14 +63,9 @@ package components.questions
 		}
 		public override function disable():void
 		{
-			isSkipped = true;
-			if(!inline)
-				enabled = false;
-			else
-			{
-				input.enabled = false;
+			super.disable();
+			if(inline)
 				refuseInput.enabled = false;
-			}
 		}
 	}
 }

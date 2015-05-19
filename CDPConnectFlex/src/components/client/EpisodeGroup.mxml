@@ -42,7 +42,9 @@
 					episodeForm.addElement(qNumber);
 					episodeForm.addElement(qDate);
 					episodeForm.addElement(qStaff);
+					qStaff.setChoices(global.staffList);
 					episodeForm.addElement(qFacility);
+					qFacility.setChoices(global.facilityList);
 					qStaff.inputControl.width = 130;
 					qFacility.inputControl.width = 130;
 				}

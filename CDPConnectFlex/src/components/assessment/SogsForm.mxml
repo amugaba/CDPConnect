@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="utf-8"?>
+<assessment:QuestionForm xmlns:fx="http://ns.adobe.com/mxml/2009" 
+						 xmlns:s="library://ns.adobe.com/flex/spark" 
+						 xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:assessment="components.assessment.*" width="100%" height="100%"
+						 xmlns:assessmentservice="services.assessmentservice.*"
+						 labelWidth="400">
+	<fx:Script>
+		<![CDATA[
+			import components.questions.QuestionClass;
+			import components.questions.QuestionList;
+			import components.questions.QuestionText;
+			import components.skips.SkipMultipleHandler;
+			import components.validators.Valid;
+			
+			import mx.binding.utils.BindingUtils;
+			import mx.collections.ArrayList;
+			import mx.controls.Alert;
+			import mx.rpc.events.ResultEvent;
+			
+			import valueObjects.AssessmentVO;
+			
+			private var whenList:ArrayList = new ArrayList(["Not at all","More than one year ago","Less than one year ago","In the past six months"]);
+			private var freqList:ArrayList = new ArrayList(["Less than one time per year","One to two times per year","Three or mroe times per week"]);
+			private var yn:ArrayList = new ArrayList(["No","Yes"]);
+			
+			public var q1a:QuestionList = new QuestionList("Q1a","Did any kind of gambling",whenList,0);
+			public var q1aFreq:QuestionList = new QuestionList("Q1aFreq","",freqList,0);
+			public var q1b:QuestionList = new QuestionList("Q1b","Played cards for money (such as Texas Hold'em, poker, or other card games",whenList,0);
+			public var q1bFreq:QuestionList = new QuestionList("Q1bFreq","",freqList,0);
+			public var q1c:QuestionList = new QuestionList("Q1c","Bet on horses, dogs, or other animals (at OTB, the track or with a bookie) for money",whenList,0);
+			public var q1cFreq:QuestionList = new QuestionList("Q1cFreq","",freqList,0);
+			public var q1d:QuestionList = new QuestionList("Q1d","Bet on sports for money (including basketball, football, parlay cards, Jai Alai, or other sports) with friends, a bookie, at work, etc.",whenList,0);
+			public var q1dFreq:QuestionList = new QuestionList("Q1dFreq","",freqList,0);
+			public var q1e:QuestionList = new QuestionList("Q1e","Played dice games (including craps, over and under, or other dice games) for money",whenList,0);
+			public var q1eFreq:QuestionList = new QuestionList("Q1eFreq","",freqList,0);
+			public var q1f:QuestionList = new QuestionList("Q1f","Gambled in a casino or on a casino boat (legal or otherwise) for money",whenList,0);
+			public var q1fFreq:QuestionList = new QuestionList("Q1fFreq","",freqList,0);
+			public var q1g:QuestionList = new QuestionList("Q1g","Played the numbers or bet on lotteries, Kino, or Quick Draw",whenList,0);
+			public var q1gFreq:QuestionList = new QuestionList("Q1gFreq","",freqList,0);
+			public var q1h:QuestionList = new QuestionList("Q1h","Played bingo for money",whenList,0);
+			public var q1hFreq:QuestionList = new QuestionList("Q1hFreq","",freqList,0);
+			public var q1i:QuestionList = new QuestionList("Q1i","Played the stock, options, and/or commondities market",whenList,0);
+			public var q1iFreq:QuestionList = new QuestionList("Q1iFreq","",freqList,0);
+			public var q1j:QuestionList = new QuestionList("Q1j","Bowled, shot pool, played golf or darts, or some other game of skill for money",whenList,0);
+			public var q1jFreq:QuestionList = new QuestionList("Q1jFreq","",freqList,0);
+			public var q1k:QuestionList = new QuestionList("Q1k","Pull tabs or 'paper' games other than lotteries (such as Lucky 7's)",whenList,0);
+			public var q1kFreq:QuestionList = new QuestionList("Q1kFreq","",freqList,0);
+			public var q1l:QuestionList = new QuestionList("Q1l","Some other form of gambling not listed above",whenList,0);
+			public var q1lFreq:QuestionList = new QuestionList("Q1lFreq","",freqList,0);
+			public var q1lOther:QuestionText = new QuestionText("Q1l","Please specify","");
+			public var q1m:QuestionList = new QuestionList("Q1m","Gambled and used alcohol or drugs at the same time",whenList,0);
+			public var q1mFreq:QuestionList = new QuestionList("Q1mFreq","",freqList,0);
+			
+			public var q2:QuestionList = new QuestionList("Q2","How troubled or bothered have you been, due to your gambling, in the past six months?",new ArrayList(["Not at all","Slightly","Moderately","Considerably","Extremely"]),0);
+			public var q3:QuestionList = new QuestionList("Q3","Have you ever quit gamling for a period of time?",new ArrayList(["I have never gambled","No, I have never quit","Yes, more than one year ago to today","Yes, more than six months but less than one year ago today","Yes, in the past six months to today","Yes, in the past month to today","Yes, in the past week to today"]),0);
+			public var q4:QuestionList = new QuestionList("Q4","What is the largest amount of money you have ever gambled on any one day?",new ArrayList(["Never have gambled","$1 or less","More than $1 up to $10","More than $10 up to $100","More than $100 up to $1,000","More than $1,000 up to $10,000","More than $10,000"]),0);
+			public var q5a1:QuestionList = new QuestionList("Q5a1","Father",yn,0);
+			public var q5a2:QuestionList = new QuestionList("Q5a2","Mother",yn,0);
+			public var q5a3:QuestionList = new QuestionList("Q5a3","A brother or sister",yn,0);
+			public var q5a4:QuestionList = new QuestionList("Q5a4","A grandparent",yn,0);
+			public var q5a5:QuestionList = new QuestionList("Q5a5","My spouse or partner",yn,0);
+			public var q5a6:QuestionList = new QuestionList("Q5a6","My child (ren)",yn,0);
+			public var q5a7:QuestionList = new QuestionList("Q5a7","Another relative",yn,0);
+			public var q5a8:QuestionList = new QuestionList("Q5a8","A friend or someone else important in my life",yn,0);
+			public var q5b:QuestionList = new QuestionList("Q5b","Have your family members ever been criticized about their gambling?",yn,0);
+			
+			public var q6:QuestionList = new QuestionList("Q6","When you gamble, how often do you go back another day to sin back money you lost?",new ArrayList(["I do not or have not ever gambled","Never","Some of the time (less than half the time I lost)","Most of the time I lost","Every time I lost"]),0);
+			public var q7:QuestionList = new QuestionList("Q7","Do you feel you have had a problem with betting money or gambling?",new ArrayList(["No","Yes, in the past but not now","Yes"]),0);
+			public var q7a:QuestionList = new QuestionList("Q7a","If you answered yes to item seven, how long ago did you have a problem betting?",new ArrayList(["More than one year ago","Less than one year ago","In the past six months","In the past month","In the past week"]),0);
+			public var q8:QuestionList = new QuestionList("Q8","Have you ever claimed to be winning money gambling but weren't really? In fact, you lost?",new ArrayList(["I have never gambled","Never","Yes, less than half the time I lost","Yes, most of the time"]),0);
+			
+			public var q9:QuestionList = new QuestionList("Q9","Did you ever gamble more than you intended to?",yn,0);
+			public var q10:QuestionList = new QuestionList("Q10","Have people criticized your betting or told you that you had a gambling problem, regardless of whether or not you thought it was true?",yn,0);
+			public var q11:QuestionList = new QuestionList("Q11","Have you ever felt guilty about the way you gamble or what happens when you gamble?",yn,0);
+			public var q12:QuestionList = new QuestionList("Q12","Have you ever felt like you would like to stop betting money or gambling but didn’t think you could?",yn,0);
+			public var q13:QuestionList = new QuestionList("Q13","Have you ever hidden betting slips, lottery tickets, gambling money, I.O.U.’s or other signs of betting or gambling from your spouse, parents, children, or other important people in your life?",yn,0);
+			public var q14:QuestionList = new QuestionList("Q14","Have you ever argued with people you live with over how you handle money?",yn,0);
+			public var q15:QuestionList = new QuestionList("Q15","(If you answered yes to question 14): Have money arguments ever centered on your gambling?",yn,0);
+			public var q16:QuestionList = new QuestionList("Q16","Have you ever lost time from work or school due to betting money or gambling?",yn,0);
+			public var q17:QuestionList = new QuestionList("Q17","Have you ever borrowed from someone and not paid them back as a result of your gambling?",yn,0);
+			
+			public var q18a:QuestionList = new QuestionList("Q18a","From household money",yn,0);
+			public var q18b:QuestionList = new QuestionList("Q18b","From your spouse or parents",yn,0);
+			public var q18c:QuestionList = new QuestionList("Q18c","From other relatives, friends, boyfriends or girlfriends, or in-laws",yn,0);
+			public var q18d:QuestionList = new QuestionList("Q18d","From banks, loan companies, or credit unions",yn,0);
+			public var q18e:QuestionList = new QuestionList("Q18e","From credit cards or debit cards",yn,0);
+			public var q18f:QuestionList = new QuestionList("Q18f","From loan sharks",yn,0);
+			public var q18g:QuestionList = new QuestionList("Q18g","You cashed in stock, bonds, or other securities",yn,0);
+			public var q18h:QuestionList = new QuestionList("Q18h","You sold personal or family property",yn,0);
+			public var q18i:QuestionList = new QuestionList("Q18i","You borrowed from your checking (you passed bad checks)",yn,0);
+			public var q18j:QuestionList = new QuestionList("Q18j","You have (had) a credit line with a bookie",yn,0);
+			public var q18k:QuestionList = new QuestionList("Q18k","You have (had) a credit line with a casino",yn,0);
+			
+			public var qScore:QuestionText = new QuestionText("Score","Score","");
+			public var qModality:QuestionList = new QuestionList("Modality","Suggested action/modality",new ArrayList(["Negative/Positive Reinforcement","Brief Intervention","Brief Treatment","Referral to Treatment"]),-1);
+			
+			public override function createForm():void
+			{
+				createText("SOGS - South Oaks Gambling Screen","h1");
+				var width1:int = 130;
+				var width2:int = 210;
+				
+				createText("For each type of gambling, select the last time the client performed the behavior and then select how often he or she did the behavior.","h1");
+				addPairedQuestions(q1a,q1aFreq);
+				addPairedQuestions(q1b,q1bFreq);
+				addPairedQuestions(q1c,q1cFreq);
+				addPairedQuestions(q1d,q1dFreq);
+				addPairedQuestions(q1e,q1eFreq);
+				addPairedQuestions(q1f,q1fFreq);
+				addPairedQuestions(q1g,q1gFreq);
+				addPairedQuestions(q1h,q1hFreq);
+				addPairedQuestions(q1i,q1iFreq);
+				addPairedQuestions(q1j,q1jFreq);
+				addPairedQuestions(q1k,q1kFreq);
+				addPairedQuestions(q1l,q1lFreq);
+				addQuestion(q1lOther);
+				addPairedQuestions(q1m,q1mFreq);
+				
+				addScreeningQuestion(q2);
+				addScreeningQuestion(q3,width1);
+				addScreeningQuestion(q4,width1);
+				
+				createText("Check which of the following people in your life has (or had) a gambling problem.","h1");
+				addScreeningQuestion(q5a1,width1);
+				addScreeningQuestion(q5a2,width1);
+				addScreeningQuestion(q5a3,width1);
+				addScreeningQuestion(q5a4,width1);
+				addScreeningQuestion(q5a5,width1);
+				addScreeningQuestion(q5a6,width1);
+				addScreeningQuestion(q5a7,width1);
+				addScreeningQuestion(q5a8,width1);
+				
+				addScreeningQuestion(q5b,width1);
+				addScreeningQuestion(q6,width1);
+				addScreeningQuestion(q7,width1);
+				addScreeningQuestion(q7a,width1);
+				addScreeningQuestion(q8,width1);
+				addScreeningQuestion(q9,width2);
+				addScreeningQuestion(q10,width2);
+				addScreeningQuestion(q11,width2);
+				addScreeningQuestion(q12,width2);
+				addScreeningQuestion(q13,width2);
+				addScreeningQuestion(q14,width2);
+				addScreeningQuestion(q15,width2);
+				addScreeningQuestion(q16,width2);
+				addScreeningQuestion(q17,width2);
+				
+				createText("If you borrowed money to gamble or to pay gambling debts, who or where did you borrow from? (circle 'yes' or 'no' for each)","h1");
+				addScreeningQuestion(q18a,width2);
+				addScreeningQuestion(q18b,width2);
+				addScreeningQuestion(q18c,width2);
+				addScreeningQuestion(q18d,width2);
+				addScreeningQuestion(q18e,width2);
+				addScreeningQuestion(q18f,width2);
+				addScreeningQuestion(q18g,width2);
+				addScreeningQuestion(q18h,width2);
+				addScreeningQuestion(q18i,width2);
+				addScreeningQuestion(q18j,width2);
+				addScreeningQuestion(q18k,width2);
+				
+				createText("Results","h1");
+				addQuestion(qScore,80);
+				addQuestion(qModality,width2);
+				qScore.input.editable = false;
+				qModality.input.enabled = false
+				
+				//Control logic
+			}
+			
+			public function addScreeningQuestion(q:QuestionList, width:int=-1):void
+			{
+				addQuestion(q,width);
+				//Refresh score after answering a question
+				BindingUtils.bindSetter(refreshScore, q.input, "selectedIndex");
+			}
+			
+			protected function addPairedQuestions(primaryQ:QuestionList, secondaryQ:QuestionList, height:int=22):void
+			{				
+				addQuestion(primaryQ);
+				primaryQ.direction = "horizontal";
+				
+				questions.push(secondaryQ);
+				primaryQ.addElement(secondaryQ.input);
+				secondaryQ.inline = true;
+				
+				Valid.addNumberValidator(primaryQ,0,0,true);
+				addSkipTextNumber(primaryQ,[secondaryQ],["0"]);
+			}
+			
+			private function refreshScore(val:String):void
+			{
+				var score:int = calculateScore();
+				qScore.answer = score.toString();
+				qModality.input.selectedIndex = getScoreModality(score);
+			}
+			
+			protected function saveButton_clickHandler(event:MouseEvent):void
+			{
+				global.pageAssessment.saveAssessment();
+			}
+			
+			private function calculateScore():int
+			{
+				var score:int = 0;
+				return score;
+			}
+			
+			private function getScoreModality(score:int):int
+			{
+				if(score < 8)
+					return SBIRTModality.NEG;
+				if(score < 16)
+					return SBIRTModality.BI;
+				if(score < 20)
+					return SBIRTModality.BT;
+				else
+					return SBIRTModality.RT;
+			}			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<s:Button id="saveButton" label="Save" x="150" y="300" click="saveButton_clickHandler(event)"/>
+</assessment:QuestionForm>
