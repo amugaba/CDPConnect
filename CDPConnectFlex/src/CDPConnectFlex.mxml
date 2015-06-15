@@ -2,7 +2,7 @@
 <!--
 CDP Connect
 DCI Upload System
-By David Tidd
+Copyright (c) 2015 Angstrom Software
 
 -->
 <s:Application xmlns:fx="http://ns.adobe.com/mxml/2009"
@@ -60,7 +60,7 @@ By David Tidd
 			public var dateFormatter:DateTimeFormatter = new DateTimeFormatter(LocaleID.DEFAULT);
 			public var adminMode:Boolean = false;
 			private var creationComplete:Boolean = false;
-			public static var DEBUG_MODE:int = 1;//0 = release, 1 = remote debug, 2 = local debug
+			public static var DEBUG_MODE:int = 2;//0 = release, 1 = remote debug, 2 = local debug
 			public var preparationStepsLeft:int = 3;
 			
 			//Project type switches

@@ -2,6 +2,8 @@ package components.questions
 {
 	import flash.display.InteractiveObject;
 	
+	import mx.binding.utils.BindingUtils;
+	import mx.binding.utils.ChangeWatcher;
 	import mx.collections.ArrayList;
 	import mx.core.UIComponent;
 	import mx.events.ValidationResultEvent;
@@ -34,6 +36,16 @@ package components.questions
 			input.text = value;
 		}
 		
+		public override function get answerNumber():Number
+		{
+			return nf.parseNumber(input.text);
+		}
+		
+		public override function set answerNumber(value:Number):void
+		{
+			input.text = value.toString();
+		}
+		
 		public override function restoreDefault():void
 		{
 			input.text = defaultValue;
@@ -42,6 +54,11 @@ package components.questions
 		public override function get inputControl():UIComponent
 		{
 			return input;
+		}
+		
+		public override function removeErrorMessage():void
+		{
+			input.errorString = "";
 		}
 		
 		public override function enable():void
@@ -58,9 +75,14 @@ package components.questions
 			if(!inline)
 				enabled = false;
 			else
-				input.enabled = false;
+				input.enabled = false;	
 			for each(var val:Validator in validators)
-				val.dispatchEvent(new ValidationResultEvent(ValidationResultEvent.VALID));
+			val.dispatchEvent(new ValidationResultEvent(ValidationResultEvent.VALID));
+		}
+		
+		public override function bindFunction(func:Function):void
+		{
+			var watcherSetter:ChangeWatcher = BindingUtils.bindSetter(func, input, "text");
 		}
 	}
 }

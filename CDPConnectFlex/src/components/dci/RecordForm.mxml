@@ -50,7 +50,7 @@
 				populateForm();
 			}
 			
-			public override function reset():void
+			public override function resetForm():void
 			{
 				populateForm();
 			}

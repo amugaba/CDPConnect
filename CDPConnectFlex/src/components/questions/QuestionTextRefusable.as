@@ -49,6 +49,12 @@ package components.questions
 			}
 		}
 		
+		public override function removeErrorMessage():void
+		{
+			input.errorString = "";
+			refuseInput.errorString = "";
+		}
+		
 		public override function enable():void
 		{
 			isSkipped = false;

@@ -3,6 +3,8 @@ package components.questions
 	
 	import flash.display.InteractiveObject;
 	
+	import mx.binding.utils.BindingUtils;
+	import mx.binding.utils.ChangeWatcher;
 	import mx.collections.ArrayList;
 	import mx.core.UIComponent;
 	
@@ -56,6 +58,11 @@ package components.questions
 			return input;
 		}
 		
+		public override function removeErrorMessage():void
+		{
+			input.errorString = "";
+		}
+		
 		public override function enable():void
 		{
 			isSkipped = false;
@@ -76,6 +83,11 @@ package components.questions
 		public function setChoices(choices:ArrayList):void
 		{
 			input.dataProvider = choices;
+		}
+		
+		public override function bindFunction(func:Function):void
+		{
+			var watcherSetter:ChangeWatcher = BindingUtils.bindSetter(func, input, "selectedItem");
 		}
 	}
 }

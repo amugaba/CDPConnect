@@ -326,7 +326,7 @@
 				var results:Array = new Array();
 				for each(var i:int in activeFormIndexes)
 				{
-					var tmpResults:Array = (dciForms[i] as DCIForm).validateForm();
+					var tmpResults:ArrayList = (dciForms[i] as DCIForm).validateForm();
 					for(var j:int = 0; j < tmpResults.length; j++)
 						results.push(tmpResults[j]);
 				}

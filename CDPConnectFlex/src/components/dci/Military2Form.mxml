@@ -96,9 +96,9 @@
 				dv.validate();
 			}
 			
-			public override function reset():void
+			public override function resetForm():void
 			{
-				super.reset();
+				super.resetForm();
 				familyVeterans = new ArrayList();
 				updateFamilyValidator();
 			}

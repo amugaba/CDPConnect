@@ -10,7 +10,7 @@
 			import components.assessment.Dast10Form;
 			import components.assessment.Phq9Form;
 			import components.assessment.PrescreenForm;
-			import components.assessment.QuestionForm;
+			import components.questions.QuestionForm;
 			import components.dci.DCIForm;
 			
 			import mx.collections.ArrayCollection;
@@ -57,10 +57,10 @@
 			
 			public function saveAssessment():void
 			{
-				var errors:Array = activeForm.validateForm();
+				var errors:ArrayList = activeForm.validateForm();
 				if(errors.length > 0)
 				{
-					Alert.show(errors.join("\n"),"Validation Errors");
+					Alert.show(errors.source.join("\n"),"Validation Errors");
 				}
 				//Create
 				else if(global.activeAssessment == null)
