@@ -11,51 +11,30 @@
 			import mx.controls.Button;
 			
 			import valueObjects.AssessmentVO;
-			override public function prepare(hasBeenRecycled:Boolean):void {
+			
+			override public function prepare(hasBeenRecycled:Boolean):void 
+			{
 				var item:AssessmentVO = data as AssessmentVO;
-				if(column.dataField == "type")
-				{
-					if(item.type == AssessType.DCI)
-					{
-						if(item.subtype == InterviewType.INTAKE_GENERAL)
-							lblData.text = "Intake";
-						else if(item.subtype == InterviewType.INTAKE_SBIRT_BI)
-							lblData.text = "Intake (SBIRT BI)";
-						else if(item.subtype == InterviewType.INTAKE_SBIRT_NEG)
-							lblData.text = "Intake (SBIRT Neg)";
-						else if(item.subtype == InterviewType.INTAKE_SBIRT_RT)
-							lblData.text = "Intake (SBIRT BT/RT)";
-						else if(item.subtype == InterviewType.FOLLOWUP)
-							lblData.text = "Followup";
-						else if(item.subtype == InterviewType.FOLLOWUP_SBIRT_BI)
-							lblData.text = "Followup (SBIRT BI)";
-						else if(item.subtype == InterviewType.DISCHARGE)
-							lblData.text = "Discharge";
-						else if(item.subtype == InterviewType.DISCHARGE_NO_INTERVIEW)
-							lblData.text = "Discharge (Admin)";
-					}
-					else if(item.type == AssessType.PRESCREEN)
-						lblData.text = "Prescreen";
-					else if(item.type == AssessType.AUDIT)
-						lblData.text = "AUDIT";
-					else if(item.type == AssessType.DAST10)
-						lblData.text = "DAST-10";
-					else if(item.type == AssessType.PHQ9)
-						lblData.text = "PHQ9";
-				}
-				else if(column.dataField == "complete")
-				{
-					if(item.complete == 0)
-						lblData.text = "No";
-					else if(item.complete == 1)
-						lblData.text = "Yes";
-				}
-				else if(column.dataField == "load")
-				{
-					
-				}
-				else
-					lblData.text = data[column.dataField];
+
+				if(item == null)
+					return;
+				
+				if(item.subtype == InterviewType.INTAKE_BI)
+					lblData.text = "Intake (SBIRT BI)";
+				else if(item.subtype == InterviewType.INTAKE_NEG)
+					lblData.text = "Intake (SBIRT Neg)";
+				else if(item.subtype == InterviewType.INTAKE_RT)
+					lblData.text = "Intake (SBIRT BT/RT)";
+				else if(item.subtype == InterviewType.FOLLOWUP_BI)
+					lblData.text = "Followup (SBIRT BI)";
+				else if(item.subtype == InterviewType.FOLLOWUP_RT)
+					lblData.text = "Followup (SBIRT RT)";
+				else if(item.subtype == InterviewType.DISCHARGE_ADMIN)
+					lblData.text = "Discharge (No interview)";
+				else if(item.subtype == InterviewType.DISCHARGE_BI)
+					lblData.text = "Discharge (SBIRT BI)";
+				else if(item.subtype == InterviewType.DISCHARGE_RT)
+					lblData.text = "Discharge (SBIRT RT)";
 			}
 		]]>
 	</fx:Script>

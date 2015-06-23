@@ -12,45 +12,34 @@ class ClientVO
 	public $clientid;
 	
 	/**
-	 * @var string
+	 * @var bool
 	 */
-	public $firstname;
+	public $intakeExists;
 	
 	/**
-	 * @var string
+	 * @var bool
 	 */
-	public $lastname;
+	public $dischargeExists;
 	
 	/**
-	 * @var string
+	 * @var bool
 	 */
-	public $dob;
+	public $followupExists;
 	
 	/**
-	 * @var string
+	 * @var bool
 	 */
-	public $ssn;
-	
-	/**
-	 * @var int
-	 */
-	public $gender;
-	
-	/**
-	 * @var string
-	 */
-	public $notes;
+	public $followupSelected;
 	
 	public function __construct()
 	{
 		$this->autoid = -1;
 		$this->clientid = "";
-		$this->firstname = "";
-		$this->lastname = "";
-		$this->dob = "";
-		$this->ssn = "";
-		$this->gender = 0;
 		$this->notes = "";
+		$this->intakeExists = false;
+		$this->dischargeExists = false;
+		$this->followupExists = false;
+		$this->followupSelected = false;
 	}
 }
 ?>

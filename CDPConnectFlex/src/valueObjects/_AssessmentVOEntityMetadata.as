@@ -23,14 +23,14 @@ internal class _AssessmentVOEntityMetadata extends com.adobe.fiber.valueobjects.
 {
     private static var emptyArray:Array = new Array();
 
-    model_internal static var allProperties:Array = new Array("autoid", "episode_autoid", "type", "subtype", "date", "complete", "data");
+    model_internal static var allProperties:Array = new Array("autoid", "client_autoid", "type", "subtype", "date", "complete", "data");
     model_internal static var allAssociationProperties:Array = new Array();
-    model_internal static var allRequiredProperties:Array = new Array("autoid", "episode_autoid", "type", "subtype", "date", "complete", "data");
-    model_internal static var allAlwaysAvailableProperties:Array = new Array("autoid", "episode_autoid", "type", "subtype", "date", "complete", "data");
+    model_internal static var allRequiredProperties:Array = new Array("autoid", "client_autoid", "type", "subtype", "date", "complete", "data");
+    model_internal static var allAlwaysAvailableProperties:Array = new Array("autoid", "client_autoid", "type", "subtype", "date", "complete", "data");
     model_internal static var guardedProperties:Array = new Array();
-    model_internal static var dataProperties:Array = new Array("autoid", "episode_autoid", "type", "subtype", "date", "complete", "data");
+    model_internal static var dataProperties:Array = new Array("autoid", "client_autoid", "type", "subtype", "date", "complete", "data");
     model_internal static var sourceProperties:Array = emptyArray
-    model_internal static var nonDerivedProperties:Array = new Array("autoid", "episode_autoid", "type", "subtype", "date", "complete", "data");
+    model_internal static var nonDerivedProperties:Array = new Array("autoid", "client_autoid", "type", "subtype", "date", "complete", "data");
     model_internal static var derivedProperties:Array = new Array();
     model_internal static var collectionProperties:Array = new Array("data");
     model_internal static var collectionBaseMap:Object;
@@ -61,7 +61,7 @@ internal class _AssessmentVOEntityMetadata extends com.adobe.fiber.valueobjects.
             // dependents map
             model_internal::dependentsOnMap = new Object();
             model_internal::dependentsOnMap["autoid"] = new Array();
-            model_internal::dependentsOnMap["episode_autoid"] = new Array();
+            model_internal::dependentsOnMap["client_autoid"] = new Array();
             model_internal::dependentsOnMap["type"] = new Array();
             model_internal::dependentsOnMap["subtype"] = new Array();
             model_internal::dependentsOnMap["date"] = new Array();
@@ -76,7 +76,7 @@ internal class _AssessmentVOEntityMetadata extends com.adobe.fiber.valueobjects.
         // Property type Map
         model_internal::propertyTypeMap = new Object();
         model_internal::propertyTypeMap["autoid"] = "int";
-        model_internal::propertyTypeMap["episode_autoid"] = "int";
+        model_internal::propertyTypeMap["client_autoid"] = "int";
         model_internal::propertyTypeMap["type"] = "int";
         model_internal::propertyTypeMap["subtype"] = "int";
         model_internal::propertyTypeMap["date"] = "String";
@@ -327,7 +327,7 @@ internal class _AssessmentVOEntityMetadata extends com.adobe.fiber.valueobjects.
     }
 
     [Bindable(event="propertyChange")]
-    public function get isEpisode_autoidAvailable():Boolean
+    public function get isClient_autoidAvailable():Boolean
     {
         return true;
     }
@@ -395,7 +395,7 @@ internal class _AssessmentVOEntityMetadata extends com.adobe.fiber.valueobjects.
     }
 
     [Bindable(event="propertyChange")]   
-    public function get episode_autoidStyle():com.adobe.fiber.styles.Style
+    public function get client_autoidStyle():com.adobe.fiber.styles.Style
     {
         return model_internal::_nullStyle;
     }

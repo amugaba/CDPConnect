@@ -41,8 +41,7 @@ class ClientService
 	 */
     public function getClientByID ($autoid)
     {
-        $stmt = mysqli_prepare($this->connection, "SELECT autoid, clientid, firstname, lastname,
-        	dob, ssn, gender, notes FROM client_tbl where autoid=?");
+        $stmt = mysqli_prepare($this->connection, "SELECT autoid, clientid, notes FROM client_tbl where autoid=?");
         $this->throwExceptionOnError();
 
         $stmt->bind_param('i', $autoid);
@@ -52,8 +51,7 @@ class ClientService
         $this->throwExceptionOnError();
 
         $client = new ClientVO();
-        $stmt->bind_result($client->autoid, $client->clientid, $client->firstname, $client->lastname, $client->dob,
-        	$client->ssn, $client->gender, $client->notes);
+        $stmt->bind_result($client->autoid, $client->clientid, $client->notes);
 
         if ($stmt->fetch())
         {
@@ -86,6 +84,7 @@ class ClientService
         $stmt->execute();
         $this->throwExceptionOnError();
 
+        $autoid = -1;
         $stmt->bind_result($autoid);
 
         if ($stmt->fetch())
@@ -123,11 +122,10 @@ class ClientService
     public function createClient ($client)
     {        
         $stmt = $this->connection->prepare("INSERT IGNORE INTO client_tbl 
-        (clientid, firstname, lastname, dob, ssn, gender) VALUES (?,?,?,?,?,?)");
+        (clientid) VALUES (?)");
         $this->throwExceptionOnError();
 
-        $stmt->bind_param('sssssi', $client->clientid, $client->firstname, $client->lastname, $client->dob,
-        	$client->ssn, $client->gender);
+        $stmt->bind_param('s', $client->clientid);
         $this->throwExceptionOnError();
 
         $rs = $stmt->execute();
@@ -142,6 +140,33 @@ class ClientService
     }
     
 	/**
+	 * Check if a client with this ID exists
+	 * 
+	 * @param string $clientid
+	 * @return bool
+	 */
+    public function clientExists($clientid)
+    {        
+        $stmt = $this->connection->prepare("SELECT EXISTS(SELECT 1 FROM $this->tablename WHERE clientid=?)");
+    	$this->throwExceptionOnError();
+
+        $stmt->bind_param('s',$clientid);
+        $this->throwExceptionOnError();
+
+        $stmt->execute();
+        $this->throwExceptionOnError();
+    	
+        $clientExists = false;
+        $stmt->bind_result($clientExists);
+        $stmt->fetch();
+        
+        $stmt->free_result();
+        $this->connection->close();
+        
+        return $clientExists;
+    }
+    
+	/**
 	 * Update a client
 	 * 
 	 * @param ClientVO $item
@@ -150,37 +175,11 @@ class ClientService
     public function updateClient ($client)
     {        
         $stmt = $this->connection->prepare("UPDATE client_tbl SET
-        clientid=?, firstname=?, lastname=?, dob=?, ssn=?, gender=?
+        clientid=?
         WHERE autoid=?");
         $this->throwExceptionOnError();
 
-        $stmt->bind_param('sssssii', $client->clientid, $client->firstname, $client->lastname, $client->dob,
-        	$client->ssn, $client->gender, $client->autoid);
-        $this->throwExceptionOnError();
-
-        $rs = $stmt->execute();
-        $this->throwExceptionOnError();
-        
-        $stmt->free_result();
-        $this->connection->close();
-        
-        return $client; 
-    }
-    
-	/**
-	 * Save notes
-	 * 
-	 * @param ClientVO $item
-	 * @return ClientVO
-	 */
-    public function saveNotes ($client)
-    {        
-        $stmt = $this->connection->prepare("UPDATE client_tbl SET
-        notes=?
-        WHERE autoid=?");
-        $this->throwExceptionOnError();
-
-        $stmt->bind_param('si', $client->notes, $client->autoid);
+        $stmt->bind_param('si', $client->clientid, $client->autoid);
         $this->throwExceptionOnError();
 
         $rs = $stmt->execute();
@@ -197,36 +196,20 @@ class ClientService
 	 * Get all clients matching the search criteria
 	 * 
 	 * @param string $clientid
-	 * @param string $firstname
-	 * @param string $lastname
-	 * @param string $dob
-	 * @param string $ssn
 	 * @return ClientVO[]
 	 */
     
-    public function searchClients ($clientid, $firstname, $lastname, $dob, $ssn)
+    public function searchClients ($clientid)
     {    	
-    	$stmt = $this->connection->prepare("SELECT autoid, clientid, firstname, lastname, dob, ssn, gender FROM client_tbl WHERE
-        	clientid LIKE ? and firstname LIKE ? and lastname LIKE ? and dob LIKE ? and ssn LIKE ?");
+    	$stmt = $this->connection->prepare("SELECT autoid, clientid FROM client_tbl WHERE
+        	clientid LIKE ?");
         $this->throwExceptionOnError();
         
         $clientid = str_replace("*", "%", $clientid);
         if(strlen($clientid) == 0)
         	$clientid = "%";
-        $firstname = str_replace("*", "%", $firstname);
-        if(strlen($firstname) == 0)
-        	$firstname = "%";
-        $lastname = str_replace("*", "%", $lastname);
-        if(strlen($lastname) == 0)
-        	$lastname = "%";
-        $dob = str_replace("*", "%", $dob);
-        if(strlen($dob) == 0)
-        	$dob = "%";
-        $ssn = str_replace("*", "%", $ssn);
-        if(strlen($ssn) == 0)
-        	$ssn = "%";
 
-        $stmt->bind_param('sssss', $clientid, $firstname, $lastname, $dob, $ssn);
+        $stmt->bind_param('s', $clientid);
         $this->throwExceptionOnError();
 		
         $stmt->execute();
@@ -234,15 +217,13 @@ class ClientService
         
         $clients = array();
     	$client = new ClientVO();
-        $stmt->bind_result($client->autoid, $client->clientid, $client->firstname, $client->lastname, $client->dob,
-        	$client->ssn, $client->gender);
+        $stmt->bind_result($client->autoid, $client->clientid);
 		
         while($stmt->fetch())
         {
 	        array_push($clients, $client);
 	        $client = new ClientVO();
-	        $stmt->bind_result($client->autoid, $client->clientid, $client->firstname, $client->lastname, $client->dob,
-        		$client->ssn, $client->gender);
+	        $stmt->bind_result($client->autoid, $client->clientid);
 	    }
         
         $stmt->free_result();

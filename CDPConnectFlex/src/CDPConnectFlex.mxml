@@ -21,8 +21,6 @@ New York SBIRT Branch
 	<fx:Script>
 		<![CDATA[
 			import components.assessment.AssessType;
-			import components.specialrules.RulesManager;
-			import components.specialrules.SbirtRules;
 			
 			import flash.globalization.DateTimeFormatter;
 			import flash.globalization.LocaleID;
@@ -38,19 +36,17 @@ New York SBIRT Branch
 			
 			import valueObjects.AssessmentVO;
 			import valueObjects.ClientVO;
-			import valueObjects.EpisodeVO;
 			import valueObjects.GrantVO;
 			import valueObjects.UserVO;			
 
 			[Bindable] public var activeClient:ClientVO = null;
 			[Bindable] public var activeUser:UserVO = null;
-			[Bindable] public var activeEpisode:EpisodeVO = null;
 			[Bindable] public var activeGrant:GrantVO = null;
 			[Bindable] public var activeAssessment:AssessmentVO = null;
+			public var intakeDCI:AssessmentVO;
 			
 			public var pageHomeButton:ButtonBarButton;
-			public var pageClientButton:ButtonBarButton;
-			public var pageAssessButton:ButtonBarButton;
+			public var pageGPRAButton:ButtonBarButton;
 			public var pageDCIButton:ButtonBarButton;
 			public var pageAdminButton:ButtonBarButton;
 			
@@ -63,9 +59,6 @@ New York SBIRT Branch
 			private var creationComplete:Boolean = false;
 			public static var DEBUG_MODE:int = 2;//0 = release, 1 = remote debug, 2 = local debug
 			public var preparationStepsLeft:int = 3;
-			
-			//Project type switches
-			public var rulesManager:RulesManager;
 			
 			protected function loginCompleteHandler(event:FlexEvent):void
 			{
@@ -89,33 +82,27 @@ New York SBIRT Branch
 				
 				//Set up button bar
 				pageHomeButton = pageButtonBar.getChildAt(0) as ButtonBarButton;
-				pageClientButton = pageButtonBar.getChildAt(1) as ButtonBarButton;
-				pageAssessButton = pageButtonBar.getChildAt(2) as ButtonBarButton;
-				pageDCIButton = pageButtonBar.getChildAt(3) as ButtonBarButton;
-				pageAdminButton = pageButtonBar.getChildAt(4) as ButtonBarButton;
-				enableLeftButtonsOnly(pageHomeButton);
+				pageGPRAButton = pageButtonBar.getChildAt(1) as ButtonBarButton;
+				pageDCIButton = pageButtonBar.getChildAt(2) as ButtonBarButton;
+				pageAdminButton = pageButtonBar.getChildAt(3) as ButtonBarButton;
+				pageHomeButton.enabled = true;
+				pageGPRAButton.enabled = false;
+				pageDCIButton.enabled = false;
 				pageAdminButton.visible = adminMode;
 				
 				//Misc
 				dateFormatter.setDateTimePattern("MM/dd/yyyy");
 				creationComplete = true;
-				rulesManager = new RulesManager(FlexGlobals.topLevelApplication as CDPConnectFlex)
 			}
 			
 			protected function headerClientText(activeClient:ClientVO):String
 			{
 				var s:String = "";
 				if(activeClient != null)
-					s = "ID: "+activeClient.clientid+"   Name: "+activeClient.lastname+", "+activeClient.firstname;
+					s = "ID: "+activeClient.clientid;
 				return s;
 			}
-			protected function headerEpisodeText(episode:EpisodeVO):String
-			{
-				var s:String = "";
-				if(episode != null)
-					s = "#" + episode.number + "   Facility: " + episode.facility + "   Staff: " + episode.staff;
-				return s;
-			}
+			
 			protected function getFacilities_resultHandler(event:ResultEvent):void
 			{
 				facilityList = new ArrayList();
@@ -143,7 +130,7 @@ New York SBIRT Branch
 				preparationStepsLeft--;
 				if(preparationStepsLeft == 0)
 				{
-					pageHome.creationCompleteHandler();
+					pageHome.initializePage();
 					pageViewstack.selectedChild = pageHome;
 				}
 			}
@@ -153,11 +140,9 @@ New York SBIRT Branch
 				activeUser = null;
 				activeClient = null;
 				activeAssessment = null;
-				pageHomeButton.enabled = false;
-				pageClientButton.enabled = false;
-				pageAssessButton.enabled = false;
+				pageHomeButton.enabled = true;
+				pageGPRAButton.enabled = false;
 				pageDCIButton.enabled = false;
-				enableLeftButtonsOnly(pageHomeButton);
 				pageViewstack.selectedChild = pageHome;
 				pageHome.resetPage();
 				pageLogin.resetPage();
@@ -167,7 +152,6 @@ New York SBIRT Branch
 			protected function getGrantResult_resultHandler(event:ResultEvent):void
 			{
 				activeGrant = getGrantResult.lastResult;
-				rulesManager.sbirtEnabled = activeGrant.sbirt == 1;
 				pageAdmin.populateSettings();
 				attemptHomePage();
 			}
@@ -183,41 +167,16 @@ New York SBIRT Branch
 				}
 			}
 			
-			//Enable all buttons to the left (higher in hierarchy) of the current one
-			public function enableLeftButtonsOnly(b:ButtonBarButton):void
+			public function enableDCIButton():void
 			{
-				if(b == pageHomeButton)
-				{
-					pageHomeButton.enabled = true;
-					pageAdminButton.enabled = true;
-					pageClientButton.enabled = false;
-					pageAssessButton.enabled = false;
-					pageDCIButton.enabled = false;
-				}
-				else if(b == pageClientButton)
-				{
-					pageHomeButton.enabled = true;
-					pageAdminButton.enabled = true;
-					pageClientButton.enabled = true;
-					pageAssessButton.enabled = false;
-					pageDCIButton.enabled = false;
-				}
-				else if(b == pageAssessButton)
-				{
-					pageHomeButton.enabled = true;
-					pageClientButton.enabled = true;
-					pageAdminButton.enabled = true;
-					pageAssessButton.enabled = true;
-					pageDCIButton.enabled = false;
-				}
-				else if(b == pageDCIButton)
-				{
-					pageHomeButton.enabled = true;
-					pageClientButton.enabled = true;
-					pageAdminButton.enabled = true;
-					pageAssessButton.enabled = false;
+					pageGPRAButton.enabled = false;
 					pageDCIButton.enabled = true;
-				}
+			}
+			
+			public function enableGPRAButton():void
+			{
+				pageGPRAButton.enabled = true;
+				pageDCIButton.enabled = false;
 			}
 			
 		]]>
@@ -246,8 +205,7 @@ New York SBIRT Branch
 				  backgroundColor="#E2E2E8" chromeColor="#6376A5" color="#000000"
 				  contentBackgroundColor="#FFFFFF" creationPolicy="all" creationComplete="pageViewstack_creationCompleteHandler(event)">
 		<pages:HomePage id="pageHome" width="100%" height="100%" label="Home" />
-		<pages:ClientPage id="pageClient" width="100%" height="100%" label="Client" />
-		<pages:AssessmentPage id="pageAssessment" width="100%" height="100%" label="Screen"/>
+		<pages:DciPage id="pageGPRA" width="100%" height="100%" label="GPRA"/>
 		<pages:DciPage id="pageDCI" width="100%" height="100%" label="DCI"/>
 		<pages:AdminPage id="pageAdmin" width="100%" height="100%" label="Admin"/>
 		<!--<pages:ReportPage id="pageReport" width="100%" height="100%" label="Reports"/>-->
@@ -257,11 +215,8 @@ New York SBIRT Branch
 		<s:layout>
 			<s:BasicLayout/>
 		</s:layout>
-		<s:FormItem x="150" y="27" label="Open Client:">
+		<s:FormItem x="150" y="27" label="Active Client:">
 			<s:Label id="headerClientLabel" text="{headerClientText(activeClient)}"/>
-		</s:FormItem>
-		<s:FormItem x="150" y="46" label="Open Episode:">
-			<s:Label id="headerEpisodeLabel" text="{headerEpisodeText(activeEpisode)}"/>
 		</s:FormItem>
 		<s:Button id="logoutButton" x="606" y="5" label="Logout"
 				  click="logoutButton_clickHandler(event)"/>

@@ -38,7 +38,6 @@ package components.questions
 			baseLabel = questionLabel;
 			this.label = questionLabel;
 			this.codeName = codeName;
-			this.multiline = true;
 		}
 		
 		public function get answer():String

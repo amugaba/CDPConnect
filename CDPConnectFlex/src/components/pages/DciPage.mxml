@@ -47,14 +47,9 @@
 			protected var activeFormIndexes:Array = new Array();
 			protected var created:Boolean = false;
 			public var interviewType:int;
-			public var intakeDCI:AssessmentVO;
-			public var intakeExists:Boolean = false;
-			public var followupExists:Boolean = false;
-			public var dischargeExists:Boolean = false;
 			
-			public function initializePage(type:int):void
+			protected function initializePage():void
 			{				
-				interviewType = type;
 				//Hide old page
 				if(viewStack.selectedIndex != 0)
 				{
@@ -77,90 +72,10 @@
 				}
 				
 				recordForm.initForm();
-				
-				if(type == InterviewType.INTAKE_SBIRT_NEG)
-				{
-					enableSectionSBIRT(true);
-					enableSectionA(true);
-					enableSectionB(false);
-					enableSectionCtoG(false);
-					enableSectionI(false);
-					enableSectionJ(false);
-					enableSectionK(false);
-				}
-				else if(type == InterviewType.INTAKE_SBIRT_BI)
-				{
-					enableSectionSBIRT(true);
-					enableSectionA(true);
-					enableSectionB(true);
-					enableSectionCtoG(false);
-					enableSectionI(false);
-					enableSectionJ(false);
-					enableSectionK(false);
-				}
-				else if(type == InterviewType.INTAKE_SBIRT_RT)
-				{
-					enableSectionSBIRT(true);
-					enableSectionA(true);
-					enableSectionB(true);
-					enableSectionCtoG(true);
-					enableSectionI(false);
-					enableSectionJ(false);
-					enableSectionK(false);
-				}
-				else if(type == InterviewType.INTAKE_GENERAL)
-				{
-					enableSectionSBIRT(false);
-					enableSectionA(true);
-					enableSectionB(true);
-					enableSectionCtoG(true);
-					enableSectionI(false);
-					enableSectionJ(false);
-					enableSectionK(false);
-				}
-				else if(type == InterviewType.FOLLOWUP)
-				{
-					enableSectionSBIRT(false);
-					enableSectionA(false);
-					enableSectionB(true);
-					enableSectionCtoG(true);
-					enableSectionI(true);
-					enableSectionJ(false);
-					enableSectionK(true);
-				}
-				else if(type == InterviewType.FOLLOWUP_SBIRT_BI)
-				{
-					enableSectionSBIRT(false);
-					enableSectionA(false);
-					enableSectionB(true);
-					enableSectionCtoG(false);
-					enableSectionI(true);
-					enableSectionJ(false);
-					enableSectionK(true);
-				}
-				else if(type == InterviewType.DISCHARGE)
-				{
-					enableSectionSBIRT(false);
-					enableSectionA(false);
-					enableSectionB(true);
-					enableSectionCtoG(true);
-					enableSectionI(false);
-					enableSectionJ(true);
-					enableSectionK(true);
-				}
-				else if(type == InterviewType.DISCHARGE_NO_INTERVIEW)
-				{
-					enableSectionSBIRT(false);
-					enableSectionA(false);
-					enableSectionB(false);
-					enableSectionCtoG(false);
-					enableSectionI(false);
-					enableSectionJ(true);
-					enableSectionK(true);
-					dischargeForm.qDischargeDate.answer = global.dateFormatter.format(new Date());
-					dischargeForm.qLastServiceDate.answer = global.dateFormatter.format(new Date());
-				}
-				
+			}
+			
+			protected function determineActiveTabs():void
+			{
 				//Determine which items are active
 				activeTabIndexes = new Array();
 				activeFormIndexes = new Array();
@@ -174,22 +89,6 @@
 					}
 				}
 				
-				//If loading a DCI
-				if(global.activeAssessment != null)
-				{
-					//Load data
-					for each(i in activeFormIndexes)
-						(dciForms[i] as DCIForm).loadData(global.activeAssessment.data.source);
-					
-					//Then process skips
-					for each(i in activeFormIndexes)
-						(dciForms[i] as DCIForm).doAllSkips();
-						
-					//Then validate
-					for each(i in activeFormIndexes)
-						(dciForms[i] as DCIForm).validateForm();
-				}
-				
 				//Reorder all tab buttons so that the invisible ones are at the bottom
 				//Have to reorder the tabs in the viewstack to correspond to the new order too though
 				var index:int = 0;
@@ -198,6 +97,179 @@
 					viewStack.setChildIndex(dciTabs[i],index);
 					index++;
 				}
+			}
+			
+			//Setup a blank DCI form
+			public function newIntake():void
+			{
+				initializePage();
+				interviewType = InterviewType.INTAKE_NEG;//change this value if user fills out services
+				
+				//Enable only section A and SBIRT. Then once the user fills out what services were provided, enabled
+				//additional sections based on that modality
+				enableSectionSBIRT(true);
+				enableSectionA(true);
+				enableSectionB(false);
+				enableSectionCtoG(false);
+				enableSectionI(false);
+				enableSectionJ(false);
+				enableSectionK(false);
+				
+				determineActiveTabs();
+			}
+			
+			public function newDischarge():void
+			{
+				initializePage();
+				interviewType = InterviewType.DISCHARGE_ADMIN;
+				
+				//If discharge, do admin discharge by default. If user selects that an interview was done, add other sections
+				enableSectionSBIRT(false);
+				enableSectionA(false);
+				enableSectionB(false);
+				enableSectionCtoG(false);
+				enableSectionI(false);
+				enableSectionJ(true);
+				enableSectionK(true);
+				dischargeForm.qDischargeDate.answer = global.dateFormatter.format(new Date());
+				dischargeForm.qLastServiceDate.answer = global.dateFormatter.format(new Date());
+				
+				determineActiveTabs();
+			}
+			
+			public function newFollowup():void
+			{
+				initializePage();
+				
+				//If followup, look at intake interview type to decide between BI and RT followup
+				if(global.intakeDCI.subtype == InterviewType.INTAKE_BI)
+				{
+					interviewType = InterviewType.FOLLOWUP_BI;
+					enableSectionSBIRT(false);
+					enableSectionA(false);
+					enableSectionB(true);
+					enableSectionCtoG(false);
+					enableSectionI(true);
+					enableSectionJ(false);
+					enableSectionK(true);
+				}
+				else
+				{
+					interviewType = InterviewType.FOLLOWUP_RT;
+					enableSectionSBIRT(false);
+					enableSectionA(false);
+					enableSectionB(true);
+					enableSectionCtoG(true);
+					enableSectionI(true);
+					enableSectionJ(false);
+					enableSectionK(true);
+				}
+				determineActiveTabs();
+			}
+			
+			public function loadDCI(interview:AssessmentVO):void
+			{
+				initializePage();
+				interviewType = interview.subtype;
+				
+				//Enable only section A and SBIRT. Then once the user fills out what services were provided, enabled
+				//additional sections based on that modality
+				if(interview.subtype == InterviewType.INTAKE_NEG)
+				{
+					enableSectionSBIRT(true);
+					enableSectionA(true);
+					enableSectionB(false);
+					enableSectionCtoG(false);
+					enableSectionI(false);
+					enableSectionJ(false);
+					enableSectionK(false);
+				}
+				else if(interview.subtype == InterviewType.INTAKE_BI)
+				{
+					enableSectionSBIRT(true);
+					enableSectionA(true);
+					enableSectionB(true);
+					enableSectionCtoG(false);
+					enableSectionI(false);
+					enableSectionJ(false);
+					enableSectionK(false);
+				}
+				else if(interview.subtype == InterviewType.INTAKE_RT)
+				{
+					enableSectionSBIRT(true);
+					enableSectionA(true);
+					enableSectionB(true);
+					enableSectionCtoG(true);
+					enableSectionI(false);
+					enableSectionJ(false);
+					enableSectionK(false);
+				}
+				else if(interview.subtype == InterviewType.FOLLOWUP_RT)
+				{
+					enableSectionSBIRT(false);
+					enableSectionA(false);
+					enableSectionB(true);
+					enableSectionCtoG(true);
+					enableSectionI(true);
+					enableSectionJ(false);
+					enableSectionK(true);
+				}
+				else if(interview.subtype == InterviewType.FOLLOWUP_BI)
+				{
+					enableSectionSBIRT(false);
+					enableSectionA(false);
+					enableSectionB(true);
+					enableSectionCtoG(false);
+					enableSectionI(true);
+					enableSectionJ(false);
+					enableSectionK(true);
+				}
+				else if(interview.subtype == InterviewType.DISCHARGE_BI)
+				{
+					enableSectionSBIRT(false);
+					enableSectionA(false);
+					enableSectionB(true);
+					enableSectionCtoG(true);
+					enableSectionI(false);
+					enableSectionJ(true);
+					enableSectionK(true);
+				}
+				else if(interview.subtype == InterviewType.DISCHARGE_RT)
+				{
+					enableSectionSBIRT(false);
+					enableSectionA(false);
+					enableSectionB(true);
+					enableSectionCtoG(true);
+					enableSectionI(false);
+					enableSectionJ(true);
+					enableSectionK(true);
+				}
+				else if(interview.subtype == InterviewType.DISCHARGE_ADMIN)
+				{
+					enableSectionSBIRT(false);
+					enableSectionA(false);
+					enableSectionB(false);
+					enableSectionCtoG(false);
+					enableSectionI(false);
+					enableSectionJ(true);
+					enableSectionK(true);
+					dischargeForm.qDischargeDate.answer = global.dateFormatter.format(new Date());
+					dischargeForm.qLastServiceDate.answer = global.dateFormatter.format(new Date());
+				}
+				
+				determineActiveTabs();
+				
+				//Load data
+				for each(var i:int in activeFormIndexes)
+					(dciForms[i] as DCIForm).loadData(global.activeAssessment.data.source);
+				
+				//Then process skips
+				for each(i in activeFormIndexes)
+					(dciForms[i] as DCIForm).doAllSkips();
+					
+				//Then validate
+				for each(i in activeFormIndexes)
+					(dciForms[i] as DCIForm).validateForm();
 			}
 			
 			protected function enableTab(tab:NavigatorContent, enabled:Boolean):void
@@ -234,9 +306,6 @@
 				}
 				
 				demoForm.qDateOfBirth.validator.enabled = enabled;
-				demoForm.qDateOfBirth.answer = global.activeClient.dob;
-				demo2Form.qGender.setAnswerIndex(global.activeClient.gender);
-				demo2Form.qGender.refreshSkips();
 			}
 			
 			protected function enableSectionB(enabled:Boolean):void
@@ -285,14 +354,14 @@
 				if(enabled)
 				{
 					//Skip based on answer in intake DCI, since gender question not asked in followup
-					if(intakeDCI.data.source["Gender"] != 0)
+					if(global.intakeDCI.data.source["Gender"] != 0)
 						livingForm.qPregnant.enable();
 					else
 						livingForm.qPregnant.disable();
 					
 					//The followup date cannot be before the intake date
 					var dv:DateAgeValidator = recordForm.qInterviewDate.validator as DateAgeValidator;
-					dv.max = 1 + (new Date().time - DateField.stringToDate(intakeDCI.date,"MM/DD/YYYY").time) / 1000 / 60 / 60 / 24;
+					dv.max = 1 + (new Date().time - DateField.stringToDate(global.intakeDCI.date,"MM/DD/YYYY").time) / 1000 / 60 / 60 / 24;
 				}
 			}
 			
@@ -303,14 +372,14 @@
 				if(enabled)
 				{
 					//Skip based on answer in intake DCI, since gender question not asked in followup
-					if(intakeDCI.data.source["Gender"] != 0)
+					if(global.intakeDCI.data.source["Gender"] != 0)
 						livingForm.qPregnant.enable();
 					else
 						livingForm.qPregnant.disable();
 					
 					//The followup date cannot be before the intake date
 					var dv:DateAgeValidator = recordForm.qInterviewDate.validator as DateAgeValidator;
-					dv.max = 1 + (new Date().time - DateField.stringToDate(intakeDCI.date,"MM/DD/YYYY").time) / 1000 / 60 / 60 / 24;
+					dv.max = 1 + (new Date().time - DateField.stringToDate(global.intakeDCI.date,"MM/DD/YYYY").time) / 1000 / 60 / 60 / 24;
 				}
 				dischargeForm.qDischargeDate.validator.enabled = enabled;
 			}
@@ -328,7 +397,7 @@
 				{
 					var tmpResults:ArrayList = (dciForms[i] as DCIForm).validateForm();
 					for(var j:int = 0; j < tmpResults.length; j++)
-						results.push(tmpResults[j]);
+						results.push(tmpResults.source[j]);
 				}
 				
 				if(results.length > 0)
@@ -354,20 +423,20 @@
 				}
 				
 				//Add in other fields
-				data["client_autoid"] = global.activeClient.autoid;
+				//data["client_autoid"] = global.activeClient.autoid;
 				
 				//If doing discharge or followup, get gender from the intake
-				if(!isIntake(interviewType))
+				if(!InterviewType.isIntake(interviewType))
 				{
-					data["Gender"] = intakeDCI.data.source["Gender"];
-					data["IntakeDate"] = intakeDCI.data.source["InterviewDate"];
+					data["Gender"] = global.intakeDCI.data.source["Gender"];
+					data["IntakeDate"] = global.intakeDCI.data.source["InterviewDate"];
 				}
 				
 				//Create
 				if(global.activeAssessment == null)
 				{
 					global.activeAssessment = new AssessmentVO();
-					global.activeAssessment.episode_autoid = global.activeEpisode.autoid;
+					global.activeAssessment.client_autoid = global.activeClient.autoid;
 					global.activeAssessment.type = AssessType.DCI;
 					global.activeAssessment.subtype = interviewType;
 					global.activeAssessment.date = global.dateFormatter.format(new Date());
@@ -392,46 +461,22 @@
 				Alert.show("DCI saved.");
 				//Add in new autoid and put in assessments grid
 				global.activeAssessment = createAssessmentResult.lastResult;
-				global.pageClient.assessmentGroup.assessmentList.addItem(global.activeAssessment);
+				global.pageHome.clientGroup.assessmentList.addItem(global.activeAssessment);
 				
-				if(isIntake(interviewType))
+				if(InterviewType.isIntake(interviewType))
 				{
-					intakeExists = true;
-					intakeDCI = global.activeAssessment;
-					
-					//Check if client is followup eligible, must be a positive first
-					if(interviewType == InterviewType.INTAKE_SBIRT_BI || interviewType == InterviewType.INTAKE_SBIRT_RT)
-						checkFollowupEligibilityResult.token = assessmentService.checkFollowupEligibility();
+					global.activeClient.intakeExists = true;
+					global.intakeDCI = global.activeAssessment;
 				}
-				else if(isDischarge(interviewType))
-					dischargeExists = true;
-				else if(isFollowup(interviewType))
-					followupExists = true;
-				
-				global.rulesManager.dciCreated();
+				else if(InterviewType.isDischarge(interviewType))
+					global.activeClient.dischargeExists = true;
+				else if(InterviewType.isFollowup(interviewType))
+					global.activeClient.followupExists = true;
 			}
 			
 			protected function updateAssessmentResult_resultHandler(event:ResultEvent):void
 			{
 				Alert.show("DCI updated.");
-			}
-			
-			protected function checkFollowupEligibilityResult_resultHandler(event:ResultEvent):void
-			{
-				if(checkFollowupEligibilityResult.lastResult)
-					Alert.show("Is the client willing to participate in follow-up?","Client is Follow-Up Eligible",Alert.YES|Alert.NO,null,agreeToFollowup);
-			}
-			
-			protected function agreeToFollowup(ev:CloseEvent):void
-			{
-				if(ev.detail == Alert.YES)
-				{
-					setFollowupSelectedResult.token = assessmentService.setFollowupSelected(global.activeAssessment.data.source["autoid"]);
-				}
-			}
-			protected function setFollowupSelectedResult_resultHandler(event:ResultEvent):void
-			{
-				Alert.show("Client has been selected for followup. Collect contact information.");
 			}
 			
 			protected function headerButton_clickHandler(event:MouseEvent):void
@@ -448,20 +493,6 @@
 				file.save(output,"CodeNames.csv");
 			}
 			
-			public function isIntake(subtype:int):Boolean
-			{
-				return subtype == InterviewType.INTAKE_GENERAL || subtype == InterviewType.INTAKE_SBIRT_BI || subtype == InterviewType.INTAKE_SBIRT_NEG || subtype == InterviewType.INTAKE_SBIRT_RT;
-			}
-			
-			public function isDischarge(subtype:int):Boolean
-			{
-				return subtype == InterviewType.DISCHARGE || subtype == InterviewType.DISCHARGE_NO_INTERVIEW;
-			}
-			
-			public function isFollowup(subtype:int):Boolean
-			{
-				return subtype == InterviewType.FOLLOWUP || subtype == InterviewType.FOLLOWUP_SBIRT_BI;
-			}
 		]]>
 	</fx:Script>
 	<fx:Declarations>
@@ -470,8 +501,6 @@
 											 showBusyCursor="true"/>
 		<s:CallResponder id="createAssessmentResult" result="createAssessmentResult_resultHandler(event)"/>
 		<s:CallResponder id="updateAssessmentDataResult" result="updateAssessmentResult_resultHandler(event)"/>
-		<s:CallResponder id="checkFollowupEligibilityResult" result="checkFollowupEligibilityResult_resultHandler(event)"/>
-		<s:CallResponder id="setFollowupSelectedResult" result="setFollowupSelectedResult_resultHandler(event)"/>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
 	

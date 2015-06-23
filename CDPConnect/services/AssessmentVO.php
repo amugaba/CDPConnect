@@ -9,7 +9,7 @@ class AssessmentVO
 	/**
 	 * @var int
 	 */
-	public $episode_autoid;
+	public $client_autoid;
 	
 	/**
 	 * @var int
@@ -39,7 +39,7 @@ class AssessmentVO
 	public function __construct()
 	{
 		$this->autoid = -1;
-		$this->episode_autoid = -1;
+		$this->client_autoid = -1;
 		$this->type = 0;
 		$this->subtype = 0;
 		$this->date = "";

@@ -59,13 +59,13 @@
 			{
 				qClientID.answer = String(global.activeClient.clientid);
 				qInterviewDate.answer = dateFormatter.format(new Date());
-				if(global.pageDCI.isIntake(global.pageDCI.interviewType))
+				if(InterviewType.isIntake(global.pageDCI.interviewType))
 					qInterviewTypeCode.answer = "Intake";
-				else if(global.pageDCI.isFollowup(global.pageDCI.interviewType))
+				else if(InterviewType.isFollowup(global.pageDCI.interviewType))
 					qInterviewTypeCode.answer = "6 Month Followup";
-				else if(InterviewType.DISCHARGE == global.pageDCI.interviewType)
+				else if(InterviewType.DISCHARGE_BI == global.pageDCI.interviewType || InterviewType.DISCHARGE_RT == global.pageDCI.interviewType)
 					qInterviewTypeCode.answer = "Discharge";
-				else if(InterviewType.DISCHARGE_NO_INTERVIEW == global.pageDCI.interviewType)
+				else if(InterviewType.DISCHARGE_ADMIN== global.pageDCI.interviewType)
 				{
 					qInterviewTypeCode.answer = "Discharge: Administrative";
 					qConductedInterview.answer = "No";

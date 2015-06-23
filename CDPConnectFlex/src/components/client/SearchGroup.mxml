@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
+		 xmlns:s="library://ns.adobe.com/flex/spark"
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 xmlns:clientservice="services.clientservice.*"
+		 width="364" height="700">
+	<fx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.core.FlexGlobals;
+			import mx.rpc.events.ResultEvent;
+			
+			import valueObjects.ClientVO;
+			
+			[Bindable] protected var clientList:ArrayCollection = new ArrayCollection();
+			protected var global:CDPConnectFlex = FlexGlobals.topLevelApplication as CDPConnectFlex;
+			
+			public function resetGroup():void
+			{
+				clientID.text = "";
+				clientList.removeAll();
+			}
+			
+			/**
+			 * Searching Clients
+			 * */
+			protected function searchButton_clickHandler(event:MouseEvent):void
+			{
+				searchClientsResult.token = clientService.searchClients(clientID.text);
+			}
+			
+			protected function searchClientsResult_resultHandler(event:ResultEvent):void
+			{
+				if((searchClientsResult.lastResult as ArrayCollection).length != 0)
+					clientList = searchClientsResult.lastResult;
+				else
+					Alert.show("No clients found.");
+			}
+			
+			public function loadButton_clickHandler():void
+			{
+				global.activeClient = clientGrid.selectedItem as ClientVO;
+				global.activeAssessment = null;
+				global.pageHome.clientGroup.loadActiveClient();
+			}
+			
+			/**
+			 * Creating Clients
+			 * */
+			protected function addClientButton_clickHandler(event:MouseEvent):void
+			{
+				if(clientID.text.length == 15)
+					clientExistsResult.token = clientService.clientExists(clientID.text);
+				else
+					Alert.show("The client ID must be 15 characters long.","Client NOT Created");
+			}
+			
+			protected function clientExistsResult_resultHandler(event:ResultEvent):void
+			{
+				if(clientExistsResult.lastResult)
+					Alert.show("A client with this ID already exists.","Client NOT Created");
+				else
+				{
+					global.activeClient = new ClientVO();
+					global.activeClient.clientid = clientID.text;
+					createClientResult.token = clientService.createClient(global.activeClient);
+				}
+			}
+			
+			protected function createClientResult_resultHandler(event:ResultEvent):void
+			{
+				if(createClientResult.lastResult == null)
+					Alert.show("Client not created.","ERROR");
+				else
+					global.activeClient = createClientResult.lastResult as ClientVO;
+			}
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<clientservice:ClientService id="clientService"
+									 fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
+									 showBusyCursor="true"/>
+		<s:CallResponder id="searchClientsResult" result="searchClientsResult_resultHandler(event)"/>
+		<s:CallResponder id="createClientResult" result="createClientResult_resultHandler(event)"/>
+		<s:CallResponder id="clientExistsResult" result="clientExistsResult_resultHandler(event)"/>
+	</fx:Declarations>
+	<s:Form id="searchForm" x="60" y="31" width="222" height="44" defaultButton="{searchButton}" fontWeight="bold">
+		<s:layout>
+			<s:VerticalLayout horizontalAlign="right"/>
+		</s:layout>
+		<mx:FormItem label="Client ID">
+			<s:TextInput id="clientID" fontWeight="normal"/>
+		</mx:FormItem>
+	</s:Form>
+	<s:Button id="searchButton" x="54" y="87" width="105" height="40" label="Search Clients"
+			  click="searchButton_clickHandler(event)" fontWeight="normal"/>
+	<s:Button id="addClientButton" x="190" y="88" height="38" label="Add New Client"
+			  click="addClientButton_clickHandler(event)" fontWeight="normal"/>
+	<s:DataGrid id="clientGrid" x="80" y="148" dataProvider="{clientList}"
+				requestedRowCount="5" resizableColumns="false" width="195" height="400">
+		<s:columns>
+			<s:ArrayList>
+				<s:GridColumn dataField="clientid" headerText="ClientID" width="120"></s:GridColumn>
+				<s:GridColumn dataField="load" headerText="Load" width="70">
+					<s:itemRenderer>
+						<fx:Component>
+							<s:GridItemRenderer width="100%">
+								<s:Button label="Load" x="7" y="3" width="55" click="{outerDocument.loadButton_clickHandler()}" />
+							</s:GridItemRenderer>
+						</fx:Component>
+					</s:itemRenderer>
+				</s:GridColumn>
+			</s:ArrayList>
+		</s:columns>
+		<s:typicalItem>
+			<fx:Object clientid="00001"></fx:Object>
+		</s:typicalItem>
+	</s:DataGrid>
+</s:Group>

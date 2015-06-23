@@ -20,13 +20,14 @@ package components.questions
 	import mx.styles.CSSStyleDeclaration;
 	import mx.styles.StyleManager;
 	
+	import spark.components.RichEditableText;
 	import spark.components.RichText;
 	
 	public class BetterFormItem extends FormItem {
 		public var maxLabelWidth:Number = 200;
-		public var text:RichText;
+		public var text:RichEditableText;
 		public var selectable:Boolean = false;
-		public var multiline:Boolean = false;
+		public var multiline:Boolean = true;
 		public var linkEnabled:Boolean = false;
 		public var linkFunction:Function = null;
 		
@@ -39,9 +40,10 @@ package components.questions
 			itemLabel.maxWidth = maxLabelWidth;
 			if (multiline) {
 				itemLabel.visible = false;
-				text = new RichText();
+				text = new RichEditableText();
 				text.tabEnabled = false;
 				text.tabFocusEnabled = false;
+				text.editable = false;
 				text.setStyle("textAlign", "right");
 				text.setStyle("paddingTop",4);
 				rawChildren.addChild(text);

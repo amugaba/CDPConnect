@@ -12,6 +12,6 @@
 
     $res = $o->getAssessmentData($assessment);*/
     
-    $res = $o->checkFollowupEligibility();
+    $res = $o->getAssessmentsByClientID(1);
     var_dump($res);
 ?> 

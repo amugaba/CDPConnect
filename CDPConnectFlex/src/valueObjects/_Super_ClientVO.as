@@ -62,14 +62,13 @@ public class _Super_ClientVO extends flash.events.EventDispatcher implements com
     /**
      * properties
      */
+    private var _internal_notes : String;
     private var _internal_autoid : int;
     private var _internal_clientid : String;
-    private var _internal_firstname : String;
-    private var _internal_lastname : String;
-    private var _internal_dob : String;
-    private var _internal_ssn : String;
-    private var _internal_gender : int;
-    private var _internal_notes : String;
+    private var _internal_intakeExists : Boolean;
+    private var _internal_dischargeExists : Boolean;
+    private var _internal_followupExists : Boolean;
+    private var _internal_followupSelected : Boolean;
 
     private static var emptyArray:Array = new Array();
 
@@ -86,11 +85,6 @@ public class _Super_ClientVO extends flash.events.EventDispatcher implements com
         _model = new _ClientVOEntityMetadata(this);
 
         // Bind to own data or source properties for cache invalidation triggering
-        model_internal::_changeWatcherArray.push(mx.binding.utils.ChangeWatcher.watch(this, "clientid", model_internal::setterListenerClientid));
-        model_internal::_changeWatcherArray.push(mx.binding.utils.ChangeWatcher.watch(this, "firstname", model_internal::setterListenerFirstname));
-        model_internal::_changeWatcherArray.push(mx.binding.utils.ChangeWatcher.watch(this, "lastname", model_internal::setterListenerLastname));
-        model_internal::_changeWatcherArray.push(mx.binding.utils.ChangeWatcher.watch(this, "dob", model_internal::setterListenerDob));
-        model_internal::_changeWatcherArray.push(mx.binding.utils.ChangeWatcher.watch(this, "ssn", model_internal::setterListenerSsn));
         model_internal::_changeWatcherArray.push(mx.binding.utils.ChangeWatcher.watch(this, "notes", model_internal::setterListenerNotes));
 
     }
@@ -98,6 +92,12 @@ public class _Super_ClientVO extends flash.events.EventDispatcher implements com
     /**
      * data/source property getters
      */
+
+    [Bindable(event="propertyChange")]
+    public function get notes() : String
+    {
+        return _internal_notes;
+    }
 
     [Bindable(event="propertyChange")]
     public function get autoid() : int
@@ -112,39 +112,27 @@ public class _Super_ClientVO extends flash.events.EventDispatcher implements com
     }
 
     [Bindable(event="propertyChange")]
-    public function get firstname() : String
+    public function get intakeExists() : Boolean
     {
-        return _internal_firstname;
+        return _internal_intakeExists;
     }
 
     [Bindable(event="propertyChange")]
-    public function get lastname() : String
+    public function get dischargeExists() : Boolean
     {
-        return _internal_lastname;
+        return _internal_dischargeExists;
     }
 
     [Bindable(event="propertyChange")]
-    public function get dob() : String
+    public function get followupExists() : Boolean
     {
-        return _internal_dob;
+        return _internal_followupExists;
     }
 
     [Bindable(event="propertyChange")]
-    public function get ssn() : String
+    public function get followupSelected() : Boolean
     {
-        return _internal_ssn;
-    }
-
-    [Bindable(event="propertyChange")]
-    public function get gender() : int
-    {
-        return _internal_gender;
-    }
-
-    [Bindable(event="propertyChange")]
-    public function get notes() : String
-    {
-        return _internal_notes;
+        return _internal_followupSelected;
     }
 
     public function clearAssociations() : void
@@ -154,6 +142,16 @@ public class _Super_ClientVO extends flash.events.EventDispatcher implements com
     /**
      * data/source property setters
      */
+
+    public function set notes(value:String) : void
+    {
+        var oldValue:String = _internal_notes;
+        if (oldValue !== value)
+        {
+            _internal_notes = value;
+            this.dispatchEvent(mx.events.PropertyChangeEvent.createUpdateEvent(this, "notes", oldValue, _internal_notes));
+        }
+    }
 
     public function set autoid(value:int) : void
     {
@@ -175,63 +173,43 @@ public class _Super_ClientVO extends flash.events.EventDispatcher implements com
         }
     }
 
-    public function set firstname(value:String) : void
+    public function set intakeExists(value:Boolean) : void
     {
-        var oldValue:String = _internal_firstname;
+        var oldValue:Boolean = _internal_intakeExists;
         if (oldValue !== value)
         {
-            _internal_firstname = value;
-            this.dispatchEvent(mx.events.PropertyChangeEvent.createUpdateEvent(this, "firstname", oldValue, _internal_firstname));
+            _internal_intakeExists = value;
+            this.dispatchEvent(mx.events.PropertyChangeEvent.createUpdateEvent(this, "intakeExists", oldValue, _internal_intakeExists));
         }
     }
 
-    public function set lastname(value:String) : void
+    public function set dischargeExists(value:Boolean) : void
     {
-        var oldValue:String = _internal_lastname;
+        var oldValue:Boolean = _internal_dischargeExists;
         if (oldValue !== value)
         {
-            _internal_lastname = value;
-            this.dispatchEvent(mx.events.PropertyChangeEvent.createUpdateEvent(this, "lastname", oldValue, _internal_lastname));
+            _internal_dischargeExists = value;
+            this.dispatchEvent(mx.events.PropertyChangeEvent.createUpdateEvent(this, "dischargeExists", oldValue, _internal_dischargeExists));
         }
     }
 
-    public function set dob(value:String) : void
+    public function set followupExists(value:Boolean) : void
     {
-        var oldValue:String = _internal_dob;
+        var oldValue:Boolean = _internal_followupExists;
         if (oldValue !== value)
         {
-            _internal_dob = value;
-            this.dispatchEvent(mx.events.PropertyChangeEvent.createUpdateEvent(this, "dob", oldValue, _internal_dob));
+            _internal_followupExists = value;
+            this.dispatchEvent(mx.events.PropertyChangeEvent.createUpdateEvent(this, "followupExists", oldValue, _internal_followupExists));
         }
     }
 
-    public function set ssn(value:String) : void
+    public function set followupSelected(value:Boolean) : void
     {
-        var oldValue:String = _internal_ssn;
+        var oldValue:Boolean = _internal_followupSelected;
         if (oldValue !== value)
         {
-            _internal_ssn = value;
-            this.dispatchEvent(mx.events.PropertyChangeEvent.createUpdateEvent(this, "ssn", oldValue, _internal_ssn));
-        }
-    }
-
-    public function set gender(value:int) : void
-    {
-        var oldValue:int = _internal_gender;
-        if (oldValue !== value)
-        {
-            _internal_gender = value;
-            this.dispatchEvent(mx.events.PropertyChangeEvent.createUpdateEvent(this, "gender", oldValue, _internal_gender));
-        }
-    }
-
-    public function set notes(value:String) : void
-    {
-        var oldValue:String = _internal_notes;
-        if (oldValue !== value)
-        {
-            _internal_notes = value;
-            this.dispatchEvent(mx.events.PropertyChangeEvent.createUpdateEvent(this, "notes", oldValue, _internal_notes));
+            _internal_followupSelected = value;
+            this.dispatchEvent(mx.events.PropertyChangeEvent.createUpdateEvent(this, "followupSelected", oldValue, _internal_followupSelected));
         }
     }
 
@@ -246,31 +224,6 @@ public class _Super_ClientVO extends flash.events.EventDispatcher implements com
      *  - the validity of the property (and the containing entity) if the given data property has a length restriction.
      *  - the validity of the property (and the containing entity) if the given data property is required.
      */
-
-    model_internal function setterListenerClientid(value:flash.events.Event):void
-    {
-        _model.invalidateDependentOnClientid();
-    }
-
-    model_internal function setterListenerFirstname(value:flash.events.Event):void
-    {
-        _model.invalidateDependentOnFirstname();
-    }
-
-    model_internal function setterListenerLastname(value:flash.events.Event):void
-    {
-        _model.invalidateDependentOnLastname();
-    }
-
-    model_internal function setterListenerDob(value:flash.events.Event):void
-    {
-        _model.invalidateDependentOnDob();
-    }
-
-    model_internal function setterListenerSsn(value:flash.events.Event):void
-    {
-        _model.invalidateDependentOnSsn();
-    }
 
     model_internal function setterListenerNotes(value:flash.events.Event):void
     {
@@ -298,31 +251,6 @@ public class _Super_ClientVO extends flash.events.EventDispatcher implements com
         var validationFailureMessages:Array = new Array();
 
         var propertyValidity:Boolean = true;
-        if (!_model.clientidIsValid)
-        {
-            propertyValidity = false;
-            com.adobe.fiber.util.FiberUtils.arrayAdd(validationFailureMessages, _model.model_internal::_clientidValidationFailureMessages);
-        }
-        if (!_model.firstnameIsValid)
-        {
-            propertyValidity = false;
-            com.adobe.fiber.util.FiberUtils.arrayAdd(validationFailureMessages, _model.model_internal::_firstnameValidationFailureMessages);
-        }
-        if (!_model.lastnameIsValid)
-        {
-            propertyValidity = false;
-            com.adobe.fiber.util.FiberUtils.arrayAdd(validationFailureMessages, _model.model_internal::_lastnameValidationFailureMessages);
-        }
-        if (!_model.dobIsValid)
-        {
-            propertyValidity = false;
-            com.adobe.fiber.util.FiberUtils.arrayAdd(validationFailureMessages, _model.model_internal::_dobValidationFailureMessages);
-        }
-        if (!_model.ssnIsValid)
-        {
-            propertyValidity = false;
-            com.adobe.fiber.util.FiberUtils.arrayAdd(validationFailureMessages, _model.model_internal::_ssnValidationFailureMessages);
-        }
         if (!_model.notesIsValid)
         {
             propertyValidity = false;
@@ -407,141 +335,6 @@ public class _Super_ClientVO extends flash.events.EventDispatcher implements com
         }
     }
 
-    model_internal var _doValidationCacheOfClientid : Array = null;
-    model_internal var _doValidationLastValOfClientid : String;
-
-    model_internal function _doValidationForClientid(valueIn:Object):Array
-    {
-        var value : String = valueIn as String;
-
-        if (model_internal::_doValidationCacheOfClientid != null && model_internal::_doValidationLastValOfClientid == value)
-           return model_internal::_doValidationCacheOfClientid ;
-
-        _model.model_internal::_clientidIsValidCacheInitialized = true;
-        var validationFailures:Array = new Array();
-        var errorMessage:String;
-        var failure:Boolean;
-
-        var valRes:ValidationResult;
-        if (_model.isClientidAvailable && _internal_clientid == null)
-        {
-            validationFailures.push(new ValidationResult(true, "", "", "clientid is required"));
-        }
-
-        model_internal::_doValidationCacheOfClientid = validationFailures;
-        model_internal::_doValidationLastValOfClientid = value;
-
-        return validationFailures;
-    }
-    
-    model_internal var _doValidationCacheOfFirstname : Array = null;
-    model_internal var _doValidationLastValOfFirstname : String;
-
-    model_internal function _doValidationForFirstname(valueIn:Object):Array
-    {
-        var value : String = valueIn as String;
-
-        if (model_internal::_doValidationCacheOfFirstname != null && model_internal::_doValidationLastValOfFirstname == value)
-           return model_internal::_doValidationCacheOfFirstname ;
-
-        _model.model_internal::_firstnameIsValidCacheInitialized = true;
-        var validationFailures:Array = new Array();
-        var errorMessage:String;
-        var failure:Boolean;
-
-        var valRes:ValidationResult;
-        if (_model.isFirstnameAvailable && _internal_firstname == null)
-        {
-            validationFailures.push(new ValidationResult(true, "", "", "firstname is required"));
-        }
-
-        model_internal::_doValidationCacheOfFirstname = validationFailures;
-        model_internal::_doValidationLastValOfFirstname = value;
-
-        return validationFailures;
-    }
-    
-    model_internal var _doValidationCacheOfLastname : Array = null;
-    model_internal var _doValidationLastValOfLastname : String;
-
-    model_internal function _doValidationForLastname(valueIn:Object):Array
-    {
-        var value : String = valueIn as String;
-
-        if (model_internal::_doValidationCacheOfLastname != null && model_internal::_doValidationLastValOfLastname == value)
-           return model_internal::_doValidationCacheOfLastname ;
-
-        _model.model_internal::_lastnameIsValidCacheInitialized = true;
-        var validationFailures:Array = new Array();
-        var errorMessage:String;
-        var failure:Boolean;
-
-        var valRes:ValidationResult;
-        if (_model.isLastnameAvailable && _internal_lastname == null)
-        {
-            validationFailures.push(new ValidationResult(true, "", "", "lastname is required"));
-        }
-
-        model_internal::_doValidationCacheOfLastname = validationFailures;
-        model_internal::_doValidationLastValOfLastname = value;
-
-        return validationFailures;
-    }
-    
-    model_internal var _doValidationCacheOfDob : Array = null;
-    model_internal var _doValidationLastValOfDob : String;
-
-    model_internal function _doValidationForDob(valueIn:Object):Array
-    {
-        var value : String = valueIn as String;
-
-        if (model_internal::_doValidationCacheOfDob != null && model_internal::_doValidationLastValOfDob == value)
-           return model_internal::_doValidationCacheOfDob ;
-
-        _model.model_internal::_dobIsValidCacheInitialized = true;
-        var validationFailures:Array = new Array();
-        var errorMessage:String;
-        var failure:Boolean;
-
-        var valRes:ValidationResult;
-        if (_model.isDobAvailable && _internal_dob == null)
-        {
-            validationFailures.push(new ValidationResult(true, "", "", "dob is required"));
-        }
-
-        model_internal::_doValidationCacheOfDob = validationFailures;
-        model_internal::_doValidationLastValOfDob = value;
-
-        return validationFailures;
-    }
-    
-    model_internal var _doValidationCacheOfSsn : Array = null;
-    model_internal var _doValidationLastValOfSsn : String;
-
-    model_internal function _doValidationForSsn(valueIn:Object):Array
-    {
-        var value : String = valueIn as String;
-
-        if (model_internal::_doValidationCacheOfSsn != null && model_internal::_doValidationLastValOfSsn == value)
-           return model_internal::_doValidationCacheOfSsn ;
-
-        _model.model_internal::_ssnIsValidCacheInitialized = true;
-        var validationFailures:Array = new Array();
-        var errorMessage:String;
-        var failure:Boolean;
-
-        var valRes:ValidationResult;
-        if (_model.isSsnAvailable && _internal_ssn == null)
-        {
-            validationFailures.push(new ValidationResult(true, "", "", "ssn is required"));
-        }
-
-        model_internal::_doValidationCacheOfSsn = validationFailures;
-        model_internal::_doValidationLastValOfSsn = value;
-
-        return validationFailures;
-    }
-    
     model_internal var _doValidationCacheOfNotes : Array = null;
     model_internal var _doValidationLastValOfNotes : String;
 

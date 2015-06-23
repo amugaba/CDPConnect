@@ -64,7 +64,7 @@ public class _Super_AssessmentVO extends flash.events.EventDispatcher implements
      * properties
      */
     private var _internal_autoid : int;
-    private var _internal_episode_autoid : int;
+    private var _internal_client_autoid : int;
     private var _internal_type : int;
     private var _internal_subtype : int;
     private var _internal_date : String;
@@ -102,9 +102,9 @@ public class _Super_AssessmentVO extends flash.events.EventDispatcher implements
     }
 
     [Bindable(event="propertyChange")]
-    public function get episode_autoid() : int
+    public function get client_autoid() : int
     {
-        return _internal_episode_autoid;
+        return _internal_client_autoid;
     }
 
     [Bindable(event="propertyChange")]
@@ -155,13 +155,13 @@ public class _Super_AssessmentVO extends flash.events.EventDispatcher implements
         }
     }
 
-    public function set episode_autoid(value:int) : void
+    public function set client_autoid(value:int) : void
     {
-        var oldValue:int = _internal_episode_autoid;
+        var oldValue:int = _internal_client_autoid;
         if (oldValue !== value)
         {
-            _internal_episode_autoid = value;
-            this.dispatchEvent(mx.events.PropertyChangeEvent.createUpdateEvent(this, "episode_autoid", oldValue, _internal_episode_autoid));
+            _internal_client_autoid = value;
+            this.dispatchEvent(mx.events.PropertyChangeEvent.createUpdateEvent(this, "client_autoid", oldValue, _internal_client_autoid));
         }
     }
 
