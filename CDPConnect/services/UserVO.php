@@ -35,6 +35,9 @@ class UserVO
 	 */
 	public $email;
 	
+	/**
+	 * @var bool
+	 */
 	public $admin;
 	public $grantid;
 	/**
@@ -55,7 +58,7 @@ class UserVO
 		$this->initials = "ZZ";
 		$this->facility = "Unknown";
 		$this->email = "";
-		$this->admin = 0;
+		$this->admin = FALSE;
 		$this->grantid = 0;
 		$this->eulaSigned = 0;
 		$this->passwordChangedDate = "";

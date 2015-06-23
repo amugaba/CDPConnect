@@ -3,22 +3,38 @@
 		 xmlns:s="library://ns.adobe.com/flex/spark"
 		 xmlns:mx="library://ns.adobe.com/flex/mx"
 		 xmlns:clientservice="services.clientservice.*"
-		 width="364" height="700">
+		 width="357" height="700" creationComplete="creationCompleteHandler(event)">
 	<fx:Script>
 		<![CDATA[
+			import components.validators.DateValidatorSimple;
+			
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.core.FlexGlobals;
+			import mx.events.FlexEvent;
 			import mx.rpc.events.ResultEvent;
+			import mx.validators.DateValidator;
 			
 			import valueObjects.ClientVO;
 			
 			[Bindable] protected var clientList:ArrayCollection = new ArrayCollection();
 			protected var global:CDPConnectFlex = FlexGlobals.topLevelApplication as CDPConnectFlex;
+			protected var dateValidator:DateValidatorSimple;
+			
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				dateValidator = new DateValidatorSimple();
+				dateValidator.required = false;
+				dateValidator.source = searchIntakeDate;
+				dateValidator.property = "text";
+			}
 			
 			public function resetGroup():void
 			{
-				clientID.text = "";
+				clientIDSearch.text = "";
+				clientIDAdd.text = "";
+				searchIntakeDate.text = "";
+				searchDischarge.selected = false;
 				clientList.removeAll();
 			}
 			
@@ -27,7 +43,18 @@
 			 * */
 			protected function searchButton_clickHandler(event:MouseEvent):void
 			{
-				searchClientsResult.token = clientService.searchClients(clientID.text);
+				if(searchIntakeDate.errorString != "")
+				{
+					Alert.show("Please enter a valid date.");
+				}
+				else
+				{
+					var dateString:String = "";
+					if(searchIntakeDate.selectedDate != null)
+						dateString = global.dateFormatter.format(searchIntakeDate.selectedDate);
+					
+					searchClientsResult.token = clientService.searchClients(clientIDSearch.text, dateString, searchDischarge.selected);
+				}
 			}
 			
 			protected function searchClientsResult_resultHandler(event:ResultEvent):void
@@ -35,7 +62,10 @@
 				if((searchClientsResult.lastResult as ArrayCollection).length != 0)
 					clientList = searchClientsResult.lastResult;
 				else
+				{
+					clientList.removeAll();
 					Alert.show("No clients found.");
+				}
 			}
 			
 			public function loadButton_clickHandler():void
@@ -50,8 +80,8 @@
 			 * */
 			protected function addClientButton_clickHandler(event:MouseEvent):void
 			{
-				if(clientID.text.length == 15)
-					clientExistsResult.token = clientService.clientExists(clientID.text);
+				if(clientIDAdd.text.length == 15)
+					clientExistsResult.token = clientService.clientExists(clientIDAdd.text);
 				else
 					Alert.show("The client ID must be 15 characters long.","Client NOT Created");
 			}
@@ -63,7 +93,7 @@
 				else
 				{
 					global.activeClient = new ClientVO();
-					global.activeClient.clientid = clientID.text;
+					global.activeClient.clientid = clientIDAdd.text;
 					createClientResult.token = clientService.createClient(global.activeClient);
 				}
 			}
@@ -86,20 +116,26 @@
 		<s:CallResponder id="createClientResult" result="createClientResult_resultHandler(event)"/>
 		<s:CallResponder id="clientExistsResult" result="clientExistsResult_resultHandler(event)"/>
 	</fx:Declarations>
-	<s:Form id="searchForm" x="60" y="31" width="222" height="44" defaultButton="{searchButton}" fontWeight="bold">
+	<s:Form id="searchForm" y="90" width="235" height="112" defaultButton="{searchButton}"
+			fontWeight="bold" horizontalCenter="0">
 		<s:layout>
-			<s:VerticalLayout horizontalAlign="right"/>
-		</s:layout>
-		<mx:FormItem label="Client ID">
-			<s:TextInput id="clientID" fontWeight="normal"/>
-		</mx:FormItem>
+			<s:FormLayout gap="-10"/>
+		</s:layout> 
+		<s:FormItem label="Client ID">
+			<s:TextInput id="clientIDSearch" fontWeight="normal"/>
+		</s:FormItem>
+		<s:FormItem label="Intake Date">
+			<mx:DateField id="searchIntakeDate" width="109" editable="true"/>
+		</s:FormItem>
+		<s:FormItem label="Discharge">
+			<s:CheckBox id="searchDischarge" label="Incomplete?"/>
+		</s:FormItem>
 	</s:Form>
-	<s:Button id="searchButton" x="54" y="87" width="105" height="40" label="Search Clients"
-			  click="searchButton_clickHandler(event)" fontWeight="normal"/>
-	<s:Button id="addClientButton" x="190" y="88" height="38" label="Add New Client"
-			  click="addClientButton_clickHandler(event)" fontWeight="normal"/>
-	<s:DataGrid id="clientGrid" x="80" y="148" dataProvider="{clientList}"
-				requestedRowCount="5" resizableColumns="false" width="195" height="400">
+	<s:Button id="searchButton" y="211" width="105" label="Search Clients"
+			  click="searchButton_clickHandler(event)" fontWeight="normal" horizontalCenter="0"/>
+	
+	<s:DataGrid id="clientGrid" y="247" width="195" height="400" dataProvider="{clientList}"
+				horizontalCenter="0" requestedRowCount="5" resizableColumns="false">
 		<s:columns>
 			<s:ArrayList>
 				<s:GridColumn dataField="clientid" headerText="ClientID" width="120"></s:GridColumn>
@@ -118,4 +154,18 @@
 			<fx:Object clientid="00001"></fx:Object>
 		</s:typicalItem>
 	</s:DataGrid>
+	<s:Label y="0" fontSize="14" fontWeight="bold" horizontalCenter="0" text="Add New Client"/>
+	<s:Label y="83" fontSize="14" fontWeight="bold" horizontalCenter="0" text="Search for Clients"/>
+	<s:Form id="addForm" x="23" y="7" width="235" height="49" defaultButton="{addClientButton}"
+			fontWeight="bold">
+		<s:layout>
+			<s:FormLayout gap="-10"/>
+		</s:layout> 
+		<s:FormItem label="Client ID">
+			<s:TextInput id="clientIDAdd" fontWeight="normal"/>
+		</s:FormItem>
+	</s:Form>
+	<s:Button id="addClientButton" x="241" y="27" label="Add Client"
+			  click="addClientButton_clickHandler(event)" fontWeight="normal"/>
+	<mx:HRule x="10" y="62" width="344" height="11"/>
 </s:Group>

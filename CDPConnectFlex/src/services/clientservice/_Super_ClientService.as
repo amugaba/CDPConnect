@@ -173,10 +173,10 @@ internal class _Super_ClientService extends com.adobe.fiber.services.wrapper.Rem
       *
       * @return an mx.rpc.AsyncToken whose result property will be populated with the result of the operation when the server response is received.
       */
-    public function searchClients(clientid:String) : mx.rpc.AsyncToken
+    public function searchClients(clientid:String, intakeDate:String, dischargeExists:Boolean) : mx.rpc.AsyncToken
     {
         var _internal_operation:mx.rpc.AbstractOperation = _serviceControl.getOperation("searchClients");
-		var _internal_token:mx.rpc.AsyncToken = _internal_operation.send(clientid) ;
+		var _internal_token:mx.rpc.AsyncToken = _internal_operation.send(clientid,intakeDate,dischargeExists) ;
         return _internal_token;
     }
      

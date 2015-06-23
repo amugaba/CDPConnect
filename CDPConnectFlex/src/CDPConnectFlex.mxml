@@ -45,11 +45,6 @@ New York SBIRT Branch
 			[Bindable] public var activeAssessment:AssessmentVO = null;
 			public var intakeDCI:AssessmentVO;
 			
-			public var pageHomeButton:ButtonBarButton;
-			public var pageGPRAButton:ButtonBarButton;
-			public var pageDCIButton:ButtonBarButton;
-			public var pageAdminButton:ButtonBarButton;
-			
 			public var userList:ArrayList = new ArrayList();
 			[Bindable] public var staffList:ArrayList = new ArrayList();
 			[Bindable] public var facilityList:ArrayList = new ArrayList(); //maybe BIndable
@@ -62,44 +57,35 @@ New York SBIRT Branch
 			
 			protected function loginCompleteHandler(event:FlexEvent):void
 			{
-				//for subsequent logins, do setup upon entering the state immediately
-				if(creationComplete)
-					loginHelper();
-			}
-			
-			protected function pageViewstack_creationCompleteHandler(event:FlexEvent):void
-			{
-				//The first time login is done during the application, do setup after creation
-				loginHelper();
-			}
-			
-			protected function loginHelper():void
-			{
 				//Get staff list, facilities list, and grant details
 				getUsers.token = userService.getUsers();
 				getFacilities.token = miscService.getFacilities();
 				getGrantResult.token = miscService.getGrant(activeUser.grantid);
 				
 				//Set up button bar
-				pageHomeButton = pageButtonBar.getChildAt(0) as ButtonBarButton;
-				pageGPRAButton = pageButtonBar.getChildAt(1) as ButtonBarButton;
-				pageDCIButton = pageButtonBar.getChildAt(2) as ButtonBarButton;
-				pageAdminButton = pageButtonBar.getChildAt(3) as ButtonBarButton;
-				pageHomeButton.enabled = true;
-				pageGPRAButton.enabled = false;
-				pageDCIButton.enabled = false;
-				pageAdminButton.visible = adminMode;
+				reportsButton.visible = adminMode;
 				
 				//Misc
 				dateFormatter.setDateTimePattern("MM/dd/yyyy");
 				creationComplete = true;
 			}
 			
+			/*protected function pageViewstack_creationCompleteHandler(event:FlexEvent):void
+			{
+				//The first time login is done during the application, do setup after creation
+				loginHelper();
+			}*/
+			
+			protected function loginHelper():void
+			{
+				
+			}
+			
 			protected function headerClientText(activeClient:ClientVO):String
 			{
 				var s:String = "";
 				if(activeClient != null)
-					s = "ID: "+activeClient.clientid;
+					s = activeClient.clientid;
 				return s;
 			}
 			
@@ -140,9 +126,6 @@ New York SBIRT Branch
 				activeUser = null;
 				activeClient = null;
 				activeAssessment = null;
-				pageHomeButton.enabled = true;
-				pageGPRAButton.enabled = false;
-				pageDCIButton.enabled = false;
 				pageViewstack.selectedChild = pageHome;
 				pageHome.resetPage();
 				pageLogin.resetPage();
@@ -156,27 +139,17 @@ New York SBIRT Branch
 				attemptHomePage();
 			}
 			
-			//Disable all buttons except the currently selected one
-			public function disableAllOtherButtons(b:ButtonBarButton):void
+			protected function homeButton_clickHandler(event:MouseEvent):void
 			{
-				b.enabled = true;
-				for(var i:int = 0; i < pageButtonBar.getChildren().length; i++)
-				{
-					if(b != pageButtonBar.getChildAt(i))
-						(pageButtonBar.getChildAt(i) as ButtonBarButton).enabled = false;
-				}
+				pageViewstack.selectedChild = pageHome;
+				pageHome.resetPage();
+				activeClient = null;
+				activeAssessment = null;
 			}
 			
-			public function enableDCIButton():void
+			protected function reportsButton_clickHandler(event:MouseEvent):void
 			{
-					pageGPRAButton.enabled = false;
-					pageDCIButton.enabled = true;
-			}
-			
-			public function enableGPRAButton():void
-			{
-				pageGPRAButton.enabled = true;
-				pageDCIButton.enabled = false;
+				pageViewstack.selectedChild = pageAdmin;
 			}
 			
 		]]>
@@ -203,7 +176,7 @@ New York SBIRT Branch
 	</fx:Declarations>
 	<mx:ViewStack id="pageViewstack" x="0" y="100" width="100%" height="100%"  includeIn="State1"
 				  backgroundColor="#E2E2E8" chromeColor="#6376A5" color="#000000"
-				  contentBackgroundColor="#FFFFFF" creationPolicy="all" creationComplete="pageViewstack_creationCompleteHandler(event)">
+				  contentBackgroundColor="#FFFFFF" creationPolicy="all">
 		<pages:HomePage id="pageHome" width="100%" height="100%" label="Home" />
 		<pages:DciPage id="pageGPRA" width="100%" height="100%" label="GPRA"/>
 		<pages:DciPage id="pageDCI" width="100%" height="100%" label="DCI"/>
@@ -215,13 +188,16 @@ New York SBIRT Branch
 		<s:layout>
 			<s:BasicLayout/>
 		</s:layout>
-		<s:FormItem x="150" y="27" label="Active Client:">
+		<s:FormItem x="142" y="39" label="Active Client:" fontSize="14">
 			<s:Label id="headerClientLabel" text="{headerClientText(activeClient)}"/>
 		</s:FormItem>
-		<s:Button id="logoutButton" x="606" y="5" label="Logout"
+		<s:Button id="logoutButton" x="609" y="16" height="43" label="Logout"
 				  click="logoutButton_clickHandler(event)"/>
+		<s:Button id="homeButton" x="443" y="16" height="43" label="Home" click="homeButton_clickHandler(event)"/>
+		<s:Button id="reportsButton" x="528" y="16" height="43" label="Reports" click="reportsButton_clickHandler(event)"/>
+		<s:Label x="197" y="12" fontSize="20" fontStyle="italic" fontWeight="normal"
+				 text="New York SBIRT"/>
 	</s:Group>
-	<mx:ToggleButtonBar id="pageButtonBar" x="171" y="10" dataProvider="{pageViewstack}" includeIn="State1"/>
 	
 	<pages:LoginPage id="pageLogin" width="100%" height="100%" label="Login" includeIn="Login"/>
 </s:Application>

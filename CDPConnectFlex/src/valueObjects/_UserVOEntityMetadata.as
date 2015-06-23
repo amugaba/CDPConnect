@@ -72,7 +72,7 @@ internal class _UserVOEntityMetadata extends com.adobe.fiber.valueobjects.Abstra
         model_internal::propertyTypeMap["initials"] = "String";
         model_internal::propertyTypeMap["facility"] = "String";
         model_internal::propertyTypeMap["email"] = "String";
-        model_internal::propertyTypeMap["admin"] = "int";
+        model_internal::propertyTypeMap["admin"] = "Boolean";
         model_internal::propertyTypeMap["grantid"] = "int";
         model_internal::propertyTypeMap["eulaSigned"] = "int";
         model_internal::propertyTypeMap["passwordChangedDate"] = "String";

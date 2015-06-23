@@ -225,7 +225,7 @@
 					}
 					else
 					{
-						global.adminMode = global.activeUser.admin == 1;
+						global.adminMode = global.activeUser.admin;
 						global.currentState = "State1";
 					}
 				}

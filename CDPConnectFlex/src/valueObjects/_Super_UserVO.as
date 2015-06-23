@@ -65,7 +65,7 @@ public class _Super_UserVO extends flash.events.EventDispatcher implements com.a
     private var _internal_initials : String;
     private var _internal_facility : String;
     private var _internal_email : String;
-    private var _internal_admin : int;
+    private var _internal_admin : Boolean;
     private var _internal_grantid : int;
     private var _internal_eulaSigned : int;
     private var _internal_passwordChangedDate : String;
@@ -135,7 +135,7 @@ public class _Super_UserVO extends flash.events.EventDispatcher implements com.a
     }
 
     [Bindable(event="propertyChange")]
-    public function get admin() : int
+    public function get admin() : Boolean
     {
         return _internal_admin;
     }
@@ -236,9 +236,9 @@ public class _Super_UserVO extends flash.events.EventDispatcher implements com.a
         }
     }
 
-    public function set admin(value:int) : void
+    public function set admin(value:Boolean) : void
     {
-        var oldValue:int = _internal_admin;
+        var oldValue:Boolean = _internal_admin;
         if (oldValue !== value)
         {
             _internal_admin = value;

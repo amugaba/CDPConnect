@@ -196,21 +196,75 @@ class ClientService
 	 * Get all clients matching the search criteria
 	 * 
 	 * @param string $clientid
+	 * @param string $intakeDate
+	 * @param bool $checkDischarge
 	 * @return ClientVO[]
 	 */
     
-    public function searchClients ($clientid)
-    {    	
-    	$stmt = $this->connection->prepare("SELECT autoid, clientid FROM client_tbl WHERE
-        	clientid LIKE ?");
-        $this->throwExceptionOnError();
-        
-        $clientid = str_replace("*", "%", $clientid);
-        if(strlen($clientid) == 0)
-        	$clientid = "%";
-
-        $stmt->bind_param('s', $clientid);
-        $this->throwExceptionOnError();
+    public function searchClients ($clientid, $intakeDate, $checkDischarge)
+    {    
+    	$clientid = str_replace("*", "%", $clientid);	
+    	if(strlen($clientid) == 0 && strlen($intakeDate) == 0 && !$checkDischarge) //no search terms
+    	{
+    		$stmt = $this->connection->prepare("SELECT autoid, clientid FROM client_tbl");
+    		$this->throwExceptionOnError();
+    	}
+    	else if(strlen($intakeDate) == 0 && !$checkDischarge) //just search clientID
+    	{
+	    	$stmt = $this->connection->prepare("SELECT autoid, clientid FROM client_tbl WHERE clientid LIKE ?");
+	    	$this->throwExceptionOnError();
+	    	
+	    	$stmt->bind_param('s', $clientid);
+        	$this->throwExceptionOnError();
+    	}
+        else if(strlen($clientid) == 0 && !$checkDischarge) //just intakeDate
+        {
+        	$stmt = $this->connection->prepare("SELECT c.autoid, c.clientid FROM client_tbl c, assessment_tbl a WHERE c.autoid=a.client_autoid AND a.subtype < 4 AND a.date=?");
+	    	$this->throwExceptionOnError();
+	    	
+	    	$stmt->bind_param('s', $intakeDate);
+        	$this->throwExceptionOnError();
+        }
+    	else if(strlen($clientid) == 0 && strlen($intakeDate) == 0) //just checkDischarge
+        {
+        	$stmt = $this->connection->prepare("SELECT c.autoid, c.clientid FROM client_tbl c WHERE NOT EXISTS (SELECT NULL FROM assessment_tbl a WHERE c.autoid=a.client_autoid AND a.subtype>3 AND a.subtype<7)");
+	    	$this->throwExceptionOnError();
+        }
+    	else if(!$checkDischarge) //clientID and intakeDate
+        {
+        	$stmt = $this->connection->prepare("SELECT c.autoid, c.clientid FROM client_tbl c, assessment_tbl a WHERE c.autoid=a.client_autoid AND c.clientid LIKE ? AND a.subtype < 4 AND a.date=?");
+	    	$this->throwExceptionOnError();
+	    	
+	    	$stmt->bind_param('ss', $clientid, $intakeDate);
+        	$this->throwExceptionOnError();
+        }
+    	else if(strlen($intakeDate) == 0) //clientID and checkDischarge
+        {
+        	$stmt = $this->connection->prepare("SELECT c.autoid, c.clientid FROM client_tbl c WHERE c.clientid LIKE ? AND NOT EXISTS (SELECT NULL FROM assessment_tbl a WHERE c.autoid=a.client_autoid AND a.subtype>3 AND a.subtype<7)");
+	    	$this->throwExceptionOnError();
+	    	
+	    	$stmt->bind_param('s', $clientid);
+        	$this->throwExceptionOnError();
+        }
+    	else if(strlen($clientid) == 0) //intakeDate and checkDischarge
+        {
+        	$stmt = $this->connection->prepare("SELECT c.autoid, c.clientid FROM client_tbl c, assessment_tbl a WHERE c.autoid=a.client_autoid AND a.subtype < 4 AND a.date=? 
+        		AND NOT EXISTS (SELECT NULL FROM assessment_tbl b WHERE c.autoid=b.client_autoid AND b.subtype>3 AND b.subtype<7)");
+	    	$this->throwExceptionOnError();
+	    	
+	    	$stmt->bind_param('s', $intakeDate);
+        	$this->throwExceptionOnError();
+        }
+    	else //all three
+        {
+        	$stmt = $this->connection->prepare("SELECT c.autoid, c.clientid FROM client_tbl c, assessment_tbl a WHERE c.clientid LIKE ? 
+        		AND c.autoid=a.client_autoid AND a.subtype < 4 AND a.date=? 
+        		AND NOT EXISTS (SELECT NULL FROM assessment_tbl b WHERE c.autoid=b.client_autoid AND b.subtype>3 AND b.subtype<7)");
+	    	$this->throwExceptionOnError();
+	    	
+	    	$stmt->bind_param('ss', $clientid, $intakeDate);
+        	$this->throwExceptionOnError();
+        }
 		
         $stmt->execute();
         $this->throwExceptionOnError();

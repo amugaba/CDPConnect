@@ -4,7 +4,7 @@
 		 xmlns:mx="library://ns.adobe.com/flex/mx"
 		 xmlns:clientservice="services.clientservice.*"
 		 xmlns:assessmentservice="services.assessmentservice.*"
-		 width="325" height="418">
+		 width="357" height="466">
 	<fx:Script>
 		<![CDATA[
 			import components.assessment.AssessType;
@@ -130,13 +130,11 @@
 				
 				if(global.activeAssessment.type == AssessType.DCI)
 				{
-					global.enableDCIButton();
 					global.pageDCI.loadDCI(global.activeAssessment);
 					global.pageViewstack.selectedChild = global.pageDCI;
 				}
 				else if(global.activeAssessment.type == AssessType.GPRA)
 				{
-					global.enableGPRAButton();
 					global.pageDCI.loadDCI(global.activeAssessment);
 					global.pageViewstack.selectedChild = global.pageGPRA;
 				}
@@ -156,13 +154,11 @@
 					{
 						global.pageDCI.newIntake();
 						global.pageViewstack.selectedChild = global.pageDCI;
-						global.enableDCIButton();
 					}
 					else
 					{
 						global.pageGPRA.newIntake();
 						global.pageViewstack.selectedChild = global.pageGPRA;
-						global.enableGPRAButton();
 					}
 				}
 			}
@@ -180,13 +176,11 @@
 					{
 						global.pageDCI.newDischarge();
 						global.pageViewstack.selectedChild = global.pageDCI;
-						global.enableDCIButton();
 					}
 					else
 					{
 						global.pageGPRA.newDischarge();
 						global.pageViewstack.selectedChild = global.pageGPRA;
-						global.enableGPRAButton();
 					}
 				}
 			}
@@ -206,13 +200,11 @@
 					{
 						global.pageDCI.newFollowup();
 						global.pageViewstack.selectedChild = global.pageDCI;
-						global.enableDCIButton();
 					}
 					else
 					{
 						global.pageGPRA.newFollowup();
 						global.pageViewstack.selectedChild = global.pageGPRA;
-						global.enableGPRAButton();
 					}
 				}
 			}
@@ -230,18 +222,21 @@
 											 fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
 											 showBusyCursor="true"/>
 	</fx:Declarations>
-	<s:Form id="clientIDForm" x="19" y="7" width="222" height="44" defaultButton="{saveClientIDButton}" fontWeight="bold">
+	<s:Label y="0" fontSize="14" fontWeight="bold" horizontalCenter="0"
+			 text="Create Interviews for Active Client"/>
+	<s:Form id="clientIDForm" y="16" width="222" height="44" defaultButton="{saveClientIDButton}"
+			fontWeight="bold" horizontalCenter="0">
 		<mx:FormItem label="Client ID">
 			<s:TextInput id="clientID" fontWeight="normal"/>
 		</mx:FormItem>
 	</s:Form>
-	<s:Button id="saveClientIDButton" x="230" y="18" label="Change ID" click="saveButton_clickHandler(event)" fontWeight="normal"/>
+	<s:Button id="saveClientIDButton" y="55" label="Change ID" click="saveButton_clickHandler(event)"
+			  fontWeight="normal" horizontalCenter="52"/>
 	
 	<!--Interviews section-->
-	<s:Label x="121" y="66" fontWeight="bold" text="Interview List"/>
-	<s:DataGrid id="assessmentGrid" x="16" y="89" width="289" height="189"
-				dataProvider="{assessmentList}" 
-				requestedRowCount="3" resizableColumns="false">
+	<s:Label y="93" fontSize="14" fontWeight="bold" horizontalCenter="0" text="Interview List"/>
+	<s:DataGrid id="assessmentGrid" y="116" width="289" height="189" dataProvider="{assessmentList}"
+				horizontalCenter="0" requestedRowCount="3" resizableColumns="false">
 		<s:columns>
 			<s:ArrayList>
 				<s:GridColumn dataField="type" headerText="Type" width="135" itemRenderer="components.client.assessmentGridRenderer"></s:GridColumn>
@@ -259,23 +254,29 @@
 		</s:columns>
 	</s:DataGrid>
 	
-	<s:Group id="dciGroup" x="46" y="237">
+	<s:Group y="317" horizontalCenter="0">
 		<s:layout>
-			<s:VerticalLayout horizontalAlign="center"/>
+			<s:HorizontalLayout gap="15"/>
 		</s:layout>
+		<s:Group id="dciGroup" x="54" y="317">
+			<s:layout>
+				<s:VerticalLayout horizontalAlign="center"/>
+			</s:layout>
+			<s:Label x="53" y="313" fontWeight="bold" text="Create New DCI"/>
+			<s:Button id="dciIntakeButton" x="63" y="331" label="Intake" click="createIntake(true)"/>
+			<s:Button id="dciDischargeButton" x="59" y="358" label="Discharge" click="createDischarge(true)"/>
+			<s:Button id="dciFollowupButton" x="62" y="385" label="Followup" click="createFollowup(true)"/>
+		</s:Group>
+		
+		<s:Group id="gpraGroup" x="167" y="313">
+			<s:layout>
+				<s:VerticalLayout horizontalAlign="center"/>
+			</s:layout>
+			<s:Label fontWeight="bold" text="Create New GPRA"/>
+			<s:Button id="gpraIntakeButton" label="Intake" click="createIntake(false)"/>
+			<s:Button id="gpraDischargeButton" label="Discharge" click="createDischarge(false)"/>
+			<s:Button id="gpraFollowupButton" label="Followup" click="createFollowup(false)"/>
+		</s:Group>
 	</s:Group>
 	
-	<s:Group id="gpraGroup" x="167" y="286">
-		<s:layout>
-			<s:VerticalLayout horizontalAlign="center"/>
-		</s:layout>
-		<s:Label fontWeight="bold" text="Create New GPRA"/>
-		<s:Button id="gpraIntakeButton" label="Intake" click="createIntake(false)"/>
-		<s:Button id="gpraDischargeButton" label="Discharge" click="createDischarge(false)"/>
-		<s:Button id="gpraFollowupButton" label="Followup" click="createFollowup(false)"/>
-	</s:Group>
-	<s:Label x="53" y="286" fontWeight="bold" text="Create New DCI"/>
-	<s:Button id="dciIntakeButton" x="63" y="304" label="Intake" click="createIntake(true)"/>
-	<s:Button id="dciDischargeButton" x="59" y="331" label="Discharge" click="createDischarge(true)"/>
-	<s:Button id="dciFollowupButton" x="62" y="358" label="Followup" click="createFollowup(true)"/>
 </s:Group>
