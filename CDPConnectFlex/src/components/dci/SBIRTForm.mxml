@@ -52,6 +52,7 @@
 				
 				//Control Logic
 				addSkipTextRange(qOtherScreen,[qOtherScreenSpec],0,999,true);
+				addSkipDropDown(qSBIRTScreen,["Negative"],[qAUDIT,qCAGE,qDAST,qDAST10,qNIAAA,qASSIST,qOtherScreen]);
 			}
 		]]>
 	</fx:Script>

@@ -6,7 +6,7 @@
 					xmlns:styles="com.adobe.fiber.styles.*"
 					xmlns:clientservice="services.clientservice.*" 
 					xmlns:client="components.client.*"
-					width="715" height="600">
+					width="715" height="700">
 	<fx:Script>
 		<![CDATA[
 			import mx.core.FlexGlobals;
@@ -29,6 +29,6 @@
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
 	<client:SearchGroup id="searchGroup" x="0" y="10" />
-	<mx:VRule y="10" width="20" height="700" horizontalCenter="0"/>
+	<mx:VRule y="10" width="20" height="690" horizontalCenter="0"/>
 	<client:ClientGroup id="clientGroup" x="358" y="10" />
 </s:NavigatorContent>

@@ -8,7 +8,7 @@
 					xmlns:clientservice="services.clientservice.*"
 					xmlns:dci="components.dci.*"
 					xmlns:assessmentservice="services.assessmentservice.*"
-					width="715" height="600">
+					width="715" height="700">
 	<fx:Script>
 		<![CDATA[
 			import com.adobe.serializers.utility.TypeUtility;
@@ -30,6 +30,8 @@
 			import mx.controls.tabBarClasses.Tab;
 			import mx.core.FlexGlobals;
 			import mx.events.CloseEvent;
+			import mx.events.ItemClickEvent;
+			import mx.events.StateChangeEvent;
 			import mx.events.ValidationResultEvent;
 			import mx.rpc.events.ResultEvent;
 			import mx.validators.ValidationResult;
@@ -47,6 +49,7 @@
 			protected var activeFormIndexes:Array = new Array();
 			protected var created:Boolean = false;
 			public var interviewType:int;
+			protected var currentIndex:int = 0;//tracks the tab index currently selected
 			
 			protected function initializePage():void
 			{				
@@ -58,6 +61,8 @@
 					oldPage.visible = false;
 				}
 				validationTextArea.text = "";
+				prevButton.enabled = false;
+				currentIndex = 0;
 				
 				if(!created)
 				{
@@ -493,6 +498,61 @@
 				file.save(output,"CodeNames.csv");
 			}
 			
+			protected function nextButton_clickHandler(event:MouseEvent):void
+			{
+				if(isCurrentFormValid())
+				{
+					viewStack.selectedIndex = viewStack.selectedIndex + 1;
+					if(viewStack.selectedIndex == activeTabIndexes.length - 1)
+						nextButton.enabled = false;
+					prevButton.enabled = true;
+					currentIndex = viewStack.selectedIndex;
+				}
+			}
+			
+			protected function prevButton_clickHandler(event:MouseEvent):void
+			{
+				if(isCurrentFormValid())
+				{
+					viewStack.selectedIndex = viewStack.selectedIndex - 1;
+					if(viewStack.selectedIndex == 0)
+						prevButton.enabled = false;
+					nextButton.enabled = true;
+					currentIndex = viewStack.selectedIndex;
+				}
+			}
+			
+			protected function tabBar_itemClickHandler(event:ItemClickEvent):void
+			{
+				if(isCurrentFormValid())
+				{
+					prevButton.enabled = true;
+					nextButton.enabled = true;
+					if(viewStack.selectedIndex == 0)
+						prevButton.enabled = false;
+					if(viewStack.selectedIndex == activeTabIndexes.length - 1)
+						nextButton.enabled = false;
+					currentIndex = viewStack.selectedIndex;
+				}
+				else
+					viewStack.selectedIndex = currentIndex;
+			}
+			
+			protected function isCurrentFormValid():Boolean
+			{
+				if(currentIndex >= activeFormIndexes.length)
+					return true;//if the current tab is the Save page
+				
+				var currentForm:DCIForm = dciForms[activeFormIndexes[currentIndex]];
+				var errors:ArrayList = currentForm.validateForm();
+				if(errors.length != 0)
+				{
+					Alert.show("Correct the errors on this page before continuing.");
+					return false;
+				}
+				return true;
+			}
+			
 		]]>
 	</fx:Script>
 	<fx:Declarations>
@@ -505,8 +565,8 @@
 	</fx:Declarations>
 	
 	<mx:TabBar id="tabBar" x="0" y="0" dataProvider="viewStack"
-			   direction="vertical"/>
-	<mx:ViewStack id="viewStack" x="105" y="0" width="603" height="650"
+			   direction="vertical" itemClick="tabBar_itemClickHandler(event)"/>
+	<mx:ViewStack id="viewStack" x="105" y="0" width="603" height="681"
 				  backgroundColor="#EAEAEA" creationPolicy="all" dropShadowVisible="true">
 		<s:NavigatorContent id="recordTab" width="100%" height="100%" label="Record">
 			<dci:RecordForm id="recordForm"/>
@@ -586,4 +646,6 @@
 			<s:TextArea id="validationTextArea" x="133" y="201" width="341" height="232" editable="false"/>
 		</s:NavigatorContent>
 	</mx:ViewStack>
+	<s:Image id="nextButton" x="650" y="630" source="assets/arrow_next_20.png" useHandCursor="true" buttonMode="true" click="nextButton_clickHandler(event)"/>
+	<s:Image id="prevButton" x="115" y="630" source="assets/arrow_prev_20.png" useHandCursor="true" buttonMode="true" click="prevButton_clickHandler(event)"/>
 </s:NavigatorContent>
