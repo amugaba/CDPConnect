@@ -41,7 +41,7 @@ class ClientService
 	 */
     public function getClientByID ($autoid)
     {
-        $stmt = mysqli_prepare($this->connection, "SELECT autoid, clientid, notes FROM client_tbl where autoid=?");
+        $stmt = mysqli_prepare($this->connection, "SELECT autoid, clientid FROM client_tbl where autoid=?");
         $this->throwExceptionOnError();
 
         $stmt->bind_param('i', $autoid);
@@ -51,7 +51,7 @@ class ClientService
         $this->throwExceptionOnError();
 
         $client = new ClientVO();
-        $stmt->bind_result($client->autoid, $client->clientid, $client->notes);
+        $stmt->bind_result($client->autoid, $client->clientid);
 
         if ($stmt->fetch())
         {

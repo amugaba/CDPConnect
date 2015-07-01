@@ -122,6 +122,7 @@
 				enableSectionJ(false);
 				enableSectionK(false);
 				
+				recordForm.populateForm();
 				determineActiveTabs();
 			}
 			
@@ -141,6 +142,7 @@
 				dischargeForm.qDischargeDate.answer = global.dateFormatter.format(new Date());
 				dischargeForm.qLastServiceDate.answer = global.dateFormatter.format(new Date());
 				
+				recordForm.populateForm();
 				determineActiveTabs();
 			}
 			
@@ -171,6 +173,7 @@
 					enableSectionJ(false);
 					enableSectionK(true);
 				}
+				recordForm.populateForm();
 				determineActiveTabs();
 			}
 			
@@ -264,6 +267,7 @@
 					dischargeForm.qLastServiceDate.answer = global.dateFormatter.format(new Date());
 				}
 				
+				recordForm.populateForm();
 				determineActiveTabs();
 				
 				//Load data
@@ -304,7 +308,8 @@
 					dv.max = 365;
 				}
 				
-				demoForm.qDateOfBirth.validator.enabled = enabled;
+				demoForm.qBirthMonth.validator.enabled = enabled;
+				demoForm.qBirthYear.validator.enabled = enabled;
 			}
 			
 			protected function enableSectionB(enabled:Boolean):void
@@ -435,6 +440,9 @@
 					data["autoid"] = data_autoid;
 					data["assessment_autoid"] = assessment_autoid;
 					global.activeAssessment.data = data;
+					global.activeAssessment.subtype = interviewType;
+					global.activeAssessment.complete = 1;
+					global.activeAssessment.type = AssessType.DCI;
 					updateAssessmentDataResult.token = assessmentService.updateAssessmentData(global.activeAssessment);
 				}
 			}

@@ -112,6 +112,7 @@
 						{
 							global.activeClient.intakeExists = true;
 							global.intakeDCI = assess;
+							global.activeClient.followupSelected = assess.data.source["followupSelected"] == 1;
 						}
 						else if(InterviewType.isDischarge(assess.subtype))
 							global.activeClient.dischargeExists = true;

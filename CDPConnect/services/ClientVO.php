@@ -35,7 +35,6 @@ class ClientVO
 	{
 		$this->autoid = -1;
 		$this->clientid = "";
-		$this->notes = "";
 		$this->intakeExists = false;
 		$this->dischargeExists = false;
 		$this->followupExists = false;

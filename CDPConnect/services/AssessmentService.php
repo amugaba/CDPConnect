@@ -160,6 +160,15 @@ class AssessmentService
 	 */
     public function updateAssessmentData ($item)
     {   
+    	$stmt = mysqli_prepare($this->connection, "UPDATE $this->tablename SET type=?, subtype=?, complete=?");
+        $this->throwExceptionOnError();
+
+        $stmt->bind_param('iii', $item->type, $item->subtype, $item->complete);
+        $this->throwExceptionOnError();
+
+        $stmt->execute();
+        $this->throwExceptionOnError();
+    	
     	$data = $item->data;
     	$pairs = array();
     	foreach($data as $key => &$value)

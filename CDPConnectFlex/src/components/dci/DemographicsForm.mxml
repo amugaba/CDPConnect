@@ -18,7 +18,8 @@
 			
 			import spark.components.TileGroup;
 			
-			public var qDateOfBirth:QuestionText = new QuestionText("DateOfBirth","Date of Birth","");
+			public var qBirthMonth:QuestionText = new QuestionText("BirthMonth","Month:","");
+			public var qBirthYear:QuestionText = new QuestionText("BirthYear","Year:","");
 			public var qHispanicLatino:QuestionList = new QuestionList("HispanicLatino","Are you Hispanic, Latino/a, or Spanish origin?",ynrm,1);
 			public var qEthnicCentralAmerican:QuestionList = new QuestionList("EthnicCentralAmerican","Central American",ynrm,1);
 			public var qEthnicCuban:QuestionList = new QuestionList("EthnicCuban","Cuban",ynrm,1);
@@ -54,7 +55,10 @@
 				viewstackIndex = 4;
 				
 				//Questions
-				addQuestion(qDateOfBirth);
+				createText("What is your month and year of birth?","h1");
+				addQuestion(qBirthMonth);
+				addQuestion(qBirthYear);
+				addDivider();
 				
 				addQuestion(qHispanicLatino);
 				createText("What ethnic group do you consider yourself?","h1");
@@ -93,10 +97,10 @@
 				addGroupedQuestion(qRacePacificIslander,g);				
 				
 				//Validators
-				Valid.addDateAgeValidator(qDateOfBirth,3,DateAgeValidator.YEAR,100,DateAgeValidator.YEAR);
+				Valid.addNumberValidator(qBirthMonth, 1, 12, true);
+				Valid.addNumberValidator(qBirthYear, new Date().fullYear-100, new Date().fullYear-18, true);
 				Valid.addDropDownValidator(qHispanicLatino,["No","Refused","Missing Data"]);
 				Valid.addRequiredValidator(qEthnicOtherSpecify);
-				qDateOfBirth.answerType = String;
 				qEthnicOtherSpecify.answerType = String;
 				
 				createEthnicBindings();
