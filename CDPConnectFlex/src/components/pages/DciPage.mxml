@@ -76,7 +76,9 @@
 					created = true;
 				}
 				
-				recordForm.initForm();
+				//intialize and reset all forms
+				for each(var form:DCIForm in dciForms)
+					form.initForm();
 			}
 			
 			protected function determineActiveTabs():void
@@ -284,19 +286,11 @@
 			
 			protected function enableSectionSBIRT(enabled:Boolean):void
 			{
-				sbirtForm.initForm();
 				enableTab(sbirtTab,enabled);
 			}
 			
 			protected function enableSectionA(enabled:Boolean):void
 			{
-				services1Form.initForm();
-				services2Form.initForm();
-				demoForm.initForm();
-				demo2Form.initForm();
-				military1Form.initForm();
-				military2Form.initForm();
-				
 				enableTab(services1Tab,enabled);
 				enableTab(services2Tab,enabled);
 				enableTab(demoTab,enabled);
@@ -315,24 +309,12 @@
 			
 			protected function enableSectionB(enabled:Boolean):void
 			{
-				drugForm.initForm();
-				drug2Form.initForm();
 				enableTab(drugTab,enabled);
 				enableTab(drug2Tab,enabled);
 			}
 			
 			protected function enableSectionCtoG(enabled:Boolean):void
 			{
-				livingForm.initForm();
-				employmentForm.initForm();
-				crimeForm.initForm();
-				health1Form.initForm();
-				health2Form.initForm();
-				health3Form.initForm();
-				health4Form.initForm();
-				health5Form.initForm();
-				socialForm.initForm();
-				
 				enableTab(livingTab,enabled);
 				enableTab(employmentTab,enabled);
 				enableTab(crimeTab,enabled);
@@ -346,15 +328,12 @@
 			
 			protected function enableSectionK(enabled:Boolean):void
 			{
-				dischargeServices1Form.initForm();
-				dischargeServices2Form.initForm();
 				enableTab(dischargeServices1Tab,enabled);
 				enableTab(dischargeServices2Tab,enabled);
 			}
 			
 			protected function enableSectionI(enabled:Boolean):void
 			{
-				followupForm.initForm();
 				enableTab(followupTab,enabled);
 				if(enabled)
 				{
@@ -372,7 +351,6 @@
 			
 			protected function enableSectionJ(enabled:Boolean):void
 			{
-				dischargeForm.initForm();
 				enableTab(dischargeTab,enabled);
 				if(enabled)
 				{
@@ -526,6 +504,9 @@
 			{
 				if(isCurrentFormValid())
 				{
+					//the tabs can change here if modality is changed, so make sure not to go beyond the last active tab
+					viewStack.selectedIndex = Math.min(viewStack.selectedIndex, activeTabIndexes.length -1);
+					
 					prevButton.enabled = true;
 					nextButton.enabled = true;
 					if(viewStack.selectedIndex == 0)
@@ -549,6 +530,38 @@
 				{
 					Alert.show("Correct the errors on this page before continuing.");
 					return false;
+				}
+				
+				//if doing intake, check if Services1 tab chose a new modality
+				if(currentForm == services1Form)
+				{
+					var modality:int = InterviewType.INTAKE_NEG;
+					if(services1Form.qSvcReferralToTreatment.answer == "Yes" || services1Form.qSvcBriefTreatment.answer == "Yes")
+						modality = InterviewType.INTAKE_RT;
+					else if(services1Form.qSvcBriefIntervention.answer == "Yes")
+						modality = InterviewType.INTAKE_BI;
+					
+					//if the modality changed, change tabs
+					if(interviewType != modality)
+					{
+						interviewType = modality;
+						if(interviewType == InterviewType.INTAKE_NEG)
+						{
+							enableSectionB(false);
+							enableSectionCtoG(false);
+						}
+						else if(interviewType == InterviewType.INTAKE_BI)
+						{
+							enableSectionB(true);
+							enableSectionCtoG(false);
+						}
+						else if(interviewType == InterviewType.INTAKE_RT)
+						{
+							enableSectionB(true);
+							enableSectionCtoG(true);
+						}
+						determineActiveTabs();
+					}
 				}
 				return true;
 			}
