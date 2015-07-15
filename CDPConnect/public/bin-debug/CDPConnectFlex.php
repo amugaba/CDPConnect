@@ -52,7 +52,7 @@
             attributes.align = "middle";
             swfobject.embedSWF(
                 "CDPConnectFlex.swf", "flashContent", 
-                "715", "800", 
+                "750", "800", 
                 swfVersionStr, xiSwfUrlStr, 
                 flashvars, params, attributes);
             // JavaScript enabled so display the flashContent div in case it is not replaced with a swf object.

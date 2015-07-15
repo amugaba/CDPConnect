@@ -12,6 +12,7 @@ package components.questions
 	import mx.binding.utils.ChangeWatcher;
 	import mx.collections.ArrayList;
 	import mx.controls.Alert;
+	import mx.core.FlexGlobals;
 	import mx.core.UIComponent;
 	import mx.validators.Validator;
 	
@@ -31,6 +32,7 @@ package components.questions
 		public var baseLabel:String;
 		protected var helpText:String;
 		public static var nf:NumberFormatter = new NumberFormatter( "en-US" );
+		protected var global:CDPConnectFlex = FlexGlobals.topLevelApplication as CDPConnectFlex;
 		
 		public function QuestionClass(codeName:String, questionLabel:String = "")
 		{

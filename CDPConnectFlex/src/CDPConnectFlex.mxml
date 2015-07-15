@@ -15,7 +15,7 @@ New York SBIRT Branch
 			   xmlns:clientservice="services.clientservice.*"
 			   xmlns:userservice="services.userservice.*"
 			   xmlns:miscservice="services.miscservice.*"
-			   width="715" height="800" minWidth="955" minHeight="620"
+			   width="750" height="800" minWidth="955" minHeight="620"
 			   backgroundColor="#E2E2E8" currentState="Login"
 			   pageTitle="CDP Connect" xmlns:pages="components.pages.*">
 	<fx:Script>
