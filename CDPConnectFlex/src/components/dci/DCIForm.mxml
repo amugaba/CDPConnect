@@ -32,9 +32,9 @@
 			import spark.events.IndexChangeEvent;
 			
 			protected static var yn:ArrayList = new ArrayList([YES_VALUE,NO_VALUE]);
-			protected static var ynrdm:ArrayList = new ArrayList([YES_VALUE,NO_VALUE,REFUSED_VALUE,DONT_KNOW_VALUE,MISSING_VALUE]);
-			protected static var ynrm:ArrayList = new ArrayList([YES_VALUE,NO_VALUE,REFUSED_VALUE,MISSING_VALUE]);
-			protected static var rdm:ArrayList = new ArrayList([REFUSED_VALUE,DONT_KNOW_VALUE,MISSING_VALUE]);
+			protected static var ynrd:ArrayList = new ArrayList([YES_VALUE,NO_VALUE,REFUSED_VALUE,DONT_KNOW_VALUE]);
+			protected static var ynr:ArrayList = new ArrayList([YES_VALUE,NO_VALUE,REFUSED_VALUE]);
+			protected static var rd:ArrayList = new ArrayList([REFUSED_VALUE,DONT_KNOW_VALUE]);
 			
 			public static var YES_CODE:int = 1;
 			public static var NO_CODE:int = 0;

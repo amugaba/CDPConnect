@@ -25,6 +25,8 @@ package components.questions
 			this.defaultValue = defaultValue;
 			input.selectedIndex = defaultValue;
 			this.enabled = editable;
+			BindingUtils.bindSetter(showErrorsNow, input, "errorString");
+			input.setStyle("showErrorTip",false);
 		}
 		
 		public override function get answer():String
@@ -88,6 +90,11 @@ package components.questions
 		public override function bindFunction(func:Function):void
 		{
 			var watcherSetter:ChangeWatcher = BindingUtils.bindSetter(func, input, "selectedItem");
+		}
+		
+		protected override function showErrorsNow(val:String):void
+		{
+			input.callLater(showErrorDeferred, [input]);
 		}
 	}
 }

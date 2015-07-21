@@ -12,41 +12,47 @@
 			
 			import mx.binding.utils.BindingUtils;
 			import mx.collections.ArrayList;
+			import mx.controls.HRule;
+			import mx.controls.Text;
 			import mx.validators.NumberValidator;
 			
-			public var qAnyViolence:QuestionList = new QuestionList("AnyViolence","In your life have you ever experienced an event, series of events, or set of circumstances that resulted in you feeling physically or emotionally harmed or threatened?",ynrdm,1);
-			public var qViolenceDisaster:QuestionList = new QuestionList("ViolenceDisaster","Natural or man-made disaster",ynrm,1);
-			public var qViolenceSchool:QuestionList = new QuestionList("ViolenceSchool","Community or school violence",ynrm,1);
-			public var qViolenceInterpersonal:QuestionList = new QuestionList("ViolenceInterpersonal","Interpersonal violence (including physical, sexual, or psychological)",ynrm,1);
-			public var qViolenceMilitary:QuestionList = new QuestionList("ViolenceMilitary","Military trauma",ynrm,1);
-			public var qViolenceOther:QuestionList = new QuestionList("ViolenceOther","Other",ynrm,1);
+			public var qAnyViolence:QuestionList = new QuestionList("AnyViolence","In your life have you ever experienced an event, series of events, or set of circumstances that resulted in you feeling physically or emotionally harmed or threatened?",ynrd,1);
+			public var qViolenceDisaster:QuestionList = new QuestionList("ViolenceDisaster","Natural or man-made disaster",ynr,1);
+			public var qViolenceSchool:QuestionList = new QuestionList("ViolenceSchool","Community or school violence",ynr,1);
+			public var qViolenceInterpersonal:QuestionList = new QuestionList("ViolenceInterpersonal","Interpersonal violence (including physical, sexual, or psychological)",ynr,1);
+			public var qViolenceMilitary:QuestionList = new QuestionList("ViolenceMilitary","Military trauma",ynr,1);
+			public var qViolenceOther:QuestionList = new QuestionList("ViolenceOther","Other",ynr,1);
 			public var qViolenceOtherSpec:QuestionText = new QuestionText("ViolenceOtherSpec","Other (specify)","");
 			
-			public var qNightmares:QuestionList = new QuestionList("Nightmares","Have had nightmares about it or thought about it when you did not want to?",ynrdm,1);
-			public var qTriedHard:QuestionList = new QuestionList("TriedHard","Tried hard not to think about it or went out of your way to avoid situations that remind you of them?",ynrdm,1);
-			public var qConstantGuard:QuestionList = new QuestionList("ConstantGuard","Were constantly on guard, watchful, or easily startled?",ynrdm,1);
-			public var qNumbAndDetach:QuestionList = new QuestionList("NumbAndDetach","Felt numb and detached from others, activities, or your surroundings?",ynrdm,1);
+			public var qNightmares:QuestionList = new QuestionList("Nightmares","Have had nightmares about it or thought about it when you did not want to?",ynrd,1);
+			public var qTriedHard:QuestionList = new QuestionList("TriedHard","Tried hard not to think about it or went out of your way to avoid situations that remind you of them?",ynrd,1);
+			public var qConstantGuard:QuestionList = new QuestionList("ConstantGuard","Were constantly on guard, watchful, or easily startled?",ynrd,1);
+			public var qNumbAndDetach:QuestionList = new QuestionList("NumbAndDetach","Felt numb and detached from others, activities, or your surroundings?",ynrd,1);
 			public var qPhysicallyHurt:QuestionList = new QuestionList("PhysicallyHurt","In the past 30 days, how often have you experienced an event, series of events of set of circumstances that resulted in you feeling physically or emotionally harmed or threatened?",new ArrayList(["Never","A few times",
-				"More than a few times","Refused","Don't Know","Missing Data"]),0);
+				"More than a few times",REFUSED_VALUE,DONT_KNOW_VALUE]),0);
+			
+			private var textKindOfEvent:Text;
+			private var textFeel:Text;
+			private var divider:HRule;
 			
 			//Health4 Form Area
 			public override function createForm():void
 			{
 				//Questions
 				addQuestion(qAnyViolence);
-				createText("What kind of event was this? (Select all that apply)","h1");
+				textKindOfEvent = createText("What kind of event was this? (Select all that apply)","h1");
 				addQuestion(qViolenceDisaster);
 				addQuestion(qViolenceSchool);
 				addQuestion(qViolenceInterpersonal);
 				addQuestion(qViolenceMilitary);
 				addQuestion(qViolenceOther);
 				addQuestion(qViolenceOtherSpec);
-				createText("Did any of these experiences feel so frightening, horrible, or upsetting that in the past and/or the present you:","h1");
+				textFeel = createText("Did any of these experiences feel so frightening, horrible, or upsetting that in the past and/or the present you:","h1",590);
 				addQuestion(qNightmares);
 				addQuestion(qTriedHard);
 				addQuestion(qConstantGuard);
 				addQuestion(qNumbAndDetach);
-				addDivider();
+				divider = addDivider();
 				addQuestion(qPhysicallyHurt,130);
 				
 				//Validators
@@ -57,6 +63,58 @@
 				addSkipDropDown(qAnyViolence,["Yes"],[qViolenceDisaster,qViolenceSchool,qViolenceInterpersonal,qViolenceMilitary,qViolenceOther,qNightmares,qTriedHard,qConstantGuard,qNumbAndDetach],true);
 				addSkipDropDown(qViolenceOther,["Yes"],[qViolenceOtherSpec],true);
 				
+			}
+			
+			//Certain questions are only visible during intake or reassessment
+			public override function initForm():void
+			{
+				super.initForm();
+				
+				//If the interview is Intake, add back in the questions
+				if(InterviewType.isIntake(global.pageDCI.interviewType))
+				{
+					if(questions.indexOf(qAnyViolence) == -1)
+					{						
+						addQuestion(qAnyViolence);
+						addElement(textKindOfEvent);
+						addQuestion(qViolenceDisaster);
+						addQuestion(qViolenceSchool);
+						addQuestion(qViolenceInterpersonal);
+						addQuestion(qViolenceMilitary);
+						addQuestion(qViolenceOther);
+						addQuestion(qViolenceOtherSpec);
+						addElement(textFeel);
+						addQuestion(qNightmares);
+						addQuestion(qTriedHard);
+						addQuestion(qConstantGuard);
+						addQuestion(qNumbAndDetach);
+						addElement(divider);
+						
+						//move last question to the end
+						addElementAt(qPhysicallyHurt,numElements-1);
+					}
+				}
+				//If the interview is not Intake, remove the first set of questions
+				else if(!InterviewType.isIntake(global.pageDCI.interviewType))
+				{
+					if(questions.indexOf(qAnyViolence) != -1)
+					{
+						removeQuestion(qAnyViolence);
+						removeElement(textKindOfEvent);
+						removeQuestion(qViolenceDisaster);
+						removeQuestion(qViolenceSchool);
+						removeQuestion(qViolenceInterpersonal);
+						removeQuestion(qViolenceMilitary);
+						removeQuestion(qViolenceOther);
+						removeQuestion(qViolenceOtherSpec);
+						removeElement(textFeel);
+						removeQuestion(qNightmares);
+						removeQuestion(qTriedHard);
+						removeQuestion(qConstantGuard);
+						removeQuestion(qNumbAndDetach);
+						removeElement(divider);
+					}
+				}
 			}
 		]]>
 	</fx:Script>

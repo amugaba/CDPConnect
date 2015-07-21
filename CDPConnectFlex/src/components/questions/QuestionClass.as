@@ -3,6 +3,7 @@ package components.questions
 	import components.skips.SkipPattern;
 	
 	import flash.display.InteractiveObject;
+	import flash.geom.Point;
 	import flash.globalization.NumberFormatter;
 	
 	import flashx.textLayout.elements.LinkElement;
@@ -12,8 +13,10 @@ package components.questions
 	import mx.binding.utils.ChangeWatcher;
 	import mx.collections.ArrayList;
 	import mx.controls.Alert;
+	import mx.controls.ToolTip;
 	import mx.core.FlexGlobals;
 	import mx.core.UIComponent;
+	import mx.managers.ToolTipManager;
 	import mx.validators.Validator;
 	
 	import spark.components.FormItem;
@@ -31,6 +34,7 @@ package components.questions
 		public var answerType:Class = int;
 		public var baseLabel:String;
 		protected var helpText:String;
+		protected var errorToolTip:ToolTip;
 		public static var nf:NumberFormatter = new NumberFormatter( "en-US" );
 		protected var global:CDPConnectFlex = FlexGlobals.topLevelApplication as CDPConnectFlex;
 		
@@ -122,6 +126,52 @@ package components.questions
 			Alert.show(helpText);
 			evt.stopImmediatePropagation();
 			evt.preventDefault();
+		}
+		
+		protected function showErrorsNow(val:String):void
+		{
+			//To be overridden
+		}
+		
+		protected function showErrorDeferred(input:UIComponent):void
+		{
+			if(input.errorString != "" && errorToolTip == null)
+			{
+				//Get the location of the input in global coordinates
+				var pt:Point = new Point(input.x, input.y);
+				if(this == input.parent)
+					pt = contentToGlobal(pt);
+				else
+					pt = (input.parent as QuestionClass).contentToGlobal(pt);
+				
+				//First try creating the tip to the right
+				errorToolTip = ToolTipManager.createToolTip(input.errorString,pt.x+input.width,pt.y-2,"errorTipRight",input) as ToolTip;
+				//errorToolTip.setStyle("styleName", "errorTip");
+				
+				//if the error runs off the screen display error above instead
+				if(errorToolTip.width + pt.x + input.width > global.width)
+				{ 
+					ToolTipManager.destroyToolTip(errorToolTip);
+					errorToolTip = ToolTipManager.createToolTip(input.errorString,pt.x,pt.y-34,"errorTipAbove",input) as ToolTip;
+					//errorToolTip.setStyle("styleName", "errorTip");
+				}
+				
+				//set padding to make error narrower
+				errorToolTip.setStyle("paddingTop",1);
+				errorToolTip.setStyle("paddingBottom",1);
+			}
+				//If the error message changed, change the text
+				//but you also need to reevaluate maybe to see if it needs to be above or right
+			else if(input.errorString != "" && errorToolTip.text != input.errorString)
+			{
+				errorToolTip.text = input.errorString;
+			}
+				//If there is no error, remove the tool tip
+			else if(input.errorString == "" && errorToolTip != null)
+			{
+				ToolTipManager.destroyToolTip(errorToolTip);
+				errorToolTip = null;
+			}
 		}
 	}
 }

@@ -109,8 +109,8 @@
 			//Setup a blank DCI form
 			public function newIntake():void
 			{
-				initializePage();
 				interviewType = InterviewType.INTAKE_NEG;//change this value if user fills out services
+				initializePage();
 				
 				//Enable only section A and SBIRT. Then once the user fills out what services were provided, enabled
 				//additional sections based on that modality
@@ -128,8 +128,8 @@
 			
 			public function newDischarge():void
 			{
-				initializePage();
 				interviewType = InterviewType.DISCHARGE_ADMIN;
+				initializePage();
 				
 				//If discharge, do admin discharge by default. If user selects that an interview was done, add other sections
 				enableSectionSBIRT(false);
@@ -148,10 +148,15 @@
 			
 			public function newFollowup():void
 			{
+				if(global.intakeDCI.subtype == InterviewType.INTAKE_BI)
+					interviewType = InterviewType.FOLLOWUP_BI;
+				else
+					interviewType = InterviewType.FOLLOWUP_RT;
+				
 				initializePage();
 				
 				//If followup, look at intake interview type to decide between BI and RT followup
-				if(global.intakeDCI.subtype == InterviewType.INTAKE_BI)
+				if(interviewType == InterviewType.INTAKE_BI)
 				{
 					interviewType = InterviewType.FOLLOWUP_BI;
 					enableSectionSBIRT(false);
@@ -179,8 +184,8 @@
 			
 			public function loadDCI(interview:AssessmentVO):void
 			{
-				initializePage();
 				interviewType = interview.subtype;
+				initializePage();
 				
 				//Enable only section A and SBIRT. Then once the user fills out what services were provided, enabled
 				//additional sections based on that modality

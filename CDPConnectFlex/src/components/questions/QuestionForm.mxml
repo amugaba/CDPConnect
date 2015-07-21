@@ -101,12 +101,13 @@
 				}
 			}
 			
-			public function addDivider():void
+			public function addDivider():HRule
 			{
 				var h:HRule = new HRule();
 				h.height = 5;
 				h.percentWidth = 100;
 				addElement(h);
+				return h;
 			}
 			
 			public function addSkipDropDown(sourceQuestion:QuestionClass, skipAnswers:Array, skipQuestions:Array, inverse:Boolean = false):void
@@ -142,7 +143,7 @@
 				sourceQuestion.skipPatterns.push(skip);
 			}
 			
-			public function createText(text:String,style:String, width:int=-1):void
+			public function createText(text:String,style:String, width:int=-1):Text
 			{
 				var t:Text = new Text();
 				t.text = text;
@@ -150,6 +151,7 @@
 					t.width = width-10;
 				t.styleName = style;
 				addElement(t);
+				return t;
 			}
 			
 			public function saveData(data:Array):Array

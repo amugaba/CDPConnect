@@ -19,9 +19,9 @@
 			public var qInterviewTypeCode:QuestionList = new QuestionList("InterviewTypeCode","Interview Type",new ArrayList(["Intake","6 Month Followup","12 Month Followup","3 Month Followup","Discharge", "Discharge: Administrative"]),0);
 			public var qConductedInterview:QuestionList = new QuestionList("ConductedInterview","Was the interview conducted?",yn,0);
 			public var qInterviewDate:QuestionText = new QuestionText("InterviewDate","Interview Date","");
-			public var qCooccurringScreen:QuestionList = new QuestionList("CooccurringScreen","Was the client screened by your program for co-occurring mental health and substance use disorders?",new ArrayList(["Yes","No","Missing Data"]),0);
-			public var qCooccurringScreenStatus:QuestionList = new QuestionList("CooccurringScreenStatus","Did the client screen positive for co-occurring mental health and substance use disorders?",new ArrayList(["Yes","No","Missing Data"]),1);
-			public var qFollowupSelected:QuestionList = new QuestionList("followupSelected","Was the client selected for follow-up, and did the client agree to follow-up?",new ArrayList(["Yes","No"]),1);
+			public var qCooccurringScreen:QuestionList = new QuestionList("CooccurringScreen","Was the client screened by your program for co-occurring mental health and substance use disorders?",yn,1);
+			public var qCooccurringScreenStatus:QuestionList = new QuestionList("CooccurringScreenStatus","Did the client screen positive for co-occurring mental health and substance use disorders?",yn,1);
+			public var qFollowupSelected:QuestionList = new QuestionList("followupSelected","Was the client selected for follow-up, and did the client agree to follow-up?",yn,1);
 
 			protected var dateFormatter:DateTimeFormatter = new DateTimeFormatter(LocaleID.DEFAULT);
 			
@@ -44,8 +44,8 @@
 				
 				//Control Logic
 				//addSkipDropDown("InterviewTypeCode",["Intake"],["ConductedInterview"]);
-				addSkipDropDown(qConductedInterview,["No"],[qInterviewDate]);
-				addSkipDropDown(qCooccurringScreen,["No","Missing Data"],[qCooccurringScreenStatus]);
+				addSkipDropDown(qConductedInterview,[NO_VALUE],[qInterviewDate]);
+				addSkipDropDown(qCooccurringScreen,[NO_VALUE],[qCooccurringScreenStatus]);
 				
 				//Prepopulate
 				dateFormatter.setDateTimePattern("MM/dd/yyyy");

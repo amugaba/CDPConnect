@@ -14,7 +14,9 @@
 			
 			import mx.binding.utils.BindingUtils;
 			import mx.collections.ArrayList;
+			import mx.controls.Alert;
 			import mx.validators.NumberValidator;
+			import mx.validators.ValidationResult;
 			
 			public var qAlcoholDays:QuestionTextRefusable = new QuestionTextRefusable("AlcoholDays","Alcoholic beverages","0");
 			public var qAlcoholIntoxDays:QuestionTextRefusable = new QuestionTextRefusable("AlcoholIntoxDays","Alcohol to intoxication (4 drinks in one sitting)","0");
@@ -81,10 +83,25 @@
 				Valid.addRequiredValidator(qOtherIllegalDrugsSpec);
 				qOtherIllegalDrugsSpec.answerType = String;
 				
+				//intox and both days are <= alc days
 				BindingUtils.bindSetter(function():void{
-					(qAlcoholIntoxDays.validator as NumberValidator).maxValue = Number(qAlcoholDays.answer);
-					(qAlcoholDrugBothDays.validator as NumberValidator).maxValue = Number(qAlcoholDays.answer);
+					(qAlcoholIntoxDays.validator as NumberValidator).maxValue = qAlcoholDays.answerNumber;
+					(qAlcoholDrugBothDays.validator as NumberValidator).maxValue = qAlcoholDays.answerNumber;
+					qAlcoholIntoxDays.validator.validate();
+					qAlcoholDrugBothDays.validator.validate();
 				}, qAlcoholDays.inputControl, "text");
+				(qAlcoholIntoxDays.validator as NumberValidator).exceedsMaxError = "Cannot be greater than 'Alcoholic beverages' days";
+				(qAlcoholDrugBothDays.validator as NumberValidator).exceedsMaxError = "Cannot be greater than 'Alcoholic beverages' days";
+				
+				//NY requested that drug days be >= both days
+				BindingUtils.bindSetter(function():void{
+					(qIllegalDrugsDays.validator as NumberValidator).minValue = qAlcoholDrugBothDays.answerNumber;
+					qIllegalDrugsDays.validator.validate();
+					qIllegalDrugsDays.refreshSkips();
+				}, qAlcoholDrugBothDays.inputControl, "text");
+				(qIllegalDrugsDays.validator as NumberValidator).lowerThanMinError = "Cannot be less than 'Both alcohol and drugs' days";
+				
+				//individual drugs must be <= total drugs
 				BindingUtils.bindSetter(drugDaysHandler, qIllegalDrugsDays.inputControl, "text");
 				
 				//Control Logic
@@ -111,6 +128,30 @@
 				Valid.addNumberValidator(daysQ,0,0,true);
 				addSkipTextNumber(daysQ,[routeQ],["0"]);
 				drugQuestions.push(daysQ);
+			}
+			
+			public override function validateForm():ArrayList
+			{
+				var errorList:ArrayList = super.validateForm();
+				
+				if(qIllegalDrugsDays.answerNumber > 0)
+				{
+					var nonzero:Boolean = false;
+					for each(var q:QuestionClass in drugQuestions)
+					{
+						if(q.answerNumber > 0)
+						{
+							nonzero = true;
+							break;
+						}
+					}
+					if(!nonzero)
+					{
+						errorList.addItem(new ValidationResult(true));
+						Alert.show("If 'Any illegal drugs' days is greater than 0, at least one individual drug's days of use must be non-zero.","Error");
+					}
+				}
+				return errorList;
 			}
 			
 			protected function drugDaysHandler(val:String):void

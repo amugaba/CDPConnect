@@ -13,13 +13,13 @@
 			import mx.collections.ArrayList;
 			import mx.validators.NumberValidator;
 			
-			public var qAttendVoluntary:QuestionList = new QuestionList("AttendVoluntary","Voluntary self-help groups for recovery that were not affiliated with a religious or faith-based organization",ynrdm,1);
+			public var qAttendVoluntary:QuestionList = new QuestionList("AttendVoluntary","Voluntary self-help groups for recovery that were not affiliated with a religious or faith-based organization",ynrd,1);
 			public var qAttendVoluntaryTimes:QuestionTextRefusable = new QuestionTextRefusable("AttendVoluntaryTimes","","0");
-			public var qAttendReligious:QuestionList = new QuestionList("AttendReligious","Religious/faith affiliated recovery self-help groups",ynrdm,1);
+			public var qAttendReligious:QuestionList = new QuestionList("AttendReligious","Religious/faith affiliated recovery self-help groups",ynrd,1);
 			public var qAttendReligiousTimes:QuestionTextRefusable = new QuestionTextRefusable("AttendReligiousTimes","","0");
-			public var qAttendOtherOrg:QuestionList = new QuestionList("AttendOtherOrg","Meetings of organizations that support recovery other than the organizations described above",ynrdm,1);
+			public var qAttendOtherOrg:QuestionList = new QuestionList("AttendOtherOrg","Meetings of organizations that support recovery other than the organizations described above",ynrd,1);
 			public var qAttendOtherOrgTimes:QuestionTextRefusable = new QuestionTextRefusable("AttendOtherOrgTimes","","0");
-			public var qInteractFamilyFriends:QuestionList = new QuestionList("InteractFamilyFriends","In the past 30 days, have you had interaction with family and/or friends that are supportive of your recovery?",ynrdm,1);
+			public var qInteractFamilyFriends:QuestionList = new QuestionList("InteractFamilyFriends","In the past 30 days, have you had interaction with family and/or friends that are supportive of your recovery?",ynrd,1);
 			public var qAccomplishedGoals:QuestionList = new QuestionList("AccomplishedGoals","In the past 30 days, I generally accomplished what I set out to do.",new ArrayList(["Strongly agree","Agree","Undecided","Disagree","Strongly disagree","Refused","Don't Know","Missing Data"]),0);
 			public var qManageHealth:QuestionList = new QuestionList("ManageHealth","I feel capable of managing my health care needs.",new ArrayList(["On my own most of the time","With support from others most of the time","On my own","Some of the time and with support from others","Some of the time","Rarely or never","Refused","Don't Know","Missing Data"]),0);
 			
@@ -27,8 +27,9 @@
 			public override function createForm():void
 			{
 				//Questions
-				createText("The following three questions refer to non-professional, peer-operated organizations devoted to helping individuals who have addiction related problems such as: Alcoholics Anonymous, Narcotics Anonymous, Oxford House, Secular Organization for Sobriety, or Women for Sobriety","");
-				createText("In the past 30 days, did you attend any _____? If yes, specify how many times.","h1");
+				createText("In the past 30 days, have you attended any voluntary self-help groups for recovery that were not affiliated with a religious or faith-based organization?","h1",590);
+				createText("In other words, did you participate in a non-professional, peer-operated organization that is devoted to helping individuals who have addiction related problems such as: Alcoholics Anonymous, Narcotics Anonymous, Oxford House, Secular Organization for Sobriety, or Women for Sobriety, etc.","",590);
+				createText("If yes, specify how many times.","h1");
 				addSocialQuestion(qAttendVoluntary,qAttendVoluntaryTimes,64);
 				addSocialQuestion(qAttendReligious,qAttendReligiousTimes,36);
 				addSocialQuestion(qAttendOtherOrg,qAttendOtherOrgTimes,50);

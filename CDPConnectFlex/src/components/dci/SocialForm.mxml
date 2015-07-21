@@ -13,21 +13,21 @@
 			import mx.collections.ArrayList;
 			import mx.validators.NumberValidator;
 			
-			private var agreementResponses:ArrayList = new ArrayList(["Strongly agree","Agree","Undecided","Disagree","Strongly disagree","Refused","Don't Know","Missing Data"]);
+			private var agreementResponses:ArrayList = new ArrayList(["Strongly agree","Agree","Undecided","Disagree","Strongly disagree",REFUSED_VALUE,DONT_KNOW_VALUE]);
 			public var qFamilySupport:QuestionList = new QuestionList("FamilySupport","In a crisis, I would have the support I need from family and friends.",agreementResponses,0);
 			public var qCommunityBelonging:QuestionList = new QuestionList("CommunityBelonging","I feel I belong in my community.",agreementResponses,0);
-			public var qWhomInTrouble:QuestionList = new QuestionList("WhomInTrouble","To whom do you turn when you are having trouble?",new ArrayList(["No One","Clergy Member","Family Member","Friends","Other","Refused","Don't Know","Missing Data"]),0);
+			public var qWhomInTrouble:QuestionList = new QuestionList("WhomInTrouble","To whom do you turn when you are having trouble?",new ArrayList(["No One","Clergy Member","Family Member","Friends","Other",REFUSED_VALUE,DONT_KNOW_VALUE]),0);
 			public var qWhomInTroubleSpec:QuestionText = new QuestionText("WhomInTroubleSpec","Other, specify:","");
 			
 			//Social Form Area
 			public override function createForm():void
 			{
 				//Questions
-				createText("Please indicate your disagreement/agreement with each of the following statements. Answer for relationships with persons other than your mental health provider(s) over the past 30 days.","h1");
-				addQuestion(qFamilySupport,130);
-				addQuestion(qCommunityBelonging,130);
+				createText("Please indicate your disagreement/agreement with each of the following statements. Answer for relationships with persons other than your mental health provider(s) over the past 30 days.","h1",590);
+				addQuestion(qFamilySupport,150);
+				addQuestion(qCommunityBelonging,150);
 				addDivider();
-				addQuestion(qWhomInTrouble);
+				addQuestion(qWhomInTrouble,150);
 				addQuestion(qWhomInTroubleSpec);
 				
 				//Validators

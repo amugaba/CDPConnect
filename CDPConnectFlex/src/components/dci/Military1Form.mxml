@@ -13,17 +13,17 @@
 			import mx.collections.ArrayList;
 			import mx.containers.FormItem;
 			
-			public var qMilitaryServed:QuestionList = new QuestionList("MilitaryServed","Have you ever served on active, reserve, or National Guard duty?",ynrdm,1);
-			public var qMilitaryBranch:QuestionList = new QuestionList("MilitaryBranch","In what branch of the military/uniformed services did you serve?",new ArrayList(["Army","Marine Corps","Navy","Air Force","Coast Guard","PHS","NOAA","Refused","Don't Know","Missing Data"]),0);
-			public var qMilitaryComponent:QuestionList = new QuestionList("MilitaryComponent","In which component did you serve?",new ArrayList(["Active","Reserve","National Guard","Refused","Don't Know","Missing Data"]),0);
-			public var qActiveDuty:QuestionList = new QuestionList("ActiveDuty","Are you currently on active duty or are you separated or retired?",new ArrayList(["On active duty","Separated","Retired","Refused","Don't Know","Missing Data"]),0);
-			public var qNeverDeployed:QuestionList = new QuestionList("NeverDeployed","Have you ever been deployed to a combat zone?",ynrdm,1);//Change this to EverDeployed
-			public var qIraqAfghanistan:QuestionList = new QuestionList("IraqAfghanistan","Iraq or Afghanistan",new ArrayList(["Yes","No"]),1);
-			public var qPersianGulf:QuestionList = new QuestionList("PersianGulf","Persian Gulf",new ArrayList(["Yes","No"]),1);
-			public var qVietnamSoutheastAsia:QuestionList = new QuestionList("VietnamSoutheastAsia","Vietnam/Southeast Asia",new ArrayList(["Yes","No"]),1);
-			public var qKorea:QuestionList = new QuestionList("Korea","Korea",new ArrayList(["Yes","No"]),1);
-			public var qWWII:QuestionList = new QuestionList("WWII","World War II",new ArrayList(["Yes","No"]),1);
-			public var qDeployedOther:QuestionList = new QuestionList("DeployedOther","Other combat zone",new ArrayList(["Yes","No"]),1);
+			public var qMilitaryServed:QuestionList = new QuestionList("MilitaryServed","Have you ever served on active, reserve, or National Guard duty?",ynrd,1);
+			public var qMilitaryBranch:QuestionList = new QuestionList("MilitaryBranch","In what branch of the military/uniformed services did you serve?",new ArrayList(["Army","Marine Corps","Navy","Air Force","Coast Guard","PHS","NOAA",REFUSED_VALUE,DONT_KNOW_VALUE]),0);
+			public var qMilitaryComponent:QuestionList = new QuestionList("MilitaryComponent","In which component did you serve?",new ArrayList(["Active","Reserve","National Guard",REFUSED_VALUE,DONT_KNOW_VALUE]),0);
+			public var qActiveDuty:QuestionList = new QuestionList("ActiveDuty","Are you currently on active duty or are you separated or retired?",new ArrayList(["On active duty","Separated","Retired",REFUSED_VALUE,DONT_KNOW_VALUE]),0);
+			public var qNeverDeployed:QuestionList = new QuestionList("NeverDeployed","Have you ever been deployed to a combat zone?",ynrd,1);//Change this to EverDeployed
+			public var qIraqAfghanistan:QuestionList = new QuestionList("IraqAfghanistan","Iraq or Afghanistan",yn,1);
+			public var qPersianGulf:QuestionList = new QuestionList("PersianGulf","Persian Gulf",yn,1);
+			public var qVietnamSoutheastAsia:QuestionList = new QuestionList("VietnamSoutheastAsia","Vietnam/Southeast Asia",yn,1);
+			public var qKorea:QuestionList = new QuestionList("Korea","Korea",yn,1);
+			public var qWWII:QuestionList = new QuestionList("WWII","World War II",yn,1);
+			public var qDeployedOther:QuestionList = new QuestionList("DeployedOther","Other combat zone",yn,1);
 			public var qDeployedOtherSpec:QuestionText = new QuestionText("DeployedOtherSpec","Other (Specify)","");
 			
 			//Military1 Form Area
@@ -51,12 +51,9 @@
 				qDeployedOtherSpec.answerType = String;
 				
 				//Control Logic
-				addSkipDropDown(qMilitaryServed,["No","Refused","Don't Know","Missing Data"],[qMilitaryBranch,qMilitaryComponent,qActiveDuty,qNeverDeployed]);
-				addSkipDropDown(qNeverDeployed,["Yes"],[qIraqAfghanistan,qPersianGulf,qVietnamSoutheastAsia,qKorea,qWWII,qDeployedOther],true);
-				//var handler:SkipMultipleHandler = createSkipMultipleHandler([qIraqAfghanistan,qPersianGulf,qVietnamSoutheastAsia,qKorea,qWWII,qDeployedOther]);
-				addSkipDropDown(qDeployedOther,["No"],[qDeployedOtherSpec]);
-				//addSkipTextNumberMultiple(handler,qNeverDeployed,["Yes","Refused","Don't Know","Missing Data"]);
-				//addSkipTextNumberMultiple(handler,qMilitaryServed,["No","Refused","Don't Know","Missing Data"]);
+				addSkipDropDown(qMilitaryServed,[NO_VALUE,REFUSED_VALUE,DONT_KNOW_VALUE],[qMilitaryBranch,qMilitaryComponent,qActiveDuty,qNeverDeployed]);
+				addSkipDropDown(qNeverDeployed,[YES_VALUE],[qIraqAfghanistan,qPersianGulf,qVietnamSoutheastAsia,qKorea,qWWII,qDeployedOther],true);
+				addSkipDropDown(qDeployedOther,[NO_VALUE],[qDeployedOtherSpec]);
 			}
 		]]>
 	</fx:Script>

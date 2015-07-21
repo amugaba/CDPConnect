@@ -8,11 +8,9 @@ package components.questions
 	import mx.binding.utils.ChangeWatcher;
 	import mx.collections.ArrayList;
 	import mx.controls.Alert;
-	import mx.controls.ToolTip;
 	import mx.core.UIComponent;
 	import mx.events.FlexEvent;
 	import mx.events.ValidationResultEvent;
-	import mx.managers.ToolTipManager;
 	import mx.validators.Validator;
 	
 	import spark.components.DropDownList;
@@ -22,7 +20,6 @@ package components.questions
 	{
 		public var input:TextInput;
 		public var defaultValue:String;
-		public var errorToolTip:ToolTip;
 		
 		public function QuestionText(codeName:String,label:String,defaultValue:String,editable:Boolean=true)
 		{
@@ -33,6 +30,7 @@ package components.questions
 			input.text = defaultValue;
 			this.enabled = editable;
 			BindingUtils.bindSetter(showErrorsNow, input, "errorString");
+			input.setStyle("showErrorTip",false);
 		}
 		
 		public override function get answer():String
@@ -93,37 +91,9 @@ package components.questions
 			var watcherSetter:ChangeWatcher = BindingUtils.bindSetter(func, input, "text");
 		}
 		
-		protected function showErrorsNow(val:String):void
+		protected override function showErrorsNow(val:String):void
 		{
-			input.callLater(showDeferred, [input]);
-		}
-		
-		private function showDeferred(target:UIComponent):void
-		{
-			if(input.errorString != "" && errorToolTip == null)
-			{
-				var pt:Point = new Point(input.x, input.y);
-				pt = contentToGlobal(pt);
-				errorToolTip = ToolTipManager.createToolTip(input.errorString,pt.x+input.width,pt.y,null,input) as ToolTip;
-				errorToolTip.setStyle("styleName", "errorTip");
-				//if(errorToolTip.width + pt.x + input.width > global.width) display error above, below, or to the left
-				if(errorToolTip.width + pt.x + input.width > global.width) //it's not pointing to the right
-				{ //set padding too
-					var newX:int = pt.x - errorToolTip.width;
-					ToolTipManager.destroyToolTip(errorToolTip);
-					errorToolTip = ToolTipManager.createToolTip(input.errorString,newX,pt.y,"errorTipAbove",input) as ToolTip;
-					errorToolTip.setStyle("styleName", "errorTip");
-				}
-			}
-			else if(input.errorString != "" && errorToolTip.text != input.errorString)
-			{
-				errorToolTip.text = input.errorString;
-			}
-			else if(input.errorString == "" && errorToolTip != null)
-			{
-				ToolTipManager.destroyToolTip(errorToolTip);
-				errorToolTip = null;
-			}
+			input.callLater(showErrorDeferred, [input]);
 		}
 	}
 }

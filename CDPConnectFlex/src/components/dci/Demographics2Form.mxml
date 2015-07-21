@@ -16,21 +16,21 @@
 			import mx.binding.utils.BindingUtils;
 			import mx.collections.ArrayList;
 			
-			public var qForeignLanguage:QuestionList = new QuestionList("ForeignLanguage","Do you speak a language other than English at home?",ynrdm,1);
-			public var qForeignLanguageSpec:QuestionList = new QuestionList("ForeignLanguageSpec","What language do you speak?",new ArrayList(["Spanish","Other","Refused","Don't Know","Missing Data"]),0);
+			public var qForeignLanguage:QuestionList = new QuestionList("ForeignLanguage","Do you speak a language other than English at home?",ynrd,1);
+			public var qForeignLanguageSpec:QuestionList = new QuestionList("ForeignLanguageSpec","What language do you speak?",new ArrayList(["Spanish","Other","Refused","Don't Know"]),0);
 			public var qForeignLanguageOtherSpec:QuestionText = new QuestionText("ForeignLanguageOtherSpec","Other (Specify)","");
-			public var qGender:QuestionList = new QuestionList("Gender","What is your gender?",new ArrayList(["Male","Female","Different identity","Refused","Missing Data"]),0);
+			public var qGender:QuestionList = new QuestionList("Gender","What is your gender?",new ArrayList(["Male","Female","Different identity","Refused"]),0);
 			public var qGenderOtherSpecify:QuestionText = new QuestionText("GenderOtherSpecify","Different identity, specify","");
-			public var qSexOrientation:QuestionList = new QuestionList("SexOrientation","Which one of the following do you consider yourself to be?",new ArrayList(["Straight","Lesbian (if female) or Gay (if male)","Bisexual","Other","Refused","Don't Know","Missing Data"]),0);
-			public var qSexWith:QuestionList = new QuestionList("SexWith","In the past 12 months, who have you had sex with?",new ArrayList(["Men only","Women only","Both men and women","I have not had sex","Refused","Don't Know","Missing Data"]),0);
-			public var qSexFeelings:QuestionList = new QuestionList("SexFeelings","Which statement best describes your feelings?",new ArrayList(["I am only attracted to females","I am mostly attracted to females","I am equally attracted to females and males","I am mostly attracted to males","I am only attracted to males","I am not sure","Refused","Don't Know","Missing Data"]),0);
-			public var qDeaf:QuestionList = new QuestionList("Deaf","Are you deaf or do you have serious difficulty hearing?",ynrdm,1);
-			public var qBlind:QuestionList = new QuestionList("Blind","Are you blind or do you have serious difficulty seeing, even when wearing glasses?",ynrdm,1);
-			public var qLearningDisability:QuestionList = new QuestionList("LearningDisability","Have you been diagnosed with a learning disability (Autism, Dyslexia, ADHD, etc.)?",ynrdm,1);
-			public var qBrainInjury:QuestionList = new QuestionList("BrainInjury","Have you been diagnosed with a traumatic brain injury (TBI)?",ynrdm,1);
-			public var qThinkingDifficult:QuestionList = new QuestionList("ThinkingDifficult","Because of physical, mental, or emotional condition, do you have serious difficulty concentrating, remembering, or making decisions?",ynrdm,1);
-			public var qStairsDifficult:QuestionList = new QuestionList("StairsDifficult","Do you have serious difficulty walking or climbing stairs?",ynrdm,1);
-			public var qDressingDifficult:QuestionList = new QuestionList("DressingDifficult","Do you have difficulty dressing or bathing?",ynrdm,1);
+			public var qSexOrientation:QuestionList = new QuestionList("SexOrientation","Which one of the following do you consider yourself to be?",new ArrayList(["Straight","Lesbian (if female) or Gay (if male)","Bisexual","Other","Refused","Don't Know"]),0);
+			public var qSexWith:QuestionList = new QuestionList("SexWith","In the past 12 months, who have you had sex with?",new ArrayList(["Men only","Women only","Both men and women","I have not had sex","Refused","Don't Know"]),0);
+			public var qSexFeelings:QuestionList = new QuestionList("SexFeelings","Which statement best describes your feelings?",new ArrayList(["I am only attracted to females","I am mostly attracted to females","I am equally attracted to females and males","I am mostly attracted to males","I am only attracted to males","I am not sure","Refused","Don't Know"]),0);
+			public var qDeaf:QuestionList = new QuestionList("Deaf","Are you deaf or do you have serious difficulty hearing?",ynrd,1);
+			public var qBlind:QuestionList = new QuestionList("Blind","Are you blind or do you have serious difficulty seeing, even when wearing glasses?",ynrd,1);
+			public var qLearningDisability:QuestionList = new QuestionList("LearningDisability","Have you been diagnosed with a learning disability (Autism, Dyslexia, ADHD, etc.)?",ynrd,1);
+			public var qBrainInjury:QuestionList = new QuestionList("BrainInjury","Have you been diagnosed with a traumatic brain injury (TBI)?",ynrd,1);
+			public var qThinkingDifficult:QuestionList = new QuestionList("ThinkingDifficult","Because of physical, mental, or emotional condition, do you have serious difficulty concentrating, remembering, or making decisions?",ynrd,1);
+			public var qStairsDifficult:QuestionList = new QuestionList("StairsDifficult","Do you have serious difficulty walking or climbing stairs?",ynrd,1);
+			public var qDressingDifficult:QuestionList = new QuestionList("DressingDifficult","Do you have difficulty dressing or bathing?",ynrd,1);
 		
 			public override function createForm():void
 			{
@@ -61,8 +61,8 @@
 				qGenderOtherSpecify.answerType = String;
 				
 				//Control Logic
-				addSkipDropDown(qForeignLanguage,["No","Refused","Don't Know","Missing Data"],[qForeignLanguageSpec]);
-				addSkipDropDown(qForeignLanguageSpec,["Spanish","Refused","Don't Know","Missing Data"],[qForeignLanguageOtherSpec]);
+				addSkipDropDown(qForeignLanguage,[NO_VALUE,REFUSED_VALUE,DONT_KNOW_VALUE],[qForeignLanguageSpec]);
+				addSkipDropDown(qForeignLanguageSpec,["Spanish",REFUSED_VALUE,DONT_KNOW_VALUE],[qForeignLanguageOtherSpec]);
 				addSkipDropDown(qGender,["Different identity"],[qGenderOtherSpecify],true);
 				
 				//Gender related questions

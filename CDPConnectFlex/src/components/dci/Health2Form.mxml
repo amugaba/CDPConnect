@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <dci:DCIForm xmlns:fx="http://ns.adobe.com/mxml/2009" 
 			 xmlns:s="library://ns.adobe.com/flex/spark" 
-			 xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:dci="components.dci.*" width="100%" height="100%">
+			 xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:dci="components.dci.*" width="100%" height="100%"
+			 labelWidth="280">
 	<fx:Script>
 		<![CDATA[
 			import components.questions.QuestionList;
@@ -12,10 +13,10 @@
 			import mx.collections.ArrayList;
 			import mx.validators.NumberValidator;
 			
-			public var qSuicideAttempted:QuestionList = new QuestionList("SuicideAttempted","Have you ever tried to kill yourself?",ynrdm,1);
-			public var qSuicideConsidered:QuestionList = new QuestionList("SuicideConsidered","At any time in the past 6 months (including today), did you seriously think about trying to kill yourself?",ynrdm,1);
-			public var qSuicideAttemptRecent:QuestionList = new QuestionList("SuicideAttemptRecent","During the past 6 months (including today), did you try to kill yourself?",ynrdm,1);
-			private var responses:ArrayList = new ArrayList(["All of the time","Most of the time","Some of the time","A little of the time","None of the time","Refused","Don't Know","Missing Data"]);
+			public var qSuicideAttempted:QuestionList = new QuestionList("SuicideAttempted","Have you ever tried to kill yourself?",ynrd,1);
+			public var qSuicideConsidered:QuestionList = new QuestionList("SuicideConsidered","At any time in the past 6 months (including today), did you seriously think about trying to kill yourself?",ynrd,1);
+			public var qSuicideAttemptRecent:QuestionList = new QuestionList("SuicideAttemptRecent","During the past 6 months (including today), did you try to kill yourself?",ynrd,1);
+			private var responses:ArrayList = new ArrayList(["All of the time","Most of the time","Some of the time","A little of the time","None of the time",REFUSED_VALUE, DONT_KNOW_VALUE]);
 			public var qNervous:QuestionList = new QuestionList("Nervous","Nervous",responses,0);
 			public var qHopeless:QuestionList = new QuestionList("Hopeless","Hopeless",responses,0);
 			public var qRestless:QuestionList = new QuestionList("Restless","Restless of fidgety",responses,0);
@@ -29,8 +30,8 @@
 				addQuestion(qSuicideAttempted);
 				addQuestion(qSuicideConsidered);
 				addQuestion(qSuicideAttemptRecent);
-				createText("During the past 30 days, about how howten did you feel...","h1");
-				var width:int = 130;
+				createText("During the past 30 days, about how how often did you feel...","h1");
+				var width:int = 140;
 				addQuestion(qNervous,width);
 				addQuestion(qHopeless,width);
 				addQuestion(qRestless,width);
@@ -38,6 +39,42 @@
 				addQuestion(qEverythingEffort,width);
 				addQuestion(qWorthless,width);
 				addQuestion(qBothered,width);
+			}
+			
+			//Certain questions are only visible during intake or reassessment
+			public override function initForm():void
+			{
+				super.initForm();
+				
+				//If the interview is Intake, and the last form loaded was not Intake
+				if(InterviewType.isIntake(global.pageDCI.interviewType))
+				{
+					if(questions.indexOf(qSuicideAttempted) == -1)
+					{
+						addQuestion(qSuicideAttempted);
+						addElementAt(qSuicideAttempted,0);
+					}
+					if(questions.indexOf(qSuicideConsidered) != -1)
+					{
+						removeQuestion(qSuicideConsidered);
+						removeQuestion(qSuicideAttemptRecent);
+					}
+				}
+				//If the interview is not Intake, and the last form was Intake
+				else if(!InterviewType.isIntake(global.pageDCI.interviewType))
+				{
+					if(questions.indexOf(qSuicideAttempted) != -1)
+					{
+						removeQuestion(qSuicideAttempted);
+					}
+					if(questions.indexOf(qSuicideConsidered) == -1)
+					{
+						addQuestion(qSuicideConsidered);
+						addQuestion(qSuicideAttemptRecent);
+						addElementAt(qSuicideConsidered,0);
+						addElementAt(qSuicideAttemptRecent,1);
+					}
+				}
 			}
 		]]>
 	</fx:Script>

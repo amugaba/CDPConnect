@@ -19,7 +19,7 @@ package components.questions
 			super(codeName, label, defaultValue, editable);
 			this.input.width = 50;
 			refuseInput = new DropDownList();
-			refuseInput.dataProvider = new ArrayList(["","Refused","Don't Know","Missing Data"]);
+			refuseInput.dataProvider = new ArrayList(["","Refused","Don't Know"]);
 			this.addElement(refuseInput);
 			refuseInput.width = 90;
 			this.direction = "horizontal";

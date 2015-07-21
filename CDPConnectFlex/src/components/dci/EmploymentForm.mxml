@@ -13,17 +13,17 @@
 			import mx.collections.ArrayList;
 			import mx.validators.NumberValidator;
 			
-			public var qTrainingProgram:QuestionList = new QuestionList("TrainingProgram","Are you currently enrolled in school or a job training program?",new ArrayList(["No/Not Enrolled","Enrolled, Full Time","Enrolled, Part Time","Other","Refused","Don't Know","Missing Data"]),0);
+			public var qTrainingProgram:QuestionList = new QuestionList("TrainingProgram","Are you currently enrolled in school or a job training program?",new ArrayList(["No/Not Enrolled","Enrolled, Full Time","Enrolled, Part Time","Other",REFUSED_VALUE,DONT_KNOW_VALUE]),0);
 			public var qTrainingProgramSpec:QuestionText = new QuestionText("TrainingProgramSpec","Other (specify)","");
 			public var qEducationYears:QuestionList = new QuestionList("EducationYears","What is the highest level of education you have finished (whether or not you received a degree)?",new ArrayList(["Preschool","Kindergarten",
 				"1st Grade","2nd Grade","3rd Grade","4th Grade","5th Grade","6th Grade","7th Grade","8th Grade","9th Grade","10th Grade","11th Grade","12th Grade/High School Diploma/Equivalent",
-				"Some college or university","Bachelor's degree (BA, BS) or higher","Vocational/Technical diploma after high school","I never attended school or a job training program","Refused","Don't Know","Missing Data"]),0);
+				"Some college or university","Bachelor's degree (BA, BS) or higher","Vocational/Technical diploma after high school","I never attended school or a job training program",REFUSED_VALUE,DONT_KNOW_VALUE]),0);
 			
-			public var qEmployStatus:QuestionList = new QuestionList("EmployStatus","Are you currently employed?",new ArrayList(["Employed Full Time (35+ hours per week, or would have been)","Employed Part Time","Unemployed, looking for work","Unemployed, disabled","Unemployed, volunteer work","Unemployed, retired","Unemployed, not looking for work","Other","Refused","Don't Know","Missing Data"]),0);
+			public var qEmployStatus:QuestionList = new QuestionList("EmployStatus","Are you currently employed?",new ArrayList(["Employed Full Time (35+ hours per week, or would have been)","Employed Part Time","Unemployed, looking for work","Unemployed, disabled","Unemployed, volunteer work","Unemployed, retired","Unemployed, not looking for work","Other",REFUSED_VALUE,DONT_KNOW_VALUE]),0);
 			public var qEmployStatusSpec:QuestionText = new QuestionText("EmployStatusSpec","Other (specify)","");
-			public var qMinimumWage:QuestionList = new QuestionList("MinimumWage","Are you paid at or above the minimum wage?",ynrdm,0);
-			public var qWagesPaidDirect:QuestionList = new QuestionList("WagesPaidDirect","Are your wages paid directly to you by your employer?",ynrdm,0);
-			public var qJobAppliedAnyone:QuestionList = new QuestionList("JobAppliedAnyone","Could anyone have applied for your job?",ynrdm,0);
+			public var qMinimumWage:QuestionList = new QuestionList("MinimumWage","Are you paid at or above the minimum wage?",ynrd,0);
+			public var qWagesPaidDirect:QuestionList = new QuestionList("WagesPaidDirect","Are your wages paid directly to you by your employer?",ynrd,0);
+			public var qJobAppliedAnyone:QuestionList = new QuestionList("JobAppliedAnyone","Could anyone have applied for your job?",ynrd,0);
 
 			public var qIncomeWages:QuestionTextRefusable = new QuestionTextRefusable("IncomeWages","Wages","0");
 			public var qIncomePubAssist:QuestionTextRefusable = new QuestionTextRefusable("IncomePubAssist","Public assistance","0");

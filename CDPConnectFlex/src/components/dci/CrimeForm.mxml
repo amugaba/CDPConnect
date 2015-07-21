@@ -17,8 +17,8 @@
 			public var qArrestedDrugDays:QuestionTextRefusable = new QuestionTextRefusable("ArrestedDrugDays","How many times have you been arrested for drug-related offenses?","0");
 			public var qArrestedConfineDays:QuestionTextRefusable = new QuestionTextRefusable("ArrestedConfineDays","How many nights have you spent in jail/prison?","0");
 			public var qNrCrimes:QuestionTextRefusable = new QuestionTextRefusable("NrCrimes","How many times have you committed a crime?","0");
-			public var qAwaitTrial:QuestionList = new QuestionList("AwaitTrial","Are you currently awaiting charges, trial, or sentencing?",ynrdm,1);
-			public var qParoleProbation:QuestionList = new QuestionList("ParoleProbation","Are you currently on parole/probation?",ynrdm,1);
+			public var qAwaitTrial:QuestionList = new QuestionList("AwaitTrial","Are you currently awaiting charges, trial, or sentencing?",ynrd,1);
+			public var qParoleProbation:QuestionList = new QuestionList("ParoleProbation","Are you currently on parole/probation?",ynrd,1);
 			
 			//Crime Form Area
 			public override function createForm():void
@@ -34,16 +34,37 @@
 				addQuestion(qParoleProbation);
 				
 				//Validators
-				//qIncomeOther").inputControl.addEventListener(FocusEvent.FOCUS_OUT,incomeOtherHandler);
-				
 				Valid.addNumberValidator(qArrestedDays,0,99);
 				Valid.addNumberValidator(qArrestedDrugDays,0,0);
 				Valid.addNumberValidator(qArrestedConfineDays,0,15);
 				Valid.addNumberValidator(qNrCrimes,0,999);
+				
 				BindingUtils.bindSetter(function():void{(qArrestedDrugDays.validator as NumberValidator).maxValue = Number(qArrestedDays.answer)}, qArrestedDays.inputControl, "text");
-				BindingUtils.bindSetter(function():void{(qArrestedConfineDays.validator as NumberValidator).minValue = global.pageDCI.livingForm.qLivingWhere.getAnswerIndex() == 15 ? 16 : 0;
-					(qArrestedConfineDays.validator as NumberValidator).maxValue = global.pageDCI.livingForm.qLivingWhere.getAnswerIndex() == 15 ? 30 : 15}, global.pageDCI.livingForm.qLivingWhere.inputControl, "selectedIndex");
-				BindingUtils.bindSetter(function():void{(qNrCrimes.validator as NumberValidator).minValue = Number(global.pageDCI.drugForm.qIllegalDrugsDays.answer)}, global.pageDCI.drugForm.qIllegalDrugsDays.inputControl, "text");
+				
+				BindingUtils.bindSetter(function():void{
+					var nv:NumberValidator = (qArrestedConfineDays.validator as NumberValidator);
+					if(global.pageDCI.livingForm.qLivingWhere.getAnswerIndex() == 14)//Living in jail
+					{
+						nv.minValue =  16;
+						nv.maxValue = 30;
+						nv.lowerThanMinError = "Section C 'Living Where' is 'Jail', so this must be 16-30.";
+						nv.exceedsMaxError = "Section C 'Living Where' is 'Jail', so this must be 16-30.";
+					}
+					else
+					{
+						nv.minValue =  0;
+						nv.maxValue = 15;
+						nv.lowerThanMinError = "Section C 'Living Where' is not 'Jail', so this must be 0-15.";
+						nv.exceedsMaxError = "Section C 'Living Where' is not 'Jail', so this must be 0-15.";
+					}
+					}, global.pageDCI.livingForm.qLivingWhere.inputControl, "selectedIndex");
+				
+				BindingUtils.bindSetter(function():void{
+					(qNrCrimes.validator as NumberValidator).minValue = Number(global.pageDCI.drugForm.qIllegalDrugsDays.answer);
+					(qNrCrimes.validator as NumberValidator).lowerThanMinError = "Must be >= section B 'Illegal drug days', which is " + global.pageDCI.drugForm.qIllegalDrugsDays.answer + ".";
+				}, global.pageDCI.drugForm.qIllegalDrugsDays.inputControl, "text");
+				
+				
 				
 				//Control Logic
 				addSkipTextNumber(qArrestedDays,[qArrestedDrugDays],["0"]);

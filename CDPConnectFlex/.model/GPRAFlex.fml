@@ -383,12 +383,15 @@
       <item name="ABSOLUTE_ENDPOINT">http://localhost//CDPConnect/CDPConnect/public/gateway.php</item>
       <item name="PHP_CLASS_NAME">AssessmentService</item>
     </annotation>
-    <function name="getAssessmentsByClientID" return-type="opaque[]">
+    <function name="getAssessmentsByClientID" return-type="AssessmentVO[]">
       <annotation name="analyze group">
-        <item name="analyzed">false</item>
+        <item name="analyzed">true</item>
       </annotation>
       <annotation name="original signature">
         <item name="returnType">opaque</item>
+      </annotation>
+      <annotation name="ValidProperties">
+        <item name="propertySpecifier">autoid,client_autoid,type,subtype,date,complete,data</item>
       </annotation>
       <parameter name="autoid" type="integer"/>
     </function>
@@ -401,12 +404,15 @@
       </annotation>
       <parameter name="item" type="AssessmentVO"/>
     </function>
-    <function name="updateAssessmentData" return-type="opaque">
+    <function name="updateAssessmentData" return-type="void">
       <annotation name="analyze group">
-        <item name="analyzed">false</item>
+        <item name="analyzed">true</item>
       </annotation>
       <annotation name="original signature">
         <item name="returnType">opaque</item>
+      </annotation>
+      <annotation name="ValidProperties">
+        <item name="propertySpecifier">autoid,client_autoid,type,subtype,date,complete,data</item>
       </annotation>
       <parameter name="item" type="AssessmentVO"/>
     </function>
@@ -428,6 +434,12 @@
     </annotation>
     <annotation name="ActionScriptGeneration">
       <item name="Package">valueObjects</item>
+    </annotation>
+    <annotation name="getAssessmentsByClientID">
+      <item name="propertySpecifier">autoid,client_autoid,type,subtype,date,complete,data</item>
+    </annotation>
+    <annotation name="updateAssessmentData">
+      <item name="propertySpecifier">autoid,client_autoid,type,subtype,date,complete,data</item>
     </annotation>
     <property name="autoid" type="integer" required="true"/>
     <property name="client_autoid" type="integer" required="true"/>

@@ -27,18 +27,18 @@ internal class _Super_AssessmentService extends com.adobe.fiber.services.wrapper
         _serviceControl = new mx.rpc.remoting.RemoteObject();
 
         // initialize RemoteClass alias for all entities returned by functions of this service
+        valueObjects.AssessmentVO._initRemoteClassAlias();
 
         var operations:Object = new Object();
         var operation:mx.rpc.remoting.Operation;
 
         operation = new mx.rpc.remoting.Operation(null, "getAssessmentsByClientID");
-         operation.resultElementType = Object;
+         operation.resultElementType = valueObjects.AssessmentVO;
         operations["getAssessmentsByClientID"] = operation;
         operation = new mx.rpc.remoting.Operation(null, "createAssessment");
          operation.resultType = valueObjects.AssessmentVO;
         operations["createAssessment"] = operation;
         operation = new mx.rpc.remoting.Operation(null, "updateAssessmentData");
-         operation.resultType = Object;
         operations["updateAssessmentData"] = operation;
 
         _serviceControl.operations = operations;

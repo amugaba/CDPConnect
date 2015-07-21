@@ -12,34 +12,34 @@
 			import mx.collections.ArrayList;
 			import mx.validators.NumberValidator;
 			
-			public var qSexActivity:QuestionList = new QuestionList("SexActivity","During the past 30 days, did you engage in sexual activity?",new ArrayList(["Yes","No","Not permitted to ask","Refused","Don't Know","Missing Data"]),1);
-			private var responses:ArrayList = new ArrayList(["Yes, protected","Yes, unprotected","No","Refused","Don't Know","Missing Data"]);
+			public var qSexActivity:QuestionList = new QuestionList("SexActivity","During the past 30 days, did you engage in sexual activity?",new ArrayList(["Yes","No","Not permitted to ask",REFUSED_VALUE, DONT_KNOW_VALUE]),1);
+			private var responses:ArrayList = new ArrayList(["Yes, protected","Yes, unprotected","No",REFUSED_VALUE, DONT_KNOW_VALUE]);
 			public var qVaginalContacts:QuestionList = new QuestionList("VaginalContacts","Vaginal sexual contacts",responses,2);
 			public var qOralContacts:QuestionList = new QuestionList("OralContacts","Oral sexual contacts",responses,2);
 			public var qAnalContacts:QuestionList = new QuestionList("AnalContacts","Anal sexual contacts",responses,2);
-			public var qSexUnprotHIVAids:QuestionList = new QuestionList("SexUnprotHIVAids","HIV positive or has AIDS",ynrdm,1);
-			public var qSexUnprotInjDrugUser:QuestionList = new QuestionList("SexUnprotInjDrugUser","An injection drug user",ynrdm,1);
-			public var qSexUnprotHigh:QuestionList = new QuestionList("SexUnprotHigh","High on some substance",ynrdm,1);
+			public var qSexUnprotHIVAids:QuestionList = new QuestionList("SexUnprotHIVAids","HIV positive or has AIDS",ynrd,1);
+			public var qSexUnprotInjDrugUser:QuestionList = new QuestionList("SexUnprotInjDrugUser","An injection drug user",ynrd,1);
+			public var qSexUnprotHigh:QuestionList = new QuestionList("SexUnprotHigh","High on some substance",ynrd,1);
 			
-			private var testResponses:ArrayList = new ArrayList(["Negative/Non-reactive","Positive/reactive","Invalid/Indeterminate","Refused","Don't Know","Missing Data"]);
-			public var qiHIVTest:QuestionList = new QuestionList("iHIVTest","Have you ever been tested for HIV?",ynrdm,1);
+			private var testResponses:ArrayList = new ArrayList(["Negative/Non-reactive","Positive/reactive","Invalid/Indeterminate",REFUSED_VALUE, DONT_KNOW_VALUE]);
+			public var qiHIVTest:QuestionList = new QuestionList("iHIVTest","Have you ever been tested for HIV?",ynrd,1);
 			public var qiHIVTestResult:QuestionList = new QuestionList("iHIVTestResult","What was the result?",testResponses,0);
-			public var qiHepBTest:QuestionList = new QuestionList("iHepBTest","Have you ever been tested for Hepatitis B?",ynrdm,1);
+			public var qiHepBTest:QuestionList = new QuestionList("iHepBTest","Have you ever been tested for Hepatitis B?",ynrd,1);
 			public var qiHepBTestResult:QuestionList = new QuestionList("iHepBTestResult","What was the result?",testResponses,0);
-			public var qiHepCTest:QuestionList = new QuestionList("iHepCTest","Have you ever been tested for Hepatitis C?",ynrdm,1);
+			public var qiHepCTest:QuestionList = new QuestionList("iHepCTest","Have you ever been tested for Hepatitis C?",ynrd,1);
 			public var qiHepCTestResult:QuestionList = new QuestionList("iHepCTestResult","What was the result?",testResponses,0);
-			public var qiHepCTestConfirm:QuestionList = new QuestionList("iHepCTestConfirm","If Positive/Reactive, did you receive a confirmatory test?",ynrdm,1);
+			public var qiHepCTestConfirm:QuestionList = new QuestionList("iHepCTestConfirm","If Positive/Reactive, did you receive a confirmatory test?",ynrd,1);
 			
 			//Health2 Form Area
 			public override function createForm():void
 			{
 				//Questions
 				addQuestion(qSexActivity,125);
-				createText("Did you engage in protected or unprotected...","h1");
+				createText("During the past 30 days, did you engage in protected or unprotected...","h1");
 				addQuestion(qVaginalContacts);
 				addQuestion(qOralContacts);
 				addQuestion(qAnalContacts);
-				createText("Unprotected sexual contacts were with an individual who is or was...","h1");
+				createText("During the past 30 days, unprotected sexual contacts were with an individual who is or was...","h1");
 				addQuestion(qSexUnprotHIVAids);
 				addQuestion(qSexUnprotInjDrugUser);
 				addQuestion(qSexUnprotHigh);
