@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<assessment:InterviewForm xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			 xmlns:s="library://ns.adobe.com/flex/spark" 
+			 xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%"
+			 labelWidth="305" xmlns:assessment="components.assessment.*">
+	<fx:Script>
+		<![CDATA[
+			import components.questions.QuestionList;
+			import components.questions.QuestionText;
+			import components.questions.QuestionTextRefusable;
+			import components.validators.DateAgeValidator;
+			import components.validators.Valid;
+			
+			import mx.binding.utils.BindingUtils;
+			import mx.collections.ArrayList;
+			import mx.validators.NumberValidator;
+			
+			import spark.components.Group;
+			
+			public var qDischargeDate:QuestionText = new QuestionText("DischargeDate","On what date was the client discharged?","");
+			public var qDischargeStatus:QuestionList = new QuestionList("DischargeStatus","What is the client's discharge status?",new ArrayList(["Completion/Graduate","Termination"]),0);
+			public var qDischargeStatusTermReason:QuestionList = new QuestionList("DischargeStatusTermReason","If the client was terminated, what was the reason for termination?",new ArrayList(["Left on own against staff advice with satisfactory progress","Left on own against staff advice without satisfactory progress",
+				"Involuntarily discharged due to nonparticipation","Involuntarily discharged due to violation of rules","Referred to another program or other services with satisfactory progress","Referred to another program or other services with unsatisfactory progress",
+				"Incarcerated due to offense committed while in treatment/recovery with satisfactory progress","Incarcerated due to offense committed while in treatment/recovery with unsatisfactory progress","Incarcerated due to old warrant or charged from before entering treatment/recovery with satisfactory progress",
+				"Incarcerated due to old warrant or charged from before entering treatment/recovery with unsatisfactory progress","Transferred to another facility for health reasons","Death","Other"]),0);
+			public var qDischargeSpec:QuestionText = new QuestionText("DischargeSpec","Other (specify)","");
+			
+			public var qdHIVTest:QuestionList = new QuestionList("dHIVTest","Did the program test this client for HIV?",yn,1);
+			public var qdHIVTestRefer:QuestionList = new QuestionList("dHIVTestRefer","[IF NO] Did the program refer this client for testing?",yn,1);
+			
+			//Discharge Form Area
+			public override function createForm():void
+			{				
+				//Questions
+				addQuestion(qDischargeDate);
+				addQuestion(qDischargeStatus,180);
+				addQuestion(qDischargeStatusTermReason,500);
+				
+				//put the discharge status input on a new line since it's long
+				var g:Group = new Group();
+				g.setStyle("paddingTop",-5);
+				g.addElement(qDischargeStatusTermReason.input);
+				qDischargeStatusTermReason.input.x = -240;
+				qDischargeStatusTermReason.input.y = 35;
+				qDischargeStatusTermReason.addElement(g);
+				
+				addQuestion(qDischargeSpec);
+				addDivider();
+				addQuestion(qdHIVTest);
+				addQuestion(qdHIVTestRefer);
+				
+				//Validators
+				Valid.addDateAgeValidator(qDischargeDate,0,DateAgeValidator.DAY,1,DateAgeValidator.YEAR);
+				Valid.addRequiredValidator(qDischargeSpec);
+				qDischargeSpec.answerType = String;
+				qDischargeDate.answerType = String;
+				
+				//Control Logic
+				addSkipDropDown(qDischargeStatus,["Completion/Graduate"],[qDischargeStatusTermReason]);
+				addSkipDropDown(qDischargeStatusTermReason,["Other"],[qDischargeSpec],true);
+				addSkipDropDown(qdHIVTest,["No"],[qdHIVTestRefer]);
+			}
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+</assessment:InterviewForm>

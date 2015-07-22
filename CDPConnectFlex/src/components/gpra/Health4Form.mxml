@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<assessment:InterviewForm xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			 xmlns:s="library://ns.adobe.com/flex/spark" 
+			 xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%"
+			 labelWidth="315" xmlns:assessment="components.assessment.*">
+	<fx:Script>
+		<![CDATA[
+			import components.assessment.InterviewType;
+			import components.assessment.InterviewType;
+			import components.questions.QuestionList;
+			import components.questions.QuestionText;
+			import components.questions.QuestionTextRefusable;
+			import components.validators.Valid;
+			
+			import mx.binding.utils.BindingUtils;
+			import mx.collections.ArrayList;
+			import mx.controls.HRule;
+			import mx.controls.Text;
+			import mx.validators.NumberValidator;
+			
+			public var qAnyViolence:QuestionList = new QuestionList("AnyViolence","Have you ever experienced violence or trauma in any setting (including community or school violence; domestic violence; physical, psychological, or sexual maltreatment/assault within or outside of the family; natural disaster; terrorism; neglect; or traumatic grief?)",ynrd,1);
+			public var qNightmares:QuestionList = new QuestionList("Nightmares","Have had nightmares about it or thought about it when you did not want to?",ynrd,1);
+			public var qTriedHard:QuestionList = new QuestionList("TriedHard","Tried hard not to think about it or went out of your way to avoid situations that remind you of them?",ynrd,1);
+			public var qConstantGuard:QuestionList = new QuestionList("ConstantGuard","Were constantly on guard, watchful, or easily startled?",ynrd,1);
+			public var qNumbAndDetach:QuestionList = new QuestionList("NumbAndDetach","Felt numb and detached from others, activities, or your surroundings?",ynrd,1);
+			public var qPhysicallyHurt:QuestionList = new QuestionList("PhysicallyHurt","In the past 30 days, how often have you experienced an event, series of events of set of circumstances that resulted in you feeling physically or emotionally harmed or threatened?",new ArrayList(["Never","A few times","More than a few times",REFUSED_VALUE,DONT_KNOW_VALUE]),0);
+			
+			private var textKindOfEvent:Text;
+			private var textFeel:Text;
+			private var divider:HRule;
+			
+			//Health4 Form Area
+			public override function createForm():void
+			{
+				//Questions
+				addQuestion(qAnyViolence);
+				textFeel = createText("Did any of these experiences feel so frightening, horrible, or upsetting that in the past and/or the present you:","h1",590);
+				addQuestion(qNightmares);
+				addQuestion(qTriedHard);
+				addQuestion(qConstantGuard);
+				addQuestion(qNumbAndDetach);
+				divider = addDivider();
+				addQuestion(qPhysicallyHurt,130);
+				
+				//Validators
+				
+				//Control Logic
+				addSkipDropDown(qAnyViolence,["Yes"],[qNightmares,qTriedHard,qConstantGuard,qNumbAndDetach],true);
+			}
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+</assessment:InterviewForm>

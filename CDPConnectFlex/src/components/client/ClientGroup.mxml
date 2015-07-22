@@ -8,7 +8,7 @@
 	<fx:Script>
 		<![CDATA[
 			import components.assessment.AssessType;
-			import components.dci.InterviewType;
+			import components.assessment.InterviewType;
 			
 			import mx.collections.ArrayCollection;
 			import mx.collections.ArrayList;
@@ -102,7 +102,7 @@
 				global.activeClient.intakeExists = false;
 				global.activeClient.dischargeExists = false;
 				global.activeClient.followupExists = false;
-				global.intakeDCI = null;
+				global.intakeInterview = null;
 				
 				for each(var assess:AssessmentVO in assessmentList)
 				{
@@ -111,7 +111,7 @@
 						if(InterviewType.isIntake(assess.subtype))
 						{
 							global.activeClient.intakeExists = true;
-							global.intakeDCI = assess;
+							global.intakeInterview = assess;
 							global.activeClient.followupSelected = assess.data.source["followupSelected"] == 1;
 						}
 						else if(InterviewType.isDischarge(assess.subtype))

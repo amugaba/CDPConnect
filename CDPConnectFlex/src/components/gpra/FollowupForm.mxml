@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<assessment:InterviewForm xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			 xmlns:s="library://ns.adobe.com/flex/spark" 
+			 xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%"
+			 labelWidth="305" xmlns:assessment="components.assessment.*">
+	<fx:Script>
+		<![CDATA[
+			import components.questions.QuestionList;
+			import components.questions.QuestionText;
+			import components.questions.QuestionTextRefusable;
+			import components.skips.SkipPattern;
+			import components.validators.DropDownValidator;
+			import components.validators.Valid;
+			
+			import mx.binding.utils.BindingUtils;
+			import mx.collections.ArrayList;
+			import mx.validators.NumberValidator;
+			
+			public var qFollowupStatus:QuestionList = new QuestionList("FollowupStatus","What is the follow-up status of the client?",new ArrayList(["Deceased at time of due date","Completed interview within specified window","Completed interview outside specified window","Located, but refused, unspecified",
+				"Located, but unable to gain institutional access","Located, but otherwise unable to gain access","Located, but withdrawn from project","Unable to locate, moved","Unable to locate, other"]),1);
+			public var qFollowupStatusSpec:QuestionText = new QuestionText("FollowupStatusSpec","Other, specify:","");
+			public var qReceivingServices:QuestionList = new QuestionList("ReceivingServices","Is the client still receiving services from your program?",yn,1);
+			
+			public var qfHIVTest:QuestionList = new QuestionList("fHIVTest","Did the program test this client for HIV?",yn,1);
+			public var qfHIVTestRefer:QuestionList = new QuestionList("fHIVTestRefer","[IF NO] Did the program refer this client for testing?",yn,1);
+			
+			//Followup Form Area
+			public override function createForm():void
+			{
+				//Questions
+				createText("Over the past 30 days...","h1");
+				addQuestion(qFollowupStatus,260);
+				addQuestion(qFollowupStatusSpec);
+				addQuestion(qReceivingServices);
+				addDivider();
+				addQuestion(qfHIVTest);
+				addQuestion(qfHIVTestRefer);
+				
+				//Validators
+				Valid.addDropDownValidator(qFollowupStatus,["Completed interview within specified window","Completed interview outside specified window"]);	
+				Valid.addRequiredValidator(qFollowupStatusSpec);
+				qFollowupStatusSpec.answerType = String;
+
+				//Control Logic
+				addSkipDropDown(qFollowupStatus,["Unable to locate, other"],[qFollowupStatusSpec],true);
+				addSkipDropDown(qfHIVTest,["No"],[qfHIVTestRefer]);
+				
+				//Valid answers to follow status depends on whether an interview was done
+				BindingUtils.bindSetter(function():void{
+					if(global.pageGPRA.recordForm.qConductedInterview.answer == YES_VALUE)
+					{
+						(qFollowupStatus.validator as DropDownValidator).validAnswers = ["Completed interview within specified window","Completed interview outside specified window"];
+						//qFollowupStatus.answer = "Completed interview within specified window";
+					}
+					else
+					{
+						(qFollowupStatus.validator as DropDownValidator).validAnswers = ["Deceased at time of due date","Located, but refused, unspecified","Located, but unable to gain institutional access",
+							"Located, but otherwise unable to gain access","Located, but withdrawn from project","Unable to locate, moved","Unable to locate, other"];
+						//qFollowupStatus.answer = "Deceased at time of due date";
+					}
+					qFollowupStatus.validator.validate();
+				}, global.pageGPRA.recordForm.qConductedInterview.inputControl, "selectedIndex");
+			}
+
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+</assessment:InterviewForm>

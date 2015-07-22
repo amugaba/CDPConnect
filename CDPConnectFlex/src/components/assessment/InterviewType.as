@@ -1,4 +1,4 @@
-package components.dci
+package components.assessment
 {
 	public class InterviewType
 	{

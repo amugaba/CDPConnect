@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <assessment:InterviewForm xmlns:fx="http://ns.adobe.com/mxml/2009" 
 			 xmlns:s="library://ns.adobe.com/flex/spark" 
-			 xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:dci="components.dci.*" width="100%" height="100%"
+			 xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%"
 			 labelWidth="148" xmlns:assessment="components.assessment.*">
 	<fx:Script>
 		<![CDATA[
@@ -20,6 +20,8 @@
 			
 			public var qBirthMonth:QuestionText = new QuestionText("BirthMonth","Month:","");
 			public var qBirthYear:QuestionText = new QuestionText("BirthYear","Year:","");
+			public var qGender:QuestionList = new QuestionList("Gender","What is your gender?",new ArrayList(["Male","Female","Different identity",REFUSED_VALUE]),0);
+			public var qGenderOtherSpecify:QuestionText = new QuestionText("GenderOtherSpecify","Different identity, specify","");
 			public var qHispanicLatino:QuestionList = new QuestionList("HispanicLatino","Are you Hispanic, Latino/a, or Spanish origin?",ynr,1);
 			public var qEthnicCentralAmerican:QuestionList = new QuestionList("EthnicCentralAmerican","Central American",ynr,1);
 			public var qEthnicCuban:QuestionList = new QuestionList("EthnicCuban","Cuban",ynr,1);
@@ -32,19 +34,10 @@
 			
 			public var qRaceWhite:QuestionList = new QuestionList("RaceWhite","White",ynr,1);
 			public var qRaceBlack:QuestionList = new QuestionList("RaceBlack","Black or African American",ynr,1);
-			public var qRaceAsianIndian:QuestionList = new QuestionList("RaceAsianIndian","Asian Indian",ynr,1);
-			public var qRaceChinese:QuestionList = new QuestionList("RaceChinese","Chinese",ynr,1);
-			public var qRaceFilipino:QuestionList = new QuestionList("RaceFilipino","Filipino",ynr,1);
-			public var qRaceJapanese:QuestionList = new QuestionList("RaceJapanese","Japanese",ynr,1);
-			public var qRaceKorean:QuestionList = new QuestionList("RaceKorean","Korean",ynr,1);
-			public var qRaceVietnamese:QuestionList = new QuestionList("RaceVietnamese","Vietnamese",ynr,1);
-			public var qRaceOtherAsian:QuestionList = new QuestionList("RaceOtherAsian","Other Asian",ynr,1);
+			public var qRaceAsian:QuestionList = new QuestionList("RaceAsian","Asian",ynr,1);
 			public var qRaceAmericanIndian:QuestionList = new QuestionList("RaceAmericanIndian","American Indian",ynr,1);
 			public var qRaceAlaskaNative:QuestionList = new QuestionList("RaceAlaskaNative","Alaska Native",ynr,1);
-			public var qRaceNativeHawaiian:QuestionList = new QuestionList("RaceNativeHawaiian","Native Hawaiian",ynr,1);
-			public var qRaceGuamanian:QuestionList = new QuestionList("RaceGuamanian","Guamanian or Chamorro",ynr,1);
-			public var qRaceSamoan:QuestionList = new QuestionList("RaceSamoan","Samoan",ynr,1);
-			public var qRacePacificIslander:QuestionList = new QuestionList("RacePacificIslander","Other Pacific Islander",ynr,1);
+			public var qRaceNativeHawaiian:QuestionList = new QuestionList("RaceNativeHawaiian","Native Hawaiian or other Pacific Islander",ynr,1);
 			
 			private var ethnicityQuestions:Array = new Array(qEthnicCentralAmerican, qEthnicCuban, qEthnicDominican, qEthnicMexican, qEthnicPuertoRican, qEthnicSouthAmerican, qEthnicOther);
 			private var numEthnicSelected:int = 0;
@@ -56,10 +49,12 @@
 				
 				//Questions
 				createText("What is your month and year of birth?","h1");
-				addQuestion(qBirthMonth);
-				addQuestion(qBirthYear);
-				qBirthMonth.input.width = 70;
-				qBirthYear.input.width = 70;
+				addQuestion(qBirthMonth,70);
+				addQuestion(qBirthYear,70);
+				addDivider();
+				
+				addQuestion(qGender,120);
+				addQuestion(qGenderOtherSpecify);
 				addDivider();
 				
 				addQuestion(qHispanicLatino);
@@ -79,25 +74,12 @@
 				addGroupedQuestion(qEthnicOtherSpecify,g);
 				
 				createText("What is your race?","h1");
-				g = new TileGroup();
-				g.requestedColumnCount = 2;
-				g.requestedRowCount = 8;
-				addElement(g);
-				addGroupedQuestion(qRaceWhite,g);
-				addGroupedQuestion(qRaceBlack,g);
-				addGroupedQuestion(qRaceAsianIndian,g);
-				addGroupedQuestion(qRaceChinese,g);
-				addGroupedQuestion(qRaceFilipino,g);
-				addGroupedQuestion(qRaceJapanese,g);
-				addGroupedQuestion(qRaceKorean,g);
-				addGroupedQuestion(qRaceVietnamese,g);
-				addGroupedQuestion(qRaceOtherAsian,g);
-				addGroupedQuestion(qRaceAmericanIndian,g);
-				addGroupedQuestion(qRaceAlaskaNative,g);
-				addGroupedQuestion(qRaceNativeHawaiian,g);
-				addGroupedQuestion(qRaceGuamanian,g);
-				addGroupedQuestion(qRaceSamoan,g);
-				addGroupedQuestion(qRacePacificIslander,g);				
+				addQuestion(qRaceWhite);
+				addQuestion(qRaceBlack);
+				addQuestion(qRaceAsian);
+				addQuestion(qRaceAmericanIndian);
+				addQuestion(qRaceAlaskaNative);
+				addQuestion(qRaceNativeHawaiian);				
 				
 				//Validators
 				Valid.addNumberValidator(qBirthMonth, 1, 12, true);
@@ -105,13 +87,19 @@
 				Valid.addDropDownValidator(qHispanicLatino,[NO_VALUE,REFUSED_VALUE]);
 				Valid.addRequiredValidator(qEthnicOtherSpecify);
 				qEthnicOtherSpecify.answerType = String;
+				Valid.addRequiredValidator(qGenderOtherSpecify);
+				qGenderOtherSpecify.answerType = String;
 				
 				createEthnicBindings();
 				
 				//Control Logic
+				addSkipDropDown(qGender,["Different identity"],[qGenderOtherSpecify],true);
 				addSkipDropDown(qHispanicLatino,[NO_VALUE,REFUSED_VALUE], ethnicityQuestions);
 				(qHispanicLatino.skipPatterns[0] as SkipPattern).skipWhenInvalid = true;
 				addSkipDropDown(qEthnicOther,[NO_VALUE,REFUSED_VALUE],[qEthnicOtherSpecify]);
+				
+				//Gender related questions
+				addSkipDropDown(qGender,["Male"],[global.pageGPRA.livingForm.qPregnant]);
 			}
 			
 			private function addGroupedQuestion(q:QuestionClass, g:TileGroup):void

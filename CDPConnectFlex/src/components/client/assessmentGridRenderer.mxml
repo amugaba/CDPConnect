@@ -6,7 +6,7 @@
 	<fx:Script>
 		<![CDATA[
 			import components.assessment.AssessType;
-			import components.dci.InterviewType;
+			import components.assessment.InterviewType;
 			
 			import mx.controls.Button;
 			

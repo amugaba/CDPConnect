@@ -84,7 +84,7 @@ package components.questions
 		public function refreshSkips():void
 		{
 			for each(var s:SkipPattern in skipPatterns)
-			s.skipHandler(null);
+				s.skipHandler(null);
 		}
 		
 		public function removeErrorMessage():void

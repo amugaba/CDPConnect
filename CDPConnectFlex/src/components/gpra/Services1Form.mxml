@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <assessment:InterviewForm xmlns:fx="http://ns.adobe.com/mxml/2009" 
 			 xmlns:s="library://ns.adobe.com/flex/spark" 
-			 xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:dci="components.dci.*" width="100%" height="100%"
+			 xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%"
 			 labelWidth="200" xmlns:assessment="components.assessment.*">
 	<fx:Script>
 		<![CDATA[
@@ -22,15 +22,7 @@
 			public var qSvcOutreach:QuestionList = new QuestionList("SvcOutreach","Outreach",yn,1);
 			public var qSvcIntensiveOutpatient:QuestionList = new QuestionList("SvcIntensiveOutpatient","Intensive outpatient",yn,1);
 			public var qSvcMethadoneOp:QuestionList = new QuestionList("SvcMethadoneOp","Methadone",yn,1);
-			public var qSvcBuprenorphineOp:QuestionList = new QuestionList("SvcBuprenorphineOp","Buprenorphine",yn,1);
-			public var qSvcNaltrexoneOp:QuestionList = new QuestionList("SvcNaltrexoneOp","Naltrexone (Oral)",yn,1);
-			public var qSvcVivitrolOp:QuestionList = new QuestionList("SvcVivitrolOp","Vivitrol (Injectable)",yn,1);
-			public var qSvcDisulfiramOp:QuestionList = new QuestionList("SvcDisulfiramOp","Disulfiram",yn,1);
-			public var qSvcAcamprosateOp:QuestionList = new QuestionList("SvcAcamprosateOp","Acamprosate",yn,1);
-			public var qSvcNaltrexoneAl:QuestionList = new QuestionList("SvcNaltrexoneAl","Naltrexone (Oral)",yn,1);
-			public var qSvcVivitrolAl:QuestionList = new QuestionList("SvcVivitrolAl","Vivitrol (Injectable)",yn,1);
-			public var qSvcDisulfiramAl:QuestionList = new QuestionList("SvcDisulfiramAl","Disulfiram",yn,1);
-			public var qSvcAcamprosateAl:QuestionList = new QuestionList("SvcAcamprosateAl","Acamprosate",yn,1);
+			
 			public var qSvcResidential:QuestionList = new QuestionList("SvcResidential","Residential/Rehabilitation",yn,1);
 			public var qSvcDetoxHospital:QuestionList = new QuestionList("SvcDetoxHospital","Hospital inpatient",yn,1);
 			public var qSvcDetoxResidential:QuestionList = new QuestionList("SvcDetoxResidential","Free standing residential",yn,1);
@@ -52,7 +44,6 @@
 			public var qSvcCoocTreatment:QuestionList = new QuestionList("SvcCoocTreatment","Co-occuring treatment/Recovery",yn,1);
 			public var qSvcPharmaInterven:QuestionList = new QuestionList("SvcPharmaInterven","Pharmacological interventions",yn,1);
 			public var qSvcHIVCounseling:QuestionList = new QuestionList("SvcHIVCounseling","HIV/AIDS counseling",yn,1);
-			public var qSvcMentalHealth:QuestionList = new QuestionList("SvcMentalHealth","Mental health services",yn,1);
 			public var qSvcOtherClinical:QuestionList = new QuestionList("SvcOtherClinical","Other clinical services",yn,1);
 			public var qSvcOtherClinicalSpec:QuestionText = new QuestionText("SvcOtherClinicalSpec", "Other (specify)","");
 			
@@ -63,7 +54,7 @@
 				createText("Modality (Select at least one modality)","h1");
 				var g:TileGroup = new TileGroup();
 				g.requestedColumnCount = 2;
-				g.requestedRowCount = 14;
+				g.requestedRowCount = 12;
 				g.orientation = "columns";
 				g.verticalGap = 3;
 				addElement(g);
@@ -73,19 +64,7 @@
 				addGroupedQuestion(qSvcOutpatient,g);
 				addGroupedQuestion(qSvcOutreach,g);
 				addGroupedQuestion(qSvcIntensiveOutpatient,g);
-				addHeader("Medication assisted treatment",g);
-				addHeader("For Opioid Addiction",g);
 				addGroupedQuestion(qSvcMethadoneOp,g);
-				addGroupedQuestion(qSvcBuprenorphineOp,g);
-				addGroupedQuestion(qSvcNaltrexoneOp,g);
-				addGroupedQuestion(qSvcVivitrolOp,g);
-				addGroupedQuestion(qSvcDisulfiramOp,g);
-				addGroupedQuestion(qSvcAcamprosateOp,g);
-				addHeader("For Alcohol Addiction",g);
-				addGroupedQuestion(qSvcNaltrexoneAl,g);
-				addGroupedQuestion(qSvcVivitrolAl,g);
-				addGroupedQuestion(qSvcDisulfiramAl,g);
-				addGroupedQuestion(qSvcAcamprosateAl,g);
 				addGroupedQuestion(qSvcResidential,g);
 				addHeader("Detoxification",g);
 				addGroupedQuestion(qSvcDetoxHospital,g);
@@ -102,7 +81,7 @@
 				createText("Treatment Services (Select at least one service)","h1");
 				g = new TileGroup();
 				g.requestedColumnCount = 2;
-				g.requestedRowCount = 8;
+				g.requestedRowCount = 7;
 				g.orientation = "columns";
 				g.verticalGap = 3;
 				addElement(g);
@@ -118,7 +97,6 @@
 				addGroupedQuestion(qSvcCoocTreatment,g);
 				addGroupedQuestion(qSvcPharmaInterven,g);
 				addGroupedQuestion(qSvcHIVCounseling,g);
-				addGroupedQuestion(qSvcMentalHealth,g);
 				addGroupedQuestion(qSvcOtherClinical,g);
 				addGroupedQuestion(qSvcOtherClinicalSpec,g);
 				qSvcOtherClinicalSpec.answerType = String;

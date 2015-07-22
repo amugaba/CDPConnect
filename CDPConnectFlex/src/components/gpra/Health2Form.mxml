@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<assessment:InterviewForm xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			 xmlns:s="library://ns.adobe.com/flex/spark" 
+			 xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%" xmlns:assessment="components.assessment.*">
+	<fx:Script>
+		<![CDATA[
+			import components.questions.QuestionList;
+			import components.questions.QuestionText;
+			import components.questions.QuestionTextRefusable;
+			import components.validators.Valid;
+			
+			import mx.binding.utils.BindingUtils;
+			import mx.collections.ArrayList;
+			import mx.validators.NumberValidator;
+			
+			public var qSexActivity:QuestionList = new QuestionList("SexActivity","During the past 30 days, did you engage in sexual activity?",new ArrayList(["Yes","No","Not permitted to ask",REFUSED_VALUE, DONT_KNOW_VALUE]),1);
+			public var qSexContacts:QuestionTextRefusable = new QuestionTextRefusable("SexContacts","Sexual contacts (vaginal, oral, or anal) did you have?","0");
+			public var qSexUnprotContacts:QuestionTextRefusable = new QuestionTextRefusable("SexUnprot","Unprotected sexual contacts did you have?","0");
+			
+			public var qSexUnprotHIVAids:QuestionTextRefusable = new QuestionTextRefusable("SexUnprotHIVAids","HIV positive or has AIDS","0");
+			public var qSexUnprotInjDrugUser:QuestionTextRefusable = new QuestionTextRefusable("SexUnprotInjDrugUser","An injection drug user","0");
+			public var qSexUnprotHigh:QuestionTextRefusable = new QuestionTextRefusable("SexUnprotHigh","High on some substance","0");
+			
+			public var qiHIVTest:QuestionList = new QuestionList("iHIVTest","Have you ever been tested for HIV?",ynrd,1);
+			public var qiHIVTestResult:QuestionList = new QuestionList("iHIVTestResult","Do you know the results of your HIV testing?",yn,0);
+			
+			//Health2 Form Area
+			public override function createForm():void
+			{
+				//Questions
+				addQuestion(qSexActivity,125);
+				createText("[IF YES] Altogether how many:","h1");
+				addQuestion(qSexContacts);
+				addQuestion(qSexUnprotContacts);
+				
+				createText("How many unprotected sexual contacts were with an individual who is or was:","h1");
+				addQuestion(qSexUnprotHIVAids);
+				addQuestion(qSexUnprotInjDrugUser);
+				addQuestion(qSexUnprotHigh);
+				addDivider();
+				addQuestion(qiHIVTest);
+				addQuestion(qiHIVTestResult);
+				
+				//Validators
+				Valid.addNumberValidator(qSexContacts,1,999,true);
+				Valid.addNumberValidator(qSexUnprotContacts,0,0,true);
+				Valid.addNumberValidator(qSexUnprotHIVAids,0,0,true);
+				Valid.addNumberValidator(qSexUnprotInjDrugUser,0,0,true);
+				Valid.addNumberValidator(qSexUnprotHigh,0,0,true);
+				
+				//Unprotected contacts should be <= total contacts
+				BindingUtils.bindSetter(function():void{
+					(qSexUnprotContacts.validator as NumberValidator).maxValue = qSexContacts.answerNumber;
+					qSexUnprotContacts.refreshSkips();
+				}, qSexContacts.inputControl, "text");
+				
+				(qSexUnprotContacts.validator as NumberValidator).exceedsMaxError = "Cannot be greater than 'Sexual contacts'";
+				
+				//These three questions can't be greater than Unprotected value
+				BindingUtils.bindSetter(function():void{
+					(qSexUnprotHIVAids.validator as NumberValidator).maxValue = qSexUnprotContacts.answerNumber;
+					(qSexUnprotInjDrugUser.validator as NumberValidator).maxValue = qSexUnprotContacts.answerNumber;
+					(qSexUnprotHigh.validator as NumberValidator).maxValue = qSexUnprotContacts.answerNumber;
+					qSexUnprotHIVAids.validator.validate();
+					qSexUnprotInjDrugUser.validator.validate();
+					qSexUnprotHigh.validator.validate();
+				}, qSexUnprotContacts.inputControl, "text");
+				
+				(qSexUnprotHIVAids.validator as NumberValidator).exceedsMaxError = "Cannot be greater than 'Unprotected contacts'";
+				(qSexUnprotInjDrugUser.validator as NumberValidator).exceedsMaxError = "Cannot be greater than 'Unprotected contacts'";
+				(qSexUnprotHigh.validator as NumberValidator).exceedsMaxError = "Cannot be greater than 'Unprotected contacts'";
+				
+				//Control Logic
+				addSkipDropDown(qSexActivity,["Yes"],[qSexContacts,qSexUnprotContacts],true);
+				addSkipTextNumber(qSexUnprotContacts,[qSexUnprotHIVAids,qSexUnprotInjDrugUser,qSexUnprotHigh],["0"]);
+				addSkipDropDown(qiHIVTest,["Yes"],[qiHIVTestResult],true);
+			}
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+</assessment:InterviewForm>

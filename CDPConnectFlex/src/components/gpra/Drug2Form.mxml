@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<assessment:InterviewForm xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			 xmlns:s="library://ns.adobe.com/flex/spark" 
+			 xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%" xmlns:assessment="components.assessment.*">
+	<fx:Script>
+		<![CDATA[
+			import components.questions.QuestionClass;
+			import components.questions.QuestionList;
+			import components.questions.QuestionText;
+			import components.questions.QuestionTextRefusable;
+			import components.skips.SkipMultipleHandler;
+			import components.skips.SkipPattern;
+			import components.validators.Valid;
+			
+			import mx.binding.utils.BindingUtils;
+			import mx.collections.ArrayList;
+			import mx.validators.NumberValidator;
+			
+			private static var route:ArrayList = new ArrayList(["Oral","Nasal","Smoking","Non-IV Injection","IV",REFUSED_VALUE,DONT_KNOW_VALUE]);
+			public var qNonPresMethadoneDays:QuestionTextRefusable = new QuestionTextRefusable("NonPresMethadoneDays","Non-prescription methadone","0");
+			public var qNonPresMethadoneRoute:QuestionList = new QuestionList("NonPresMethadoneRoute","",route,0);
+			public var qHallucPsychDays:QuestionTextRefusable = new QuestionTextRefusable("HallucPsychDays","Hallucinogens/psychedelics, PCP, MDMA, LSD, Mushrooms, or Mescaline","0");
+			public var qHallucPsychRoute:QuestionList = new QuestionList("HallucPsychRoute","",route,0);
+			public var qMethamDays:QuestionTextRefusable = new QuestionTextRefusable("MethamDays","Methamphetamine or other amphetamines","0");
+			public var qMethamRoute:QuestionList = new QuestionList("MethamRoute","",route,0);
+			public var qBenzodiazepinesDays:QuestionTextRefusable = new QuestionTextRefusable("BenzodiazepinesDays","Benzodiazepines: Diazepam, Alprazolam, Triazolam, and Estasolam","0");
+			public var qBenzodiazepinesRoute:QuestionList = new QuestionList("BenzodiazepinesRoute","",route,0);
+			public var qBarbituatesDays:QuestionTextRefusable = new QuestionTextRefusable("BarbituatesDays","Barbiturates: Mephobarbital and pentobarbital sodium","0");
+			public var qBarbituatesRoute:QuestionList = new QuestionList("BarbituatesRoute","",route,0);
+			public var qNonPrescGhbDays:QuestionTextRefusable = new QuestionTextRefusable("NonPrescGhbDays","Non-prescription GHB","0");
+			public var qNonPrescGhbRoute:QuestionList = new QuestionList("NonPrescGhbRoute","",route,0);
+			public var qKetamineDays:QuestionTextRefusable = new QuestionTextRefusable("KetamineDays","Ketamine","0");
+			public var qKetamineRoute:QuestionList = new QuestionList("KetamineRoute","",route,0);
+			public var qOtherTranquilizersDays:QuestionTextRefusable = new QuestionTextRefusable("OtherTranquilizersDays","Other tranquilizers, downers, sedatives, or hypnotics","0");
+			public var qOtherTranquilizersRoute:QuestionList = new QuestionList("OtherTranquilizersRoute","",route,0);
+			public var qInhalantsDays:QuestionTextRefusable = new QuestionTextRefusable("InhalantsDays","Inhalants","0");
+			public var qInhalantsRoute:QuestionList = new QuestionList("InhalantsRoute","",route,0);
+			public var qOtherIllegalDrugsDays:QuestionTextRefusable = new QuestionTextRefusable("OtherIllegalDrugsDays","Other illegal drugs","0");
+			public var qOtherIllegalDrugsRoute:QuestionList = new QuestionList("OtherIllegalDrugsRoute","",route,0);
+			public var qOtherIllegalDrugsSpec:QuestionText = new QuestionText("OtherIllegalDrugsSpec","Other, specify","");
+			public var qInjectedDrugs:QuestionList = new QuestionList("InjectedDrugs","In the past 30 days have you injected drugs?",ynrd,1);
+			public var qParaphenaliaUsedOthers:QuestionList = new QuestionList("ParaphenaliaUsedOthers","In the past 30 days, how often did you use a syringe/needle, cooker, cotton or water that someone else used?",
+				new ArrayList(["Always","More than half the time","Less than half the time","Never",REFUSED_VALUE,DONT_KNOW_VALUE]),3);
+			
+			public override function createForm():void
+			{
+				viewstackIndex = 9;
+				
+				createText("In the past 30 days, how many days have you used...","h1");
+				addDrugQuestion(qNonPresMethadoneDays,qNonPresMethadoneRoute);
+				addDrugQuestion(qHallucPsychDays,qHallucPsychRoute);
+				addDrugQuestion(qMethamDays,qMethamRoute);
+				addDrugQuestion(qBenzodiazepinesDays,qBenzodiazepinesRoute);
+				addDrugQuestion(qBarbituatesDays,qBarbituatesRoute);
+				addDrugQuestion(qNonPrescGhbDays,qNonPrescGhbRoute);
+				addDrugQuestion(qKetamineDays,qKetamineRoute);
+				addDrugQuestion(qOtherTranquilizersDays,qOtherTranquilizersRoute);
+				addDrugQuestion(qInhalantsDays,qInhalantsRoute);				
+				addDrugQuestion(qOtherIllegalDrugsDays,qOtherIllegalDrugsRoute);
+				addQuestion(qOtherIllegalDrugsSpec);
+				addQuestion(qInjectedDrugs);
+				addQuestion(qParaphenaliaUsedOthers);
+				
+				//Validators
+				Valid.addRequiredValidator(qOtherIllegalDrugsSpec);
+				qOtherIllegalDrugsSpec.answerType = String;
+				
+				//Control Logic
+				addSkipTextNumber(qOtherIllegalDrugsDays,[qOtherIllegalDrugsSpec],["0"]);
+				addSkipDropDown(qInjectedDrugs,[YES_VALUE],[qParaphenaliaUsedOthers],true);
+			}
+			
+			protected function addDrugQuestion(daysQ:QuestionTextRefusable, routeQ:QuestionList, height:int=22):void
+			{				
+				addQuestion(daysQ);
+				daysQ.direction = "horizontal";
+				
+				questions.push(routeQ);
+				daysQ.addElement(routeQ.input);
+				routeQ.inline = true;
+				
+				Valid.addNumberValidator(daysQ,0,0,true);
+				addSkipTextNumber(daysQ,[routeQ],["0"]);
+				global.pageGPRA.drugForm.drugQuestions.push(daysQ);
+			}
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+</assessment:InterviewForm>

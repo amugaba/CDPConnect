@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <assessment:InterviewForm xmlns:fx="http://ns.adobe.com/mxml/2009" 
 			 xmlns:s="library://ns.adobe.com/flex/spark" 
-			 xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:dci="components.dci.*" width="100%" height="100%" xmlns:assessment="components.assessment.*">
+			 xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%" xmlns:assessment="components.assessment.*">
 	<fx:Script>
 		<![CDATA[
 			import components.questions.QuestionList;
@@ -20,11 +20,11 @@
 			public var qAttendOtherOrg:QuestionList = new QuestionList("AttendOtherOrg","If yes, specify how many times",ynrd,1);
 			public var qAttendOtherOrgTimes:QuestionTextRefusable = new QuestionTextRefusable("AttendOtherOrgTimes","","0");
 			
-			public var qInteractFamilyFriends:QuestionList = new QuestionList("InteractFamilyFriends","In the past 30 days, have you had interaction with family and/or friends that are supportive of your recovery?",ynrd,1);
-			public var qAccomplishedGoals:QuestionList = new QuestionList("AccomplishedGoals","In the past 30 days, I generally accomplished what I set out to do.",new ArrayList(["Strongly agree","Agree","Undecided","Disagree","Strongly disagree",REFUSED_VALUE,DONT_KNOW_VALUE]),0);
-			public var qManageHealth:QuestionList = new QuestionList("ManageHealth","I feel capable of managing my health care needs.",new ArrayList(["On my own most of the time","With support from others most of the time","On my own","Some of the time and with support from others","Some of the time","Rarely or never",REFUSED_VALUE,DONT_KNOW_VALUE]),0);
+			public var qInteractFamilyFriends:QuestionList = new QuestionList("InteractFamilyFriends","In the past 30 days, did you have interaction with family and/or friends that are supportive of your recovery?",ynrd,1);
+			public var qWhomInTrouble:QuestionList = new QuestionList("WhomInTrouble","To whom do you turn when you are having trouble?",new ArrayList(["No One","Clergy Member","Family Member","Friends","Other",REFUSED_VALUE,DONT_KNOW_VALUE]),0);
+			public var qWhomInTroubleSpec:QuestionText = new QuestionText("WhomInTroubleSpec","Other, specify:","");
 			
-			//Health3 Form Area
+			//Social Form Area
 			public override function createForm():void
 			{
 				//Questions
@@ -32,18 +32,23 @@
 				createText("In other words, did you participate in a non-professional, peer-operated organization that is devoted to helping individuals who have addiction related problems such as: Alcoholics Anonymous, Narcotics Anonymous, Oxford House, Secular Organization for Sobriety, or Women for Sobriety, etc.","",590);
 				addSocialQuestion(qAttendVoluntary,qAttendVoluntaryTimes);
 				
-				createText("In the past 30 days, have you attend any religious/faith-affiliated recovery self-help groups?","h1",590);
+				createText("In the past 30 days, did you attend any religious/faith-affiliated recovery self-help groups?","h1",590);
 				addSocialQuestion(qAttendReligious,qAttendReligiousTimes);
 				
-				createText("In the past 30 days, have you attend meetings of organizations that support recovery other than religious/faith and non-religious/faith self-help groups?","h1",590);
+				createText("In the past 30 days, did you attend meetings of organizations that support recovery other than the organizations described above?","h1",590);
 				addSocialQuestion(qAttendOtherOrg,qAttendOtherOrgTimes);
 				
 				addDivider();
 				addQuestion(qInteractFamilyFriends);
-				addQuestion(qAccomplishedGoals,130);
-				addQuestion(qManageHealth,280);
+				addQuestion(qWhomInTrouble,150);
+				addQuestion(qWhomInTroubleSpec);
 				
 				//Validators
+				Valid.addRequiredValidator(qWhomInTroubleSpec);
+				qWhomInTroubleSpec.answerType = String;
+				
+				//Control Logic
+				addSkipDropDown(qWhomInTrouble,["Other"],[qWhomInTroubleSpec],true);				
 			}
 			
 			protected function addSocialQuestion(socialQ:QuestionList, daysQ:QuestionTextRefusable):void

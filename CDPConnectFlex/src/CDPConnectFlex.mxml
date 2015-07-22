@@ -43,7 +43,7 @@ New York SBIRT Branch
 			[Bindable] public var activeUser:UserVO = null;
 			[Bindable] public var activeGrant:GrantVO = null;
 			[Bindable] public var activeAssessment:AssessmentVO = null;
-			public var intakeDCI:AssessmentVO;
+			public var intakeInterview:AssessmentVO;
 			
 			public var userList:ArrayList = new ArrayList();
 			[Bindable] public var staffList:ArrayList = new ArrayList();
@@ -178,7 +178,7 @@ New York SBIRT Branch
 				  backgroundColor="#E2E2E8" chromeColor="#6376A5" color="#000000"
 				  contentBackgroundColor="#FFFFFF" creationPolicy="all">
 		<pages:HomePage id="pageHome" width="100%" height="100%" label="Home" />
-		<pages:DciPage id="pageGPRA" width="100%" height="100%" label="GPRA"/>
+		<pages:GpraPage id="pageGPRA" width="100%" height="100%" label="GPRA"/>
 		<pages:DciPage id="pageDCI" width="100%" height="100%" label="DCI"/>
 		<pages:AdminPage id="pageAdmin" width="100%" height="100%" label="Admin"/>
 		<!--<pages:ReportPage id="pageReport" width="100%" height="100%" label="Reports"/>-->

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <assessment:InterviewForm xmlns:fx="http://ns.adobe.com/mxml/2009" 
 			 xmlns:s="library://ns.adobe.com/flex/spark" 
-			 xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:dci="components.dci.*" width="100%" height="100%"
+			 xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%"
 			 labelWidth="200" xmlns:assessment="components.assessment.*">
 	<fx:Script>
 		<![CDATA[
@@ -27,7 +27,6 @@
 			public var qSvcTransportation:QuestionText = new QuestionText("DisTransportation","Transportation","0");
 			public var qSvcHIVService:QuestionText = new QuestionText("DisHIVService","HIV/AIDS services","0");
 			public var qSvcDrugFreeHousing:QuestionText = new QuestionText("DisDrugFreeHousing","Supportive drug-free housing","0");
-			public var qSvcCareCoordination:QuestionText = new QuestionText("DisCareCoordination","Care coordination","0");
 			public var qSvcOtherCaseMgmt:QuestionText = new QuestionText("DisOtherCaseMgmt","Other case management","0");
 			public var qSvcOtherCaseMgmtSpec:QuestionText = new QuestionText("DisOtherCaseMgmtSpec","Other (specify)","");
 			public var qSvcContinuingCare:QuestionText = new QuestionText("DisContinuingCare","Continuing care","0");
@@ -79,7 +78,6 @@
 				addGroupedQuestion(qSvcTransportation,g);
 				addGroupedQuestion(qSvcHIVService,g);
 				addGroupedQuestion(qSvcDrugFreeHousing,g);
-				addGroupedQuestion(qSvcCareCoordination,g);
 				addGroupedQuestion(qSvcOtherCaseMgmt,g);
 				addGroupedQuestion(qSvcOtherCaseMgmtSpec,g, false);
 				

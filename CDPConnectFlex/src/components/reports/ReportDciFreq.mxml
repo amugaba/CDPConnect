@@ -8,7 +8,7 @@
 					width="100%" height="100%" xmlns:questions="components.questions.*">
 	<fx:Script>
 		<![CDATA[
-			import components.dci.InterviewType;
+			import gpra.InterviewType;
 			import components.questions.QuestionList;
 			import components.questions.QuestionText;
 			import components.validators.DateAgeValidator;

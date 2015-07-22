@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <assessment:InterviewForm xmlns:fx="http://ns.adobe.com/mxml/2009" 
 			 xmlns:s="library://ns.adobe.com/flex/spark" 
-			 xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:dci="components.dci.*" width="100%" height="100%" xmlns:assessment="components.assessment.*">
+			 xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%" xmlns:assessment="components.assessment.*">
 	<fx:Script>
 		<![CDATA[
-			import components.assessment.InterviewType;
 			import components.assessment.InterviewType;
 			import components.questions.QuestionClass;
 			import components.questions.QuestionList;
@@ -18,8 +17,9 @@
 			import mx.collections.ArrayList;
 			
 			public var qClientID:QuestionText = new QuestionText("ClientID","Client ID","",false);
-			public var qInterviewTypeCode:QuestionList = new QuestionList("InterviewTypeCode","Interview Type",new ArrayList(["Intake","6 Month Followup","12 Month Followup","3 Month Followup","Discharge", "Discharge: Administrative"]),0);
-			public var qConductedInterview:QuestionList = new QuestionList("ConductedInterview","Was the interview conducted?",yn,0);
+			public var qClientType:QuestionList = new QuestionList("ClientType","Client Type",new ArrayList(["Treatment Client","Client in Recovery"]),0);
+			public var qInterviewTypeCode:QuestionList = new QuestionList("InterviewTypeCode","Interview Type",new ArrayList(["Intake","6 Month Followup","12 Month Followup","3 Month Followup","Discharge"]),0);
+			public var qConductedInterview:QuestionList = new QuestionList("ConductedInterview","Did you conduct a followup/discharge interview?",yn,0);
 			public var qInterviewDate:QuestionText = new QuestionText("InterviewDate","Interview Date","");
 			public var qCooccurringScreen:QuestionList = new QuestionList("CooccurringScreen","Was the client screened by your program for co-occurring mental health and substance use disorders?",yn,1);
 			public var qCooccurringScreenStatus:QuestionList = new QuestionList("CooccurringScreenStatus","Did the client screen positive for co-occurring mental health and substance use disorders?",yn,1);
@@ -33,6 +33,7 @@
 				//Questions
 				addQuestion(qClientID);
 				qClientID.answerType = String;
+				addQuestion(qClientType, 150);
 				addQuestion(qInterviewTypeCode, 150);
 				addQuestion(qConductedInterview);
 				addQuestion(qInterviewDate);
@@ -45,7 +46,7 @@
 				qInterviewDate.answerType = String;
 				
 				//Control Logic
-				//addSkipDropDown("InterviewTypeCode",["Intake"],["ConductedInterview"]);
+				addSkipDropDown(qInterviewTypeCode,["Intake"],[qConductedInterview]);
 				addSkipDropDown(qConductedInterview,[NO_VALUE],[qInterviewDate]);
 				addSkipDropDown(qCooccurringScreen,[NO_VALUE],[qCooccurringScreenStatus]);
 				
@@ -60,18 +61,22 @@
 				qInterviewDate.answer = dateFormatter.format(new Date());
 				qFollowupSelected.visible = false;
 				
-				if(InterviewType.isIntake(global.pageDCI.interviewType))
+				if(InterviewType.isIntake(global.pageGPRA.interviewType))
 				{
 					qInterviewTypeCode.answer = "Intake";
 					qFollowupSelected.visible = true;
 				}
-				else if(InterviewType.isFollowup(global.pageDCI.interviewType))
+				else if(InterviewType.isFollowup(global.pageGPRA.interviewType))
 					qInterviewTypeCode.answer = "6 Month Followup";
-				else if(InterviewType.DISCHARGE_BI == global.pageDCI.interviewType || InterviewType.DISCHARGE_RT == global.pageDCI.interviewType)
-					qInterviewTypeCode.answer = "Discharge";
-				else if(InterviewType.DISCHARGE_ADMIN== global.pageDCI.interviewType)
+				else if(InterviewType.DISCHARGE_BI == global.pageGPRA.interviewType || InterviewType.DISCHARGE_RT == global.pageGPRA.interviewType)
 				{
-					qInterviewTypeCode.answer = "Discharge: Administrative";
+					qInterviewTypeCode.answer = "Discharge";
+					qConductedInterview.answer = "Yes";
+					qConductedInterview.refreshSkips();
+				}
+				else if(InterviewType.DISCHARGE_ADMIN== global.pageGPRA.interviewType)
+				{
+					qInterviewTypeCode.answer = "Discharge";
 					qConductedInterview.answer = "No";
 					qConductedInterview.refreshSkips();
 				}

@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<assessment:InterviewForm xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			 xmlns:s="library://ns.adobe.com/flex/spark" 
+			 xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%" xmlns:assessment="components.assessment.*">
+	<fx:Script>
+		<![CDATA[
+			import components.questions.QuestionClass;
+			import components.questions.QuestionList;
+			import components.questions.QuestionText;
+			import components.questions.QuestionTextRefusable;
+			import components.skips.SkipMultipleHandler;
+			import components.skips.SkipPattern;
+			import components.validators.Valid;
+			
+			import mx.binding.utils.BindingUtils;
+			import mx.collections.ArrayList;
+			import mx.controls.Alert;
+			import mx.validators.NumberValidator;
+			import mx.validators.ValidationResult;
+			
+			public var qAlcoholDays:QuestionTextRefusable = new QuestionTextRefusable("AlcoholDays","Any alcohol","0");
+			public var qAlcoholIntoxManyDrinksDays:QuestionTextRefusable = new QuestionTextRefusable("AlcoholIntoxManyDrinksDays","Alcohol to intoxication (5+ drinks in one sitting)","0");
+			public var qAlcoholIntoxFewDrinksDays:QuestionTextRefusable = new QuestionTextRefusable("AlcoholIntoxFewDrinksDays","Alcohol to intoxication (4 or fewer drinks in one sitting and felt high)","0");
+			public var qIllegalDrugsDays:QuestionTextRefusable = new QuestionTextRefusable("IllegDrugsDays","Illegal drugs","0");
+			public var qAlcoholDrugBothDays:QuestionTextRefusable = new QuestionTextRefusable("AlcoholDrugBothDays","Both alcohol and drugs (on the same day)","0");
+			
+			private static var route:ArrayList = new ArrayList(["Oral","Nasal","Smoking","Non-IV Injection","IV",REFUSED_VALUE,DONT_KNOW_VALUE]);
+			public var qCocaineCrackDays:QuestionTextRefusable = new QuestionTextRefusable("CocaineCrackDays","Cocaine (coke, crack)","0");
+			public var qCocaineCrackRoute:QuestionList = new QuestionList("CocaineCrackRoute","",route,0);
+			
+			public var qMarijuanaHashDays:QuestionTextRefusable = new QuestionTextRefusable("MarijuanaHashDays","Marijuana/Hashish","0");
+			public var qMarijuanaHashRoute:QuestionList = new QuestionList("MarijuanaHashRoute","",route,0);
+			public var qOpiatesHeroinDays:QuestionTextRefusable = new QuestionTextRefusable("OpiatesHeroinDays","Heroin","0");
+			public var qOpiatesHeroinRoute:QuestionList = new QuestionList("OpiatesHeroinRoute","",route,0);
+			public var qOpiatesMorphineDays:QuestionTextRefusable = new QuestionTextRefusable("OpiatesMorphineDays","Morphine","0");
+			public var qOpiatesMorphineRoute:QuestionList = new QuestionList("OpiatesMorphineRoute","",route,0);
+			public var qOpiatesDiluadidDays:QuestionTextRefusable = new QuestionTextRefusable("OpiatesDiluadidDays","Diluadid","0");
+			public var qOpiatesDiluadidRoute:QuestionList = new QuestionList("OpiatesDiluadidRoute","",route,0);
+			public var qOpiatesDemerolDays:QuestionTextRefusable = new QuestionTextRefusable("OpiatesDemerolDays","Demerol","0");
+			public var qOpiatesDemerolRoute:QuestionList = new QuestionList("OpiatesDemerolRoute","",route,0);
+			public var qOpiatesPercocetDays:QuestionTextRefusable = new QuestionTextRefusable("OpiatesPercocetDays","Percocet","0");
+			public var qOpiatesPercocetRoute:QuestionList = new QuestionList("OpiatesPercocetRoute","",route,0);
+			public var qOpiatesDarvonDays:QuestionTextRefusable = new QuestionTextRefusable("OpiatesDarvonDays","Darvon","0");
+			public var qOpiatesDarvonRoute:QuestionList = new QuestionList("OpiatesDarvonRoute","",route,0);
+			public var qOpiatesCodeineDays:QuestionTextRefusable = new QuestionTextRefusable("OpiatesCodeineDays","Codeine","0");
+			public var qOpiatesCodeineRoute:QuestionList = new QuestionList("OpiatesCodeineRoute","",route,0);
+			public var qOpiatesTylenolDays:QuestionTextRefusable = new QuestionTextRefusable("OpiatesTylenolDays","Tylenol 2,3,4","0");
+			public var qOpiatesTylenolRoute:QuestionList = new QuestionList("OpiatesTylenolRoute","",route,0);
+			public var qOpiatesOxycoDays:QuestionTextRefusable = new QuestionTextRefusable("OpiatesOxycoDays","Oxycontin/Oxycodone","0");
+			public var qOpiatesOxycoRoute:QuestionList = new QuestionList("OpiatesOxycoRoute","",route,0);
+			
+			public var drugQuestions:Array = new Array();
+			
+			//Drug1 Form Area
+			public override function createForm():void
+			{
+				viewstackIndex = 8;
+				
+				//Questions
+				createText("In the past 30 days, how many days have you used...","h1");
+				addQuestion(qAlcoholDays);
+				addQuestion(qAlcoholIntoxManyDrinksDays);
+				addQuestion(qAlcoholIntoxFewDrinksDays);
+				addQuestion(qIllegalDrugsDays);
+				addQuestion(qAlcoholDrugBothDays);
+				
+				createText("In the past 30 days, how many days have you used...","h1");				
+				addDrugQuestion(qCocaineCrackDays,qCocaineCrackRoute);
+				addDrugQuestion(qMarijuanaHashDays,qMarijuanaHashRoute);
+				addDrugQuestion(qOpiatesHeroinDays,qOpiatesHeroinRoute);
+				addDrugQuestion(qOpiatesMorphineDays,qOpiatesMorphineRoute);
+				addDrugQuestion(qOpiatesDiluadidDays,qOpiatesDiluadidRoute);
+				addDrugQuestion(qOpiatesDemerolDays,qOpiatesDemerolRoute);
+				addDrugQuestion(qOpiatesPercocetDays,qOpiatesPercocetRoute);
+				addDrugQuestion(qOpiatesDarvonDays,qOpiatesDarvonRoute);
+				addDrugQuestion(qOpiatesCodeineDays,qOpiatesCodeineRoute);				
+				addDrugQuestion(qOpiatesTylenolDays,qOpiatesTylenolRoute);
+				addDrugQuestion(qOpiatesOxycoDays,qOpiatesOxycoRoute);
+			
+				//Validators				
+				Valid.addNumberValidator(qAlcoholDays,0,30,true);
+				Valid.addNumberValidator(qAlcoholIntoxManyDrinksDays,0,0,true);
+				Valid.addNumberValidator(qAlcoholIntoxFewDrinksDays,0,0,true);
+				Valid.addNumberValidator(qIllegalDrugsDays,0,30,true);
+				Valid.addNumberValidator(qAlcoholDrugBothDays,0,0,true);
+				
+				//intox and both days are <= alc days
+				BindingUtils.bindSetter(function():void{
+					(qAlcoholIntoxManyDrinksDays.validator as NumberValidator).maxValue = qAlcoholDays.answerNumber;
+					(qAlcoholIntoxFewDrinksDays.validator as NumberValidator).maxValue = qAlcoholDays.answerNumber;
+					(qAlcoholDrugBothDays.validator as NumberValidator).maxValue = Math.min(qAlcoholDays.answerNumber,qIllegalDrugsDays.answerNumber);
+					qAlcoholIntoxManyDrinksDays.validator.validate();
+					qAlcoholIntoxFewDrinksDays.validator.validate();
+					qAlcoholDrugBothDays.validator.validate();
+				}, qAlcoholDays.inputControl, "text");
+				
+				(qAlcoholIntoxManyDrinksDays.validator as NumberValidator).exceedsMaxError = "Cannot be greater than 'Any alcohol'";
+				(qAlcoholIntoxFewDrinksDays.validator as NumberValidator).exceedsMaxError = "Cannot be greater than 'Any alcohol'";
+				(qAlcoholDrugBothDays.validator as NumberValidator).exceedsMaxError = "Cannot be greater than 'Any alcohol' or 'Illegal drugs'";
+				
+				//individual drugs must be <= total drugs
+				BindingUtils.bindSetter(drugDaysHandler, qIllegalDrugsDays.inputControl, "text");
+				
+				//Control Logic
+				addSkipTextNumber(qAlcoholDays,[qAlcoholIntoxManyDrinksDays,qAlcoholIntoxFewDrinksDays],["0"]);
+				
+				//Skip Living questions if alcohol and drugs are 0
+				var handler:SkipMultipleHandler = createSkipMultipleHandler([global.pageGPRA.livingForm.qImpactStress,global.pageGPRA.livingForm.qImpactActivity,global.pageGPRA.livingForm.qImpactEmotional]);
+				addSkipTextNumberMultiple(handler,qAlcoholDays,["0"]);
+				addSkipTextNumberMultiple(handler,qIllegalDrugsDays,["0"]);
+				handler.allMustSkip = true;
+				
+				//skip Both Days if alcohol OR drugs is 0
+				handler = createSkipMultipleHandler([qAlcoholDrugBothDays]);
+				addSkipTextNumberMultiple(handler,qAlcoholDays,["0"]);
+				addSkipTextNumberMultiple(handler,qIllegalDrugsDays,["0"]);
+			}
+			
+			protected function addDrugQuestion(daysQ:QuestionTextRefusable, routeQ:QuestionList, height:int=22):void
+			{				
+				addQuestion(daysQ);
+				daysQ.direction = "horizontal";
+				
+				questions.push(routeQ);
+				daysQ.addElement(routeQ.input);//maybe this is wrong
+				routeQ.inline = true;
+				
+				Valid.addNumberValidator(daysQ,0,0,true);
+				addSkipTextNumber(daysQ,[routeQ],["0"]);
+				drugQuestions.push(daysQ);
+			}
+			
+			protected function drugDaysHandler(val:String):void
+			{
+				(qAlcoholDrugBothDays.validator as NumberValidator).maxValue = Math.min(qAlcoholDays.answerNumber,Number(val));
+				
+				for each(var q:QuestionClass in drugQuestions)
+				{
+					(q.validator as NumberValidator).maxValue = Number(val);
+					q.validator.validate();
+				}
+			}
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+</assessment:InterviewForm>
