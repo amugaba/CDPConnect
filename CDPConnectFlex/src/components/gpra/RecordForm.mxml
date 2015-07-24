@@ -24,8 +24,6 @@
 			public var qCooccurringScreen:QuestionList = new QuestionList("CooccurringScreen","Was the client screened by your program for co-occurring mental health and substance use disorders?",yn,1);
 			public var qCooccurringScreenStatus:QuestionList = new QuestionList("CooccurringScreenStatus","Did the client screen positive for co-occurring mental health and substance use disorders?",yn,1);
 			public var qFollowupSelected:QuestionList = new QuestionList("followupSelected","Was the client selected for follow-up, and did the client agree to follow-up?",yn,1);
-
-			protected var dateFormatter:DateTimeFormatter = new DateTimeFormatter(LocaleID.DEFAULT);
 			
 			//Record Form Area
 			public override function createForm():void
@@ -37,6 +35,8 @@
 				addQuestion(qInterviewTypeCode, 150);
 				addQuestion(qConductedInterview);
 				addQuestion(qInterviewDate);
+				qInterviewDate.defaultValue = global.dateFormatter.format(new Date());
+				qInterviewDate.answer = qInterviewDate.defaultValue;
 				addQuestion(qCooccurringScreen);
 				addQuestion(qCooccurringScreenStatus);
 				addQuestion(qFollowupSelected);
@@ -51,35 +51,42 @@
 				addSkipDropDown(qCooccurringScreen,[NO_VALUE],[qCooccurringScreenStatus]);
 				
 				//Prepopulate
-				dateFormatter.setDateTimePattern("MM/dd/yyyy");
 				populateForm();
 			}
 			
 			public function populateForm():void
 			{
 				qClientID.answer = String(global.activeClient.clientid);
-				qInterviewDate.answer = dateFormatter.format(new Date());
-				qFollowupSelected.visible = false;
 				
 				if(InterviewType.isIntake(global.pageGPRA.interviewType))
 				{
 					qInterviewTypeCode.answer = "Intake";
-					qFollowupSelected.visible = true;
+					if(questions.indexOf(qFollowupSelected) == -1) //followup Q is only shown in Intake
+						addQuestion(qFollowupSelected);
 				}
-				else if(InterviewType.isFollowup(global.pageGPRA.interviewType))
-					qInterviewTypeCode.answer = "6 Month Followup";
-				else if(InterviewType.DISCHARGE_BI == global.pageGPRA.interviewType || InterviewType.DISCHARGE_RT == global.pageGPRA.interviewType)
+				else
 				{
-					qInterviewTypeCode.answer = "Discharge";
-					qConductedInterview.answer = "Yes";
-					qConductedInterview.refreshSkips();
+					if(questions.indexOf(qFollowupSelected) != -1)
+						removeQuestion(qFollowupSelected);
+					
+					if(InterviewType.isFollowup(global.pageGPRA.interviewType))
+					{
+						qInterviewTypeCode.answer = "6 Month Followup";
+					}
+					else if(InterviewType.DISCHARGE_BI == global.pageGPRA.interviewType || InterviewType.DISCHARGE_RT == global.pageGPRA.interviewType)
+					{
+						qInterviewTypeCode.answer = "Discharge";
+						qConductedInterview.answer = "Yes";
+					}
+					else if(InterviewType.DISCHARGE_ADMIN== global.pageGPRA.interviewType)
+					{
+						qInterviewTypeCode.answer = "Discharge";
+						qConductedInterview.answer = "No";
+					}
 				}
-				else if(InterviewType.DISCHARGE_ADMIN== global.pageGPRA.interviewType)
-				{
-					qInterviewTypeCode.answer = "Discharge";
-					qConductedInterview.answer = "No";
-					qConductedInterview.refreshSkips();
-				}
+				
+				qInterviewTypeCode.refreshSkips();
+				qConductedInterview.refreshSkips();
 			}
 			
 			

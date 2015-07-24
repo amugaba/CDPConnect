@@ -19,7 +19,7 @@
 			import mx.controls.Alert;
 			import mx.states.OverrideBase;
 			
-			public var qFamilyActiveDuty:QuestionList = new QuestionList("FamilyActiveDuty","Is anyone in your immediate family currently serving as a member of one of the branches of the United States Uniformed Services on active duty, reserve components or National Guard?",ynrd,0);
+			public var qFamilyActiveDuty:QuestionList = new QuestionList("FamilyActiveDuty","Is anyone in your immediate family currently serving as a member of one of the branches of the United States Uniformed Services on active duty, reserve components or National Guard?",ynrd,1);
 			public var qServiceMemRelationship:QuestionList = new QuestionList("ServiceMemRelationship","What is the relationship of that person (Service Member) to you?",new ArrayList(["Mother","Father","Brother","Sister","Spouse","Partner","Daughter","Son","Self","Other"]),0);
 			public var qServiceMemExpOther:QuestionText = new QuestionText("ServiceMemExpOther","Other, specify","");
 			public var qServiceMemExpDeployed:QuestionList = new QuestionList("ServiceMemExpDeployed","Deployed in support of combat operations (e.g., Iraq or Afghanistan)?",ynrd,1);

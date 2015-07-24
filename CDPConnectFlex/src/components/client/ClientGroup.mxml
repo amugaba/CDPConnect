@@ -43,6 +43,8 @@
 			 * */
 			protected function saveButton_clickHandler(event:MouseEvent):void
 			{
+				if(clientID.text == global.activeClient.clientid)//ID not changed
+					return;
 				if(clientID.text.length == 15)
 					clientExistsResult.token = clientService.clientExists(clientID.text);
 				else
@@ -106,19 +108,16 @@
 				
 				for each(var assess:AssessmentVO in assessmentList)
 				{
-					if(assess.type == AssessType.DCI)
+					if(InterviewType.isIntake(assess.subtype))
 					{
-						if(InterviewType.isIntake(assess.subtype))
-						{
-							global.activeClient.intakeExists = true;
-							global.intakeInterview = assess;
-							global.activeClient.followupSelected = assess.data.source["followupSelected"] == 1;
-						}
-						else if(InterviewType.isDischarge(assess.subtype))
-							global.activeClient.dischargeExists = true;
-						else if(InterviewType.isFollowup(assess.subtype))
-							global.activeClient.followupExists = true;
+						global.activeClient.intakeExists = true;
+						global.intakeInterview = assess;
+						global.activeClient.followupSelected = assess.data.source["followupSelected"] == 1;
 					}
+					else if(InterviewType.isDischarge(assess.subtype))
+						global.activeClient.dischargeExists = true;
+					else if(InterviewType.isFollowup(assess.subtype))
+						global.activeClient.followupExists = true;
 				}
 			}
 			
@@ -131,12 +130,12 @@
 				
 				if(global.activeAssessment.type == AssessType.DCI)
 				{
-					global.pageDCI.loadDCI(global.activeAssessment);
+					global.pageDCI.loadInterview(global.activeAssessment);
 					global.pageViewstack.selectedChild = global.pageDCI;
 				}
 				else if(global.activeAssessment.type == AssessType.GPRA)
 				{
-					global.pageDCI.loadDCI(global.activeAssessment);
+					global.pageGPRA.loadInterview(global.activeAssessment);
 					global.pageViewstack.selectedChild = global.pageGPRA;
 				}
 			}	
@@ -236,17 +235,17 @@
 	
 	<!--Interviews section-->
 	<s:Label y="93" fontSize="14" fontWeight="bold" horizontalCenter="0" text="Interview List"/>
-	<s:DataGrid id="assessmentGrid" y="116" width="289" height="189" dataProvider="{assessmentList}"
+	<s:DataGrid id="assessmentGrid" y="116" width="300" height="189" dataProvider="{assessmentList}"
 				horizontalCenter="0" requestedRowCount="3" resizableColumns="false">
 		<s:columns>
 			<s:ArrayList>
-				<s:GridColumn dataField="type" headerText="Type" width="135" itemRenderer="components.client.assessmentGridRenderer"></s:GridColumn>
+				<s:GridColumn dataField="type" headerText="Type" width="150" itemRenderer="components.client.assessmentGridRenderer"></s:GridColumn>
 				<s:GridColumn dataField="date" headerText="Date" width="75"></s:GridColumn>
 				<s:GridColumn dataField="load" headerText="Load" width="70">
 					<s:itemRenderer>
 						<fx:Component>
 							<s:GridItemRenderer width="100%">
-								<s:Button label="Load" x="7" width="55" click="{outerDocument.loadButton_clickHandler()}" />
+								<s:Button label="Load" x="7" y="3" width="55" click="{outerDocument.loadButton_clickHandler()}" />
 							</s:GridItemRenderer>
 						</fx:Component>
 					</s:itemRenderer>

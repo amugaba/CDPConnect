@@ -1,302 +1,148 @@
 <?xml version="1.0" encoding="utf-8"?>
-<s:NavigatorContent xmlns:fx="http://ns.adobe.com/mxml/2009"
+<pages:InstrumentPage xmlns:fx="http://ns.adobe.com/mxml/2009"
 					xmlns:s="library://ns.adobe.com/flex/spark"
 					xmlns:mx="library://ns.adobe.com/flex/mx"
 					xmlns:custom="components.*"
-					xmlns:gpraservice="services.gpraservice.*"
 					xmlns:styles="com.adobe.fiber.styles.*"
-					xmlns:clientservice="services.clientservice.*"
 					xmlns:gpra="components.gpra.*"
-					xmlns:assessmentservice="services.assessmentservice.*"
-					width="715" height="700">
+					xmlns:pages="components.pages.*">
 	<fx:Script>
 		<![CDATA[
-			import com.adobe.serializers.utility.TypeUtility;
-			
 			import components.assessment.AssessType;
 			import components.assessment.InterviewForm;
 			import components.assessment.InterviewType;
-			import components.questions.QuestionClass;
-			import components.questions.QuestionList;
-			import components.questions.QuestionText;
-			import components.questions.QuestionTextRefusable;
-			import components.skips.SkipPattern;
+			import components.gpra.*;
 			import components.validators.DateAgeValidator;
 			
-			import mx.collections.ArrayCollection;
-			import mx.collections.ArrayList;
-			import mx.controls.Alert;
 			import mx.controls.DateField;
-			import mx.controls.tabBarClasses.Tab;
-			import mx.core.FlexGlobals;
-			import mx.events.CloseEvent;
-			import mx.events.ItemClickEvent;
-			import mx.events.StateChangeEvent;
-			import mx.events.ValidationResultEvent;
-			import mx.rpc.events.ResultEvent;
-			import mx.validators.ValidationResult;
+			import mx.events.FlexEvent;
 			
-			import valueObjects.AssessmentVO;
-			import valueObjects.ClientVO;
+			import spark.components.NavigatorContent;
 			
-			protected var questionDict:Dictionary = new Dictionary();
+			//Form variables
+			public var recordForm:RecordForm;
+			public var sbirtForm:SBIRTForm;
+			public var services1Form:Services1Form;
+			public var services2Form:Services2Form;
+			public var demoForm:DemographicsForm;
+			public var military1Form:Military1Form;
+			public var military2Form:Military2Form;
+			public var drugForm:DrugForm;
+			public var drug2Form:Drug2Form;
+			public var livingForm:LivingForm;
+			public var employmentForm:EmploymentForm;
+			public var crimeForm:CrimeForm;
+			public var health1Form:Health1Form;
+			public var health2Form:Health2Form;
+			public var health3Form:Health3Form;
+			public var health4Form:Health4Form;
+			public var socialForm:SocialForm;
+			public var followupForm:FollowupForm;
+			public var dischargeForm:DischargeForm;
+			public var dischargeServices1Form:Services1DischargeForm;
+			public var dischargeServices2Form:Services2DischargeForm;
 			
-			protected var global:CDPConnectFlex = FlexGlobals.topLevelApplication as CDPConnectFlex;
-			protected var gpraForms:Array = new Array();
-			protected var gpraTabs:Array = new Array();
-			protected var tabButtons:Array = new Array();
-			protected var activeTabIndexes:Array = new Array();
-			protected var activeFormIndexes:Array = new Array();
-			protected var created:Boolean = false;
-			public var interviewType:int;
-			protected var currentIndex:int = 0;//tracks the tab index currently selected
+			public var recordTab:NavigatorContent;
+			public var sbirtTab:NavigatorContent;
+			public var services1Tab:NavigatorContent;
+			public var services2Tab:NavigatorContent;
+			public var demoTab:NavigatorContent;
+			public var military1Tab:NavigatorContent;
+			public var military2Tab:NavigatorContent;
+			public var drugTab:NavigatorContent;
+			public var drug2Tab:NavigatorContent;
+			public var livingTab:NavigatorContent;
+			public var employmentTab:NavigatorContent;
+			public var crimeTab:NavigatorContent;
+			public var health1Tab:NavigatorContent;
+			public var health2Tab:NavigatorContent;
+			public var health3Tab:NavigatorContent;
+			public var health4Tab:NavigatorContent;
+			public var socialTab:NavigatorContent;
+			public var followupTab:NavigatorContent;
+			public var dischargeTab:NavigatorContent;
+			public var dischargeServices1Tab:NavigatorContent;
+			public var dischargeServices2Tab:NavigatorContent;
 			
-			protected function initializePage():void
-			{				
-				//Hide old page
-				if(viewStack.selectedIndex != 0)
-				{
-					var oldPage:Object = viewStack.selectedChild;
-					viewStack.selectedIndex = 0;
-					oldPage.visible = false;
-				}
-				validationTextArea.text = "";
-				prevButton.enabled = false;
-				currentIndex = 0;
+			//Construct all forms, then construct all tabs and put them in the viewstack
+			protected override function loadFormsAndTabs():void
+			{
+				assessType = AssessType.GPRA;
+				recordForm = new RecordForm();
+				sbirtForm = new SBIRTForm();
+				services1Form = new Services1Form();
+				services2Form = new Services2Form();
+				demoForm = new DemographicsForm();
+				military1Form = new Military1Form();
+				military2Form = new Military2Form();
+				drugForm = new DrugForm();
+				drug2Form = new Drug2Form();
+				livingForm = new LivingForm();
+				employmentForm = new EmploymentForm();
+				crimeForm = new CrimeForm();
+				health1Form = new Health1Form();
+				health2Form = new Health2Form();
+				health3Form = new Health3Form();
+				health4Form = new Health4Form();
+				socialForm = new SocialForm();
+				followupForm = new FollowupForm();
+				dischargeForm = new DischargeForm();
+				dischargeServices1Form = new Services1DischargeForm();
+				dischargeServices2Form = new Services2DischargeForm();
 				
-				if(!created)
-				{
-					gpraForms = new Array(recordForm,sbirtForm,services1Form,services2Form,demoForm,military1Form,military2Form,drugForm,drug2Form,livingForm,employmentForm,
-						crimeForm,health1Form,health2Form,health3Form,health4Form,socialForm,followupForm,dischargeForm,dischargeServices1Form,dischargeServices2Form);
-					gpraTabs = new Array(recordTab,sbirtTab,services1Tab,services2Tab,demoTab,military1Tab,military2Tab,drugTab,drug2Tab,livingTab,employmentTab,
-						crimeTab,health1Tab,health2Tab,health3Tab,health4Tab,socialTab,followupTab,dischargeTab,dischargeServices1Tab,dischargeServices2Tab,saveTab);
-
-					for each(var btmp:Tab in tabBar.getChildren())
-						tabButtons.push(btmp);
-					created = true;
-				}
+				recordTab = createTab(recordForm,"Record");
+				sbirtTab = createTab(sbirtForm,"SBIRT");
+				services1Tab = createTab(services1Form,"Services1");
+				services2Tab = createTab(services2Form,"Services2");
+				demoTab = createTab(demoForm,"Demographics");
+				military1Tab = createTab(military1Form,"Military1");
+				military2Tab = createTab(military2Form,"Military2");
+				drugTab = createTab(drugForm,"Drug1");
+				drug2Tab = createTab(drug2Form,"Drug2");
+				livingTab = createTab(livingForm,"Living");
+				employmentTab = createTab(employmentForm,"Employment");
+				crimeTab = createTab(crimeForm,"Crime");
+				health1Tab = createTab(health1Form,"Health1");
+				health2Tab = createTab(health2Form,"Health2");
+				health3Tab = createTab(health3Form,"Health3");
+				health4Tab = createTab(health4Form,"Health4");
+				socialTab = createTab(socialForm,"Social");
+				followupTab = createTab(followupForm,"Followup");
+				dischargeTab = createTab(dischargeForm,"Discharge");
+				dischargeServices1Tab = createTab(dischargeServices1Form,"Services1");
+				dischargeServices2Tab = createTab(dischargeServices2Form,"Services2");
+				viewStack.addElement(saveTab);//move the save tab to the end
 				
-				//intialize and reset all forms
-				for each(var form:InterviewForm in gpraForms)
-					form.initForm();
+				//Put forms and tabs into lists
+				forms = new Array(recordForm,sbirtForm,services1Form,services2Form,demoForm,military1Form,military2Form,drugForm,drug2Form,livingForm,employmentForm,
+					crimeForm,health1Form,health2Form,health3Form,health4Form,socialForm,followupForm,dischargeForm,dischargeServices1Form,dischargeServices2Form);
+				tabs = new Array(recordTab,sbirtTab,services1Tab,services2Tab,demoTab,military1Tab,military2Tab,drugTab,drug2Tab,livingTab,employmentTab,
+					crimeTab,health1Tab,health2Tab,health3Tab,health4Tab,socialTab,followupTab,dischargeTab,dischargeServices1Tab,dischargeServices2Tab,saveTab);
 			}
 			
-			protected function determineActiveTabs():void
+			//Add all of the tabs and forms to the view stack
+			protected function createTab(form:InterviewForm, tabLabel:String):NavigatorContent
 			{
-				//Determine which items are active
-				activeTabIndexes = new Array();
-				activeFormIndexes = new Array();
-				for(var i:int = 0; i < tabButtons.length; i++)
-				{
-					if(tabButtons[i].visible)
-					{
-						activeTabIndexes.push(i);
-						if(i < gpraForms.length)
-							activeFormIndexes.push(i);
-					}
-				}
-				
-				//Reorder all tab buttons so that the invisible ones are at the bottom
-				//Have to reorder the tabs in the viewstack to correspond to the new order too though
-				var index:int = 0;
-				for each(i in activeTabIndexes)
-				{
-					viewStack.setChildIndex(gpraTabs[i],index);
-					index++;
-				}
+				var nc:NavigatorContent = new NavigatorContent();
+				nc.percentWidth = 100;
+				nc.percentHeight = 100;
+				nc.label = tabLabel;
+				nc.addElement(form);
+				viewStack.addElement(nc);
+				return nc;
 			}
 			
-			//Setup a blank GPRA form
-			public function newIntake():void
+			protected override function populateRecordForm():void
 			{
-				interviewType = InterviewType.INTAKE_NEG;//change this value if user fills out services
-				initializePage();
-				
-				//Enable only section A and SBIRT. Then once the user fills out what services were provided, enabled
-				//additional sections based on that modality
-				enableSectionSBIRT(true);
-				enableSectionA(true);
-				enableSectionB(false);
-				enableSectionCtoG(false);
-				enableSectionI(false);
-				enableSectionJ(false);
-				enableSectionK(false);
-				
 				recordForm.populateForm();
-				determineActiveTabs();
 			}
 			
-			public function newDischarge():void
-			{
-				interviewType = InterviewType.DISCHARGE_ADMIN;
-				initializePage();
-				
-				//If discharge, do admin discharge by default. If user selects that an interview was done, add other sections
-				enableSectionSBIRT(false);
-				enableSectionA(false);
-				enableSectionB(false);
-				enableSectionCtoG(false);
-				enableSectionI(false);
-				enableSectionJ(true);
-				enableSectionK(true);
-				dischargeForm.qDischargeDate.answer = global.dateFormatter.format(new Date());
-				
-				recordForm.populateForm();
-				determineActiveTabs();
-			}
-			
-			public function newFollowup():void
-			{
-				if(global.intakeInterview.subtype == InterviewType.INTAKE_BI)
-					interviewType = InterviewType.FOLLOWUP_BI;
-				else
-					interviewType = InterviewType.FOLLOWUP_RT;
-				
-				initializePage();
-				
-				//If followup, look at intake interview type to decide between BI and RT followup
-				if(interviewType == InterviewType.INTAKE_BI)
-				{
-					interviewType = InterviewType.FOLLOWUP_BI;
-					enableSectionSBIRT(false);
-					enableSectionA(false);
-					enableSectionB(true);
-					enableSectionCtoG(false);
-					enableSectionI(true);
-					enableSectionJ(false);
-					enableSectionK(true);
-				}
-				else
-				{
-					interviewType = InterviewType.FOLLOWUP_RT;
-					enableSectionSBIRT(false);
-					enableSectionA(false);
-					enableSectionB(true);
-					enableSectionCtoG(true);
-					enableSectionI(true);
-					enableSectionJ(false);
-					enableSectionK(true);
-				}
-				recordForm.populateForm();
-				determineActiveTabs();
-			}
-			
-			public function loadGPRA(interview:AssessmentVO):void
-			{
-				interviewType = interview.subtype;
-				initializePage();
-				
-				//Enable only section A and SBIRT. Then once the user fills out what services were provided, enabled
-				//additional sections based on that modality
-				if(interview.subtype == InterviewType.INTAKE_NEG)
-				{
-					enableSectionSBIRT(true);
-					enableSectionA(true);
-					enableSectionB(false);
-					enableSectionCtoG(false);
-					enableSectionI(false);
-					enableSectionJ(false);
-					enableSectionK(false);
-				}
-				else if(interview.subtype == InterviewType.INTAKE_BI)
-				{
-					enableSectionSBIRT(true);
-					enableSectionA(true);
-					enableSectionB(true);
-					enableSectionCtoG(false);
-					enableSectionI(false);
-					enableSectionJ(false);
-					enableSectionK(false);
-				}
-				else if(interview.subtype == InterviewType.INTAKE_RT)
-				{
-					enableSectionSBIRT(true);
-					enableSectionA(true);
-					enableSectionB(true);
-					enableSectionCtoG(true);
-					enableSectionI(false);
-					enableSectionJ(false);
-					enableSectionK(false);
-				}
-				else if(interview.subtype == InterviewType.FOLLOWUP_RT)
-				{
-					enableSectionSBIRT(false);
-					enableSectionA(false);
-					enableSectionB(true);
-					enableSectionCtoG(true);
-					enableSectionI(true);
-					enableSectionJ(false);
-					enableSectionK(true);
-				}
-				else if(interview.subtype == InterviewType.FOLLOWUP_BI)
-				{
-					enableSectionSBIRT(false);
-					enableSectionA(false);
-					enableSectionB(true);
-					enableSectionCtoG(false);
-					enableSectionI(true);
-					enableSectionJ(false);
-					enableSectionK(true);
-				}
-				else if(interview.subtype == InterviewType.DISCHARGE_BI)
-				{
-					enableSectionSBIRT(false);
-					enableSectionA(false);
-					enableSectionB(true);
-					enableSectionCtoG(true);
-					enableSectionI(false);
-					enableSectionJ(true);
-					enableSectionK(true);
-				}
-				else if(interview.subtype == InterviewType.DISCHARGE_RT)
-				{
-					enableSectionSBIRT(false);
-					enableSectionA(false);
-					enableSectionB(true);
-					enableSectionCtoG(true);
-					enableSectionI(false);
-					enableSectionJ(true);
-					enableSectionK(true);
-				}
-				else if(interview.subtype == InterviewType.DISCHARGE_ADMIN)
-				{
-					enableSectionSBIRT(false);
-					enableSectionA(false);
-					enableSectionB(false);
-					enableSectionCtoG(false);
-					enableSectionI(false);
-					enableSectionJ(true);
-					enableSectionK(true);
-					dischargeForm.qDischargeDate.answer = global.dateFormatter.format(new Date());
-				}
-				
-				recordForm.populateForm();
-				determineActiveTabs();
-				
-				//Load data
-				for each(var i:int in activeFormIndexes)
-					(gpraForms[i] as InterviewForm).loadData(global.activeAssessment.data.source);
-				
-				//Then process skips
-				for each(i in activeFormIndexes)
-					(gpraForms[i] as InterviewForm).doAllSkips();
-					
-				//Then validate
-				for each(i in activeFormIndexes)
-					(gpraForms[i] as InterviewForm).validateForm();
-			}
-			
-			protected function enableTab(tab:NavigatorContent, enabled:Boolean):void
-			{
-				(tabButtons[gpraTabs.indexOf(tab)] as Tab).visible = enabled;
-			}
-			
-			protected function enableSectionSBIRT(enabled:Boolean):void
+			protected override function enableSectionSBIRT(enabled:Boolean):void
 			{
 				enableTab(sbirtTab,enabled);
 			}
 			
-			protected function enableSectionA(enabled:Boolean):void
+			protected override function enableSectionA(enabled:Boolean):void
 			{
 				enableTab(services1Tab,enabled);
 				enableTab(services2Tab,enabled);
@@ -314,13 +160,13 @@
 				demoForm.qBirthYear.validator.enabled = enabled;
 			}
 			
-			protected function enableSectionB(enabled:Boolean):void
+			protected override function enableSectionB(enabled:Boolean):void
 			{
 				enableTab(drugTab,enabled);
 				enableTab(drug2Tab,enabled);
 			}
 			
-			protected function enableSectionCtoG(enabled:Boolean):void
+			protected override function enableSectionCtoG(enabled:Boolean):void
 			{
 				enableTab(livingTab,enabled);
 				enableTab(employmentTab,enabled);
@@ -332,13 +178,13 @@
 				enableTab(socialTab,enabled);
 			}
 			
-			protected function enableSectionK(enabled:Boolean):void
+			protected override function enableSectionK(enabled:Boolean):void
 			{
 				enableTab(dischargeServices1Tab,enabled);
 				enableTab(dischargeServices2Tab,enabled);
 			}
 			
-			protected function enableSectionI(enabled:Boolean):void
+			protected override function enableSectionI(enabled:Boolean):void
 			{
 				enableTab(followupTab,enabled);
 				if(enabled)
@@ -355,7 +201,7 @@
 				}
 			}
 			
-			protected function enableSectionJ(enabled:Boolean):void
+			protected override function enableSectionJ(enabled:Boolean):void
 			{
 				enableTab(dischargeTab,enabled);
 				if(enabled)
@@ -373,174 +219,8 @@
 				dischargeForm.qDischargeDate.validator.enabled = enabled;
 			}
 			
-			/**
-			 * Save DCI
-			 * 1. Validate for errors
-			 * 2. Save each active form's data
-			 * */
-			protected function saveButton_clickHandler(event:MouseEvent):void
+			protected override function checkModalityChange(currentForm:InterviewForm):void
 			{
-				//Validate all active pages
-				var results:Array = new Array();
-				for each(var i:int in activeFormIndexes)
-				{
-					var tmpResults:ArrayList = (gpraForms[i] as InterviewForm).validateForm();
-					for(var j:int = 0; j < tmpResults.length; j++)
-						results.push(tmpResults.source[j]);
-				}
-				
-				if(results.length > 0)
-				{
-					validationTextArea.text = results.join("\n");
-					Alert.show("Correct the errors shown in the area below and then click 'Save' again.","DCI NOT SAVED"); 
-				}
-				else
-				{
-					validationTextArea.text = "";
-					parseForm();
-				}
-			}
-			
-			//Parse Form Data, construct Assessment data
-			protected function parseForm():void
-			{
-				var data:Array = new Array();
-				
-				for each(var i:int in activeFormIndexes)
-				{
-					data = (gpraForms[i] as InterviewForm).saveData(data);
-				}
-				
-				//Add in other fields
-				//data["client_autoid"] = global.activeClient.autoid;
-				
-				//If doing discharge or followup, get gender from the intake
-				if(!InterviewType.isIntake(interviewType))
-				{
-					data["Gender"] = global.intakeInterview.data.source["Gender"];
-					data["IntakeDate"] = global.intakeInterview.data.source["InterviewDate"];
-				}
-				
-				//Create
-				if(global.activeAssessment == null)
-				{
-					global.activeAssessment = new AssessmentVO();
-					global.activeAssessment.client_autoid = global.activeClient.autoid;
-					global.activeAssessment.type = AssessType.DCI;
-					global.activeAssessment.subtype = interviewType;
-					global.activeAssessment.date = global.dateFormatter.format(new Date());
-					global.activeAssessment.complete = 1;
-					global.activeAssessment.data = data;
-					createAssessmentResult.token = assessmentService.createAssessment(global.activeAssessment);
-				}
-				else //Update
-				{
-					//Preserve the autoids when saving
-					var data_autoid:int = global.activeAssessment.data.source["autoid"];
-					var assessment_autoid:int = global.activeAssessment.data.source["assessment_autoid"];
-					data["autoid"] = data_autoid;
-					data["assessment_autoid"] = assessment_autoid;
-					global.activeAssessment.data = data;
-					global.activeAssessment.subtype = interviewType;
-					global.activeAssessment.complete = 1;
-					global.activeAssessment.type = AssessType.DCI;
-					updateAssessmentDataResult.token = assessmentService.updateAssessmentData(global.activeAssessment);
-				}
-			}
-			
-			protected function createAssessmentResult_resultHandler(event:ResultEvent):void
-			{
-				Alert.show("DCI saved.");
-				//Add in new autoid and put in assessments grid
-				global.activeAssessment = createAssessmentResult.lastResult;
-				global.pageHome.clientGroup.assessmentList.addItem(global.activeAssessment);
-				
-				if(InterviewType.isIntake(interviewType))
-				{
-					global.activeClient.intakeExists = true;
-					global.intakeInterview = global.activeAssessment;
-				}
-				else if(InterviewType.isDischarge(interviewType))
-					global.activeClient.dischargeExists = true;
-				else if(InterviewType.isFollowup(interviewType))
-					global.activeClient.followupExists = true;
-			}
-			
-			protected function updateAssessmentResult_resultHandler(event:ResultEvent):void
-			{
-				Alert.show("DCI updated.");
-			}
-			
-			protected function headerButton_clickHandler(event:MouseEvent):void
-			{
-				var output:String = "";
-				var file:FileReference = new FileReference();
-				
-				for each(var form:InterviewForm in gpraForms)
-				{
-					//get each question code from each form
-					for each(var q:QuestionClass in form.questions)
-						output += q.codeName + "," + q.className + "," + q.answerType.toString() + "\r\n";
-				}
-				file.save(output,"CodeNames.csv");
-			}
-			
-			protected function nextButton_clickHandler(event:MouseEvent):void
-			{
-				if(isCurrentFormValid())
-				{
-					viewStack.selectedIndex = viewStack.selectedIndex + 1;
-					if(viewStack.selectedIndex == activeTabIndexes.length - 1)
-						nextButton.enabled = false;
-					prevButton.enabled = true;
-					currentIndex = viewStack.selectedIndex;
-				}
-			}
-			
-			protected function prevButton_clickHandler(event:MouseEvent):void
-			{
-				if(isCurrentFormValid())
-				{
-					viewStack.selectedIndex = viewStack.selectedIndex - 1;
-					if(viewStack.selectedIndex == 0)
-						prevButton.enabled = false;
-					nextButton.enabled = true;
-					currentIndex = viewStack.selectedIndex;
-				}
-			}
-			
-			protected function tabBar_itemClickHandler(event:ItemClickEvent):void
-			{
-				if(isCurrentFormValid())
-				{
-					//the tabs can change here if modality is changed, so make sure not to go beyond the last active tab
-					viewStack.selectedIndex = Math.min(viewStack.selectedIndex, activeTabIndexes.length -1);
-					
-					prevButton.enabled = true;
-					nextButton.enabled = true;
-					if(viewStack.selectedIndex == 0)
-						prevButton.enabled = false;
-					if(viewStack.selectedIndex == activeTabIndexes.length - 1)
-						nextButton.enabled = false;
-					currentIndex = viewStack.selectedIndex;
-				}
-				else
-					viewStack.selectedIndex = currentIndex;
-			}
-			
-			protected function isCurrentFormValid():Boolean
-			{
-				if(currentIndex >= activeFormIndexes.length)
-					return true;//if the current tab is the Save page
-				
-				var currentForm:InterviewForm = gpraForms[activeFormIndexes[currentIndex]];
-				var errors:ArrayList = currentForm.validateForm();
-				if(errors.length != 0)
-				{
-					Alert.show("Correct the errors on this page before continuing.");
-					return false;
-				}
-				
 				//if doing intake, check if Services1 tab chose a new modality
 				if(currentForm == services1Form)
 				{
@@ -572,96 +252,12 @@
 						determineActiveTabs();
 					}
 				}
-				return true;
 			}
 			
 		]]>
 	</fx:Script>
 	<fx:Declarations>
-		<assessmentservice:AssessmentService id="assessmentService"
-											 fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
-											 showBusyCursor="true"/>
-		<s:CallResponder id="createAssessmentResult" result="createAssessmentResult_resultHandler(event)"/>
-		<s:CallResponder id="updateAssessmentDataResult" result="updateAssessmentResult_resultHandler(event)"/>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
-	
-	<mx:TabBar id="tabBar" x="0" y="0" dataProvider="viewStack"
-			   direction="vertical" itemClick="tabBar_itemClickHandler(event)"/>
-	<mx:ViewStack id="viewStack" x="105" y="0" width="603" height="681"
-				  backgroundColor="#EAEAEA" creationPolicy="all" dropShadowVisible="true">
-		<s:NavigatorContent id="recordTab" width="100%" height="100%" label="Record">
-			<gpra:RecordForm id="recordForm"/>
-		</s:NavigatorContent>
-		<s:NavigatorContent id="sbirtTab" width="100%" height="100%" label="SBIRT">
-			<gpra:SBIRTForm id="sbirtForm"/>
-		</s:NavigatorContent>
-		<s:NavigatorContent id="services1Tab" width="100%" height="100%" label="Services1">
-			<gpra:Services1Form id="services1Form"/>
-		</s:NavigatorContent>
-		<s:NavigatorContent id="services2Tab" width="100%" height="100%" label="Services2">
-			<gpra:Services2Form id="services2Form"/>
-		</s:NavigatorContent>
-		<s:NavigatorContent id="demoTab" width="100%" height="100%" label="Demographic">
-			<gpra:DemographicsForm id="demoForm"/>
-		</s:NavigatorContent>
-		<s:NavigatorContent id="military1Tab" width="100%" height="100%" label="Military1">
-			<gpra:Military1Form id="military1Form" />
-		</s:NavigatorContent>
-		<s:NavigatorContent id="military2Tab" width="100%" height="100%" label="Military2">
-			<gpra:Military2Form id="military2Form"/>
-		</s:NavigatorContent>
-		<s:NavigatorContent id="drugTab" width="100%" height="100%" label="Drug1">
-			<gpra:DrugForm id="drugForm" />
-		</s:NavigatorContent>
-		<s:NavigatorContent id="drug2Tab" width="100%" height="100%" label="Drug2">
-			<gpra:Drug2Form id="drug2Form" />
-		</s:NavigatorContent>
-		<s:NavigatorContent id="livingTab" width="100%" height="100%" label="Living">
-			<gpra:LivingForm id="livingForm" />
-		</s:NavigatorContent>
-		<s:NavigatorContent id="employmentTab" width="100%" height="100%" label="Employment">
-			<gpra:EmploymentForm id="employmentForm" />
-		</s:NavigatorContent>
-		<s:NavigatorContent id="crimeTab" width="100%" height="100%" label="Crime">
-			<gpra:CrimeForm id="crimeForm" />
-		</s:NavigatorContent>
-		<s:NavigatorContent id="health1Tab" width="100%" height="100%" label="Health1">
-			<gpra:Health1Form id="health1Form" />
-		</s:NavigatorContent>
-		<s:NavigatorContent id="health2Tab" width="100%" height="100%" label="Health2">
-			<gpra:Health2Form id="health2Form" />
-		</s:NavigatorContent>
-		<s:NavigatorContent id="health3Tab" width="100%" height="100%" label="Health3">
-			<gpra:Health3Form id="health3Form" />
-		</s:NavigatorContent>
-		<s:NavigatorContent id="health4Tab" width="100%" height="100%" label="Health4">
-			<gpra:Health4Form id="health4Form" />
-		</s:NavigatorContent>
-		<s:NavigatorContent id="socialTab" width="100%" height="100%" label="Social">
-			<gpra:SocialForm id="socialForm" />
-		</s:NavigatorContent>
-		<s:NavigatorContent id="followupTab" width="100%" height="100%" label="Followup">
-			<gpra:FollowupForm id="followupForm" />
-		</s:NavigatorContent>
-		<s:NavigatorContent id="dischargeTab" width="100%" height="100%" label="Discharge">
-			<gpra:DischargeForm id="dischargeForm" />
-		</s:NavigatorContent>
-		<s:NavigatorContent id="dischargeServices1Tab" width="100%" height="100%" label="Services 1">
-			<gpra:Services1DischargeForm id="dischargeServices1Form" />
-		</s:NavigatorContent>
-		<s:NavigatorContent id="dischargeServices2Tab" width="100%" height="100%" label="Services 2">
-			<gpra:Services2DischargeForm id="dischargeServices2Form" />
-		</s:NavigatorContent>
-		<s:NavigatorContent id="saveTab" width="100%" height="100%" label="Save">
-			<s:Button id="saveButton" x="243" y="88" height="56" label="Validate and Save"
-					  click="saveButton_clickHandler(event)"/>
-			<s:Button id="headerButton" x="200" y="300" label="Get Headers" visible="false"
-					  click="headerButton_clickHandler(event)"/>
-			<s:Label x="252" y="183" fontWeight="bold" text="Validation Results"/>
-			<s:TextArea id="validationTextArea" x="133" y="201" width="341" height="232" editable="false"/>
-		</s:NavigatorContent>
-	</mx:ViewStack>
-	<s:Image id="nextButton" x="650" y="630" source="assets/arrow_next_20.png" useHandCursor="true" buttonMode="true" click="nextButton_clickHandler(event)"/>
-	<s:Image id="prevButton" x="115" y="630" source="assets/arrow_prev_20.png" useHandCursor="true" buttonMode="true" click="prevButton_clickHandler(event)"/>
-</s:NavigatorContent>
+
+</pages:InstrumentPage>

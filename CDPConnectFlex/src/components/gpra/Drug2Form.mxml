@@ -19,8 +19,8 @@
 			private static var route:ArrayList = new ArrayList(["Oral","Nasal","Smoking","Non-IV Injection","IV",REFUSED_VALUE,DONT_KNOW_VALUE]);
 			public var qNonPresMethadoneDays:QuestionTextRefusable = new QuestionTextRefusable("NonPresMethadoneDays","Non-prescription methadone","0");
 			public var qNonPresMethadoneRoute:QuestionList = new QuestionList("NonPresMethadoneRoute","",route,0);
-			public var qHallucPsychDays:QuestionTextRefusable = new QuestionTextRefusable("HallucPsychDays","Hallucinogens/psychedelics, PCP, MDMA, LSD, Mushrooms, or Mescaline","0");
-			public var qHallucPsychRoute:QuestionList = new QuestionList("HallucPsychRoute","",route,0);
+			public var qHallucinogensDays:QuestionTextRefusable = new QuestionTextRefusable("HallucinogensDays","Hallucinogens/psychedelics, PCP, MDMA, LSD, Mushrooms, or Mescaline","0");
+			public var qHallucinogensRoute:QuestionList = new QuestionList("HallucinogensRoute","",route,0);
 			public var qMethamDays:QuestionTextRefusable = new QuestionTextRefusable("MethamDays","Methamphetamine or other amphetamines","0");
 			public var qMethamRoute:QuestionList = new QuestionList("MethamRoute","",route,0);
 			public var qBenzodiazepinesDays:QuestionTextRefusable = new QuestionTextRefusable("BenzodiazepinesDays","Benzodiazepines: Diazepam, Alprazolam, Triazolam, and Estasolam","0");
@@ -31,8 +31,8 @@
 			public var qNonPrescGhbRoute:QuestionList = new QuestionList("NonPrescGhbRoute","",route,0);
 			public var qKetamineDays:QuestionTextRefusable = new QuestionTextRefusable("KetamineDays","Ketamine","0");
 			public var qKetamineRoute:QuestionList = new QuestionList("KetamineRoute","",route,0);
-			public var qOtherTranquilizersDays:QuestionTextRefusable = new QuestionTextRefusable("OtherTranquilizersDays","Other tranquilizers, downers, sedatives, or hypnotics","0");
-			public var qOtherTranquilizersRoute:QuestionList = new QuestionList("OtherTranquilizersRoute","",route,0);
+			public var qSedativesDays:QuestionTextRefusable = new QuestionTextRefusable("SedativesDays","Other tranquilizers, downers, sedatives, or hypnotics","0");
+			public var qSedativesRoute:QuestionList = new QuestionList("SedativesRoute","",route,0);
 			public var qInhalantsDays:QuestionTextRefusable = new QuestionTextRefusable("InhalantsDays","Inhalants","0");
 			public var qInhalantsRoute:QuestionList = new QuestionList("InhalantsRoute","",route,0);
 			public var qOtherIllegalDrugsDays:QuestionTextRefusable = new QuestionTextRefusable("OtherIllegalDrugsDays","Other illegal drugs","0");
@@ -48,13 +48,13 @@
 				
 				createText("In the past 30 days, how many days have you used...","h1");
 				addDrugQuestion(qNonPresMethadoneDays,qNonPresMethadoneRoute);
-				addDrugQuestion(qHallucPsychDays,qHallucPsychRoute);
+				addDrugQuestion(qHallucinogensDays,qHallucinogensRoute);
 				addDrugQuestion(qMethamDays,qMethamRoute);
 				addDrugQuestion(qBenzodiazepinesDays,qBenzodiazepinesRoute);
 				addDrugQuestion(qBarbituatesDays,qBarbituatesRoute);
 				addDrugQuestion(qNonPrescGhbDays,qNonPrescGhbRoute);
 				addDrugQuestion(qKetamineDays,qKetamineRoute);
-				addDrugQuestion(qOtherTranquilizersDays,qOtherTranquilizersRoute);
+				addDrugQuestion(qSedativesDays,qSedativesRoute);
 				addDrugQuestion(qInhalantsDays,qInhalantsRoute);				
 				addDrugQuestion(qOtherIllegalDrugsDays,qOtherIllegalDrugsRoute);
 				addQuestion(qOtherIllegalDrugsSpec);

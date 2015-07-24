@@ -1,7 +1,11 @@
 package components.questions
 {
+	import components.assessment.AssessType;
+	import components.assessment.InterviewForm;
 	import components.skips.SkipPattern;
+	import components.skips.SkipPatternMultiple;
 	
+	import flash.display.DisplayObjectContainer;
 	import flash.display.InteractiveObject;
 	import flash.geom.Point;
 	import flash.globalization.NumberFormatter;
@@ -25,8 +29,6 @@ package components.questions
 	public class QuestionClass extends BetterFormItem
 	{
 		public var codeName:String;
-		public var skipQuestions:Array = new Array();
-		public var skipAnswers:Array = new Array();
 		public var skipPatterns:Vector.<SkipPattern> = new Vector.<SkipPattern>();
 		public var validators:Vector.<Validator> = new Vector.<Validator>();
 		public var inline:Boolean = false;
@@ -34,7 +36,7 @@ package components.questions
 		public var answerType:Class = int;
 		public var baseLabel:String;
 		protected var helpText:String;
-		protected var errorToolTip:ToolTip;
+		public var errorToolTip:ToolTip;
 		public static var nf:NumberFormatter = new NumberFormatter( "en-US" );
 		protected var global:CDPConnectFlex = FlexGlobals.topLevelApplication as CDPConnectFlex;
 		
@@ -106,7 +108,11 @@ package components.questions
 			restoreDefault();
 			enable();
 			for each(var s:SkipPattern in skipPatterns)
-			s.isSkipping = false;
+			{
+				s.isSkipping = false;
+				if(s is SkipPatternMultiple)
+					(s as SkipPatternMultiple).handler.isSkipping = false;
+			}
 			removeErrorMessage();
 		}
 		
@@ -128,6 +134,16 @@ package components.questions
 			evt.preventDefault();
 		}
 		
+		//Search up the display tree until Form is found or there are no more parents
+		//Returns null if there is no parent Form
+		protected function getParentForm(input:UIComponent):InterviewForm
+		{
+			var currentItem:DisplayObjectContainer = input.parent;
+			while(!(currentItem is InterviewForm) && currentItem != null)
+				currentItem = currentItem.parent;
+			return currentItem as InterviewForm;
+		}
+		
 		protected function showErrorsNow(val:String):void
 		{
 			//To be overridden
@@ -135,6 +151,14 @@ package components.questions
 		
 		protected function showErrorDeferred(input:UIComponent):void
 		{
+			//If the question is not attached to a form, don't do error tips
+			var form:InterviewForm = getParentForm(input);
+			if(form == null)
+			{
+				input.errorString = "";
+				return;
+			}
+			
 			if(input.errorString != "" && errorToolTip == null)
 			{
 				//Get the location of the input in global coordinates
@@ -172,6 +196,10 @@ package components.questions
 				ToolTipManager.destroyToolTip(errorToolTip);
 				errorToolTip = null;
 			}
+			
+			//if the form is not currently displayed, don't show the error
+			if(errorToolTip != null && global.activeInstrument.viewStack.selectedIndex != global.activeInstrument.activeForms.indexOf(form))
+				errorToolTip.visible = false;
 		}
 	}
 }

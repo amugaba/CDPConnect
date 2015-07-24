@@ -33,6 +33,8 @@
 			{				
 				//Questions
 				addQuestion(qDischargeDate);
+				qDischargeDate.defaultValue = global.dateFormatter.format(new Date());
+				qDischargeDate.answer = qDischargeDate.defaultValue;
 				addQuestion(qDischargeStatus,180);
 				addQuestion(qDischargeStatusTermReason,500);
 				

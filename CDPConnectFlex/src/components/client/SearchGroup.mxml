@@ -103,7 +103,12 @@
 				if(createClientResult.lastResult == null)
 					Alert.show("Client not created.","ERROR");
 				else
+				{
 					global.activeClient = createClientResult.lastResult as ClientVO;
+					Alert.show("Client added!");
+					clientIDAdd.text = "";
+					global.pageHome.clientGroup.loadActiveClient();
+				}
 			}
 		]]>
 	</fx:Script>

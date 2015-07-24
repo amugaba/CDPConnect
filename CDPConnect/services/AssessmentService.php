@@ -17,7 +17,7 @@ class AssessmentService
 	var $dci_type = 1;
 	var $gpra_type = 2;
 	
-	var $tableByType = array("gpra_tbl", "dci_tbl");
+	var $tableByType = array("dci_tbl", "gpra_tbl");
 	
     public $connection;
 
@@ -141,7 +141,7 @@ class AssessmentService
         $keys = array_keys($data);
 		$columns = join(",", $keys);
 		$values = join(",", $data);
-		$rs = mysqli_query($this->connection, "INSERT INTO $table (client_autoid, $columns) VALUES ($item->autoid, $values)");
+		$rs = mysqli_query($this->connection, "INSERT INTO $table (client_autoid, assessment_autoid, $columns) VALUES ($item->client_autoid, $item->autoid, $values)");
 	    $this->throwExceptionOnError();
 	    
 	    $data_autoid = mysqli_insert_id($this->connection);
@@ -160,10 +160,10 @@ class AssessmentService
 	 */
     public function updateAssessmentData ($item)
     {   
-    	$stmt = mysqli_prepare($this->connection, "UPDATE $this->tablename SET type=?, subtype=?, complete=?");
+    	$stmt = mysqli_prepare($this->connection, "UPDATE $this->tablename SET type=?, subtype=?, complete=? WHERE autoid=?");
         $this->throwExceptionOnError();
 
-        $stmt->bind_param('iii', $item->type, $item->subtype, $item->complete);
+        $stmt->bind_param('iiii', $item->type, $item->subtype, $item->complete, $item->autoid);
         $this->throwExceptionOnError();
 
         $stmt->execute();

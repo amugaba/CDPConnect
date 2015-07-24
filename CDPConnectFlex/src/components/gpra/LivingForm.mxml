@@ -60,8 +60,12 @@
 				Valid.addNumberValidator(qChildrenNr,1,99,true);
 				Valid.addNumberValidator(qChildrenCustodyNr,0,1,true);
 				Valid.addNumberValidator(qChildrenCustodyLost,0,1,true);
-				BindingUtils.bindSetter(function():void{(qChildrenCustodyNr.validators[0] as NumberValidator).maxValue = Number(qChildrenNr.answer)}, qChildrenNr.inputControl, "text");
-				BindingUtils.bindSetter(function():void{(qChildrenCustodyLost.validators[0] as NumberValidator).maxValue = Number(qChildrenNr.answer)}, qChildrenNr.inputControl, "text");
+				BindingUtils.bindSetter(function():void{
+					(qChildrenCustodyNr.validators[0] as NumberValidator).maxValue = Number(qChildrenNr.answer);
+					(qChildrenCustodyLost.validators[0] as NumberValidator).maxValue = Number(qChildrenNr.answer);
+					qChildrenCustodyNr.validator.validate();
+					qChildrenCustodyLost.validator.validate();
+				}, qChildrenNr.inputControl, "text");
 				qLivingOtherSpec.answerType = String;
 				
 				//Control Logic

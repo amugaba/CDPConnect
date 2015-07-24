@@ -76,12 +76,7 @@
 			public function resetForm():void
 			{
 				for each(var q:QuestionClass in questions)
-				{
 					q.reset();
-				}
-				
-				doAllSkips();
-				removeAllErrors();
 			}
 			
 			//This will validate each question and then process skips based on the question's current answer and valid status

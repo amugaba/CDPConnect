@@ -21,6 +21,7 @@ New York SBIRT Branch
 	<fx:Script>
 		<![CDATA[
 			import components.assessment.AssessType;
+			import components.pages.InstrumentPage;
 			
 			import flash.globalization.DateTimeFormatter;
 			import flash.globalization.LocaleID;
@@ -43,6 +44,7 @@ New York SBIRT Branch
 			[Bindable] public var activeUser:UserVO = null;
 			[Bindable] public var activeGrant:GrantVO = null;
 			[Bindable] public var activeAssessment:AssessmentVO = null;
+			public var activeInstrument:InstrumentPage = null;
 			public var intakeInterview:AssessmentVO;
 			
 			public var userList:ArrayList = new ArrayList();
@@ -141,6 +143,12 @@ New York SBIRT Branch
 			
 			protected function homeButton_clickHandler(event:MouseEvent):void
 			{
+				//if an interview is currently being shown, check if it was saved recently
+				//prompt user to save progress or if they want to quit
+				//also remove any visible error tips from current form
+				if(activeInstrument != null && activeInstrument.viewStack.selectedIndex < activeInstrument.activeForms.length)
+					activeInstrument.activeForms[activeInstrument.viewStack.selectedIndex].removeAllErrors();
+				
 				pageViewstack.selectedChild = pageHome;
 				pageHome.resetPage();
 				activeClient = null;

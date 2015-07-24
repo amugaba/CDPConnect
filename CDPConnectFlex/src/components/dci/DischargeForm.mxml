@@ -40,7 +40,11 @@
 			{				
 				//Questions
 				addQuestion(qDischargeDate);
+				qDischargeDate.defaultValue = global.dateFormatter.format(new Date());
+				qDischargeDate.answer = qDischargeDate.defaultValue;
 				addQuestion(qLastServiceDate);
+				qLastServiceDate.defaultValue = global.dateFormatter.format(new Date());
+				qLastServiceDate.answer = qLastServiceDate.defaultValue;
 				addQuestion(qDischargeStatus,260);
 				addQuestion(qDischargeSpec);
 				addDivider();

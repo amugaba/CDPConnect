@@ -31,8 +31,8 @@
 				viewstackIndex = 6;
 				
 				//Questions
-				addQuestion(qMilitaryServed, 175);
-				addQuestion(qActiveDuty, 175);
+				addQuestion(qMilitaryServed, 180);
+				addQuestion(qActiveDuty, 250);
 				addQuestion(qNeverDeployed);
 				createText("IF YES, which combat zones?","h1");
 				addQuestion(qIraqAfghanistan);
