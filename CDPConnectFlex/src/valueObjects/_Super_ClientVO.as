@@ -62,10 +62,10 @@ public class _Super_ClientVO extends flash.events.EventDispatcher implements com
     /**
      * properties
      */
-    private var _internal_notes : String;
     private var _internal_autoid : int;
     private var _internal_clientid : String;
     private var _internal_intakeExists : Boolean;
+    private var _internal_intakeDate : String;
     private var _internal_dischargeExists : Boolean;
     private var _internal_followupExists : Boolean;
     private var _internal_followupSelected : Boolean;
@@ -85,19 +85,14 @@ public class _Super_ClientVO extends flash.events.EventDispatcher implements com
         _model = new _ClientVOEntityMetadata(this);
 
         // Bind to own data or source properties for cache invalidation triggering
-        model_internal::_changeWatcherArray.push(mx.binding.utils.ChangeWatcher.watch(this, "notes", model_internal::setterListenerNotes));
+        model_internal::_changeWatcherArray.push(mx.binding.utils.ChangeWatcher.watch(this, "clientid", model_internal::setterListenerClientid));
+        model_internal::_changeWatcherArray.push(mx.binding.utils.ChangeWatcher.watch(this, "intakeDate", model_internal::setterListenerIntakeDate));
 
     }
 
     /**
      * data/source property getters
      */
-
-    [Bindable(event="propertyChange")]
-    public function get notes() : String
-    {
-        return _internal_notes;
-    }
 
     [Bindable(event="propertyChange")]
     public function get autoid() : int
@@ -115,6 +110,12 @@ public class _Super_ClientVO extends flash.events.EventDispatcher implements com
     public function get intakeExists() : Boolean
     {
         return _internal_intakeExists;
+    }
+
+    [Bindable(event="propertyChange")]
+    public function get intakeDate() : String
+    {
+        return _internal_intakeDate;
     }
 
     [Bindable(event="propertyChange")]
@@ -143,16 +144,6 @@ public class _Super_ClientVO extends flash.events.EventDispatcher implements com
      * data/source property setters
      */
 
-    public function set notes(value:String) : void
-    {
-        var oldValue:String = _internal_notes;
-        if (oldValue !== value)
-        {
-            _internal_notes = value;
-            this.dispatchEvent(mx.events.PropertyChangeEvent.createUpdateEvent(this, "notes", oldValue, _internal_notes));
-        }
-    }
-
     public function set autoid(value:int) : void
     {
         var oldValue:int = _internal_autoid;
@@ -180,6 +171,16 @@ public class _Super_ClientVO extends flash.events.EventDispatcher implements com
         {
             _internal_intakeExists = value;
             this.dispatchEvent(mx.events.PropertyChangeEvent.createUpdateEvent(this, "intakeExists", oldValue, _internal_intakeExists));
+        }
+    }
+
+    public function set intakeDate(value:String) : void
+    {
+        var oldValue:String = _internal_intakeDate;
+        if (oldValue !== value)
+        {
+            _internal_intakeDate = value;
+            this.dispatchEvent(mx.events.PropertyChangeEvent.createUpdateEvent(this, "intakeDate", oldValue, _internal_intakeDate));
         }
     }
 
@@ -225,9 +226,14 @@ public class _Super_ClientVO extends flash.events.EventDispatcher implements com
      *  - the validity of the property (and the containing entity) if the given data property is required.
      */
 
-    model_internal function setterListenerNotes(value:flash.events.Event):void
+    model_internal function setterListenerClientid(value:flash.events.Event):void
     {
-        _model.invalidateDependentOnNotes();
+        _model.invalidateDependentOnClientid();
+    }
+
+    model_internal function setterListenerIntakeDate(value:flash.events.Event):void
+    {
+        _model.invalidateDependentOnIntakeDate();
     }
 
 
@@ -251,10 +257,15 @@ public class _Super_ClientVO extends flash.events.EventDispatcher implements com
         var validationFailureMessages:Array = new Array();
 
         var propertyValidity:Boolean = true;
-        if (!_model.notesIsValid)
+        if (!_model.clientidIsValid)
         {
             propertyValidity = false;
-            com.adobe.fiber.util.FiberUtils.arrayAdd(validationFailureMessages, _model.model_internal::_notesValidationFailureMessages);
+            com.adobe.fiber.util.FiberUtils.arrayAdd(validationFailureMessages, _model.model_internal::_clientidValidationFailureMessages);
+        }
+        if (!_model.intakeDateIsValid)
+        {
+            propertyValidity = false;
+            com.adobe.fiber.util.FiberUtils.arrayAdd(validationFailureMessages, _model.model_internal::_intakeDateValidationFailureMessages);
         }
 
         model_internal::_cacheInitialized_isValid = true;
@@ -335,29 +346,56 @@ public class _Super_ClientVO extends flash.events.EventDispatcher implements com
         }
     }
 
-    model_internal var _doValidationCacheOfNotes : Array = null;
-    model_internal var _doValidationLastValOfNotes : String;
+    model_internal var _doValidationCacheOfClientid : Array = null;
+    model_internal var _doValidationLastValOfClientid : String;
 
-    model_internal function _doValidationForNotes(valueIn:Object):Array
+    model_internal function _doValidationForClientid(valueIn:Object):Array
     {
         var value : String = valueIn as String;
 
-        if (model_internal::_doValidationCacheOfNotes != null && model_internal::_doValidationLastValOfNotes == value)
-           return model_internal::_doValidationCacheOfNotes ;
+        if (model_internal::_doValidationCacheOfClientid != null && model_internal::_doValidationLastValOfClientid == value)
+           return model_internal::_doValidationCacheOfClientid ;
 
-        _model.model_internal::_notesIsValidCacheInitialized = true;
+        _model.model_internal::_clientidIsValidCacheInitialized = true;
         var validationFailures:Array = new Array();
         var errorMessage:String;
         var failure:Boolean;
 
         var valRes:ValidationResult;
-        if (_model.isNotesAvailable && _internal_notes == null)
+        if (_model.isClientidAvailable && _internal_clientid == null)
         {
-            validationFailures.push(new ValidationResult(true, "", "", "notes is required"));
+            validationFailures.push(new ValidationResult(true, "", "", "clientid is required"));
         }
 
-        model_internal::_doValidationCacheOfNotes = validationFailures;
-        model_internal::_doValidationLastValOfNotes = value;
+        model_internal::_doValidationCacheOfClientid = validationFailures;
+        model_internal::_doValidationLastValOfClientid = value;
+
+        return validationFailures;
+    }
+    
+    model_internal var _doValidationCacheOfIntakeDate : Array = null;
+    model_internal var _doValidationLastValOfIntakeDate : String;
+
+    model_internal function _doValidationForIntakeDate(valueIn:Object):Array
+    {
+        var value : String = valueIn as String;
+
+        if (model_internal::_doValidationCacheOfIntakeDate != null && model_internal::_doValidationLastValOfIntakeDate == value)
+           return model_internal::_doValidationCacheOfIntakeDate ;
+
+        _model.model_internal::_intakeDateIsValidCacheInitialized = true;
+        var validationFailures:Array = new Array();
+        var errorMessage:String;
+        var failure:Boolean;
+
+        var valRes:ValidationResult;
+        if (_model.isIntakeDateAvailable && _internal_intakeDate == null)
+        {
+            validationFailures.push(new ValidationResult(true, "", "", "intakeDate is required"));
+        }
+
+        model_internal::_doValidationCacheOfIntakeDate = validationFailures;
+        model_internal::_doValidationLastValOfIntakeDate = value;
 
         return validationFailures;
     }

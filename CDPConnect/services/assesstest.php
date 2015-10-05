@@ -12,6 +12,6 @@
 
     $res = $o->getAssessmentData($assessment);*/
     
-    $res = $o->getAssessmentsByClientID(1);
+    $res = $o->getAssessmentsByClientID2(1);
     var_dump($res);
 ?> 

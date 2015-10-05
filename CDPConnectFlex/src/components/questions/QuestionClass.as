@@ -28,12 +28,12 @@ package components.questions
 	
 	public class QuestionClass extends BetterFormItem
 	{
-		public var codeName:String;
+		public var codeName:String;//database column name
 		public var skipPatterns:Vector.<SkipPattern> = new Vector.<SkipPattern>();
 		public var validators:Vector.<Validator> = new Vector.<Validator>();
-		public var inline:Boolean = false;
-		public var isSkipped:Boolean = false;
-		public var answerType:Class = int;
+		public var inline:Boolean = false;//is it attached to another question
+		public var isSkipped:Boolean = false;//is it currently skipped by another question
+		public var answerType:Class = int;//Text inputs can have either int or String values
 		public var baseLabel:String;
 		protected var helpText:String;
 		public var errorToolTip:ToolTip;

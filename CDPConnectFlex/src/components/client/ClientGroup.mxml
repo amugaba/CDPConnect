@@ -14,6 +14,7 @@
 			import mx.collections.ArrayList;
 			import mx.controls.Alert;
 			import mx.core.FlexGlobals;
+			import mx.events.CloseEvent;
 			import mx.events.ValidationResultEvent;
 			import mx.rpc.events.ResultEvent;
 			import mx.validators.Validator;
@@ -208,6 +209,41 @@
 					}
 				}
 			}
+			
+			protected function deleteButton_clickHandler(event:MouseEvent):void
+			{
+				Alert.show("Are you sure?","DELETE INTERVIEW",Alert.YES|Alert.NO,null,deleteButtonConfirmHandler);
+			}
+			
+			protected function deleteButtonConfirmHandler(event:CloseEvent):void
+			{
+				if(event.detail == Alert.YES)
+				{
+					var assessment:AssessmentVO = assessmentGrid.selectedItem as AssessmentVO
+					deleteAssessmentResult.token = assessmentService.deleteAssessment(assessment);
+					
+					//Remove interview from grid
+					global.pageHome.clientGroup.assessmentList.removeItemAt(assessmentGrid.selectedIndex);
+					
+					//Update active clientVO to say that it no longer has this assessment
+					var interviewType:int = assessment.subtype;
+					if(InterviewType.isIntake(interviewType))
+					{
+						global.activeClient.intakeExists = false;
+						global.intakeInterview = null;
+					}
+					else if(InterviewType.isDischarge(interviewType))
+						global.activeClient.dischargeExists = false;
+					else if(InterviewType.isFollowup(interviewType))
+						global.activeClient.followupExists = false;
+				}
+			}
+			
+			protected function deleteAssessmentResult_resultHandler(event:ResultEvent):void
+			{
+				Alert.show("Interview deleted");
+			}
+			
 		]]>
 	</fx:Script>
 	<fx:Declarations>
@@ -221,6 +257,7 @@
 		<assessmentservice:AssessmentService id="assessmentService"
 											 fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
 											 showBusyCursor="true"/>
+		<s:CallResponder id="deleteAssessmentResult" result="deleteAssessmentResult_resultHandler(event)"/>
 	</fx:Declarations>
 	<s:Label y="0" fontSize="14" fontWeight="bold" horizontalCenter="0"
 			 text="Create Interviews for Active Client"/>
@@ -278,5 +315,7 @@
 			<s:Button id="gpraFollowupButton" label="Followup" click="createFollowup(false)"/>
 		</s:Group>
 	</s:Group>
+	<s:Button id="deleteButton" y="435" label="Delete Interview"
+			  click="deleteButton_clickHandler(event)" horizontalCenter="0"/>
 	
 </s:Group>

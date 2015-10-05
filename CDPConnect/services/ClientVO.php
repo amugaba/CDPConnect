@@ -17,6 +17,11 @@ class ClientVO
 	public $intakeExists;
 	
 	/**
+	 * @var string
+	 */
+	public $intakeDate;
+	
+	/**
 	 * @var bool
 	 */
 	public $dischargeExists;
@@ -36,6 +41,7 @@ class ClientVO
 		$this->autoid = -1;
 		$this->clientid = "";
 		$this->intakeExists = false;
+		$this->intakeDate = "";
 		$this->dischargeExists = false;
 		$this->followupExists = false;
 		$this->followupSelected = false;

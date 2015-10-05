@@ -100,11 +100,42 @@
 				}
 			}
 			
+			//When first starting an interview, create a blank record in the database
+			public function createBlankAssessment():void
+			{
+				global.activeAssessment = new AssessmentVO();
+				global.activeAssessment.client_autoid = global.activeClient.autoid;
+				global.activeAssessment.type = assessType;
+				global.activeAssessment.subtype = interviewType;
+				global.activeAssessment.date = global.dateFormatter.format(new Date());
+				global.activeAssessment.complete = 0;
+				createBlankAssessmentResult.token = assessmentService.createBlankAssessment(global.activeAssessment);
+			}
+			
+			protected function createBlankAssessmentResult_resultHandler(event:ResultEvent):void
+			{
+				//Add in new autoid and put in assessments grid
+				global.activeAssessment = createBlankAssessmentResult.lastResult;
+				global.pageHome.clientGroup.assessmentList.addItem(global.activeAssessment);
+				
+				//Update active clientVO to say that it has this assessment
+				if(InterviewType.isIntake(interviewType))
+				{
+					global.activeClient.intakeExists = true;
+					global.intakeInterview = global.activeAssessment;
+				}
+				else if(InterviewType.isDischarge(interviewType))
+					global.activeClient.dischargeExists = true;
+				else if(InterviewType.isFollowup(interviewType))
+					global.activeClient.followupExists = true;
+			}
+			
 			//Setup a blank Interview form
 			public function newIntake():void
 			{
 				interviewType = InterviewType.INTAKE_NEG;//change this value if user fills out services
 				initializePage();
+				createBlankAssessment();
 				
 				//Enable only section A and SBIRT. Then once the user fills out what services were provided, enabled
 				//additional sections based on that modality
@@ -129,6 +160,7 @@
 			{
 				interviewType = InterviewType.DISCHARGE_ADMIN;
 				initializePage();
+				createBlankAssessment();
 				
 				//If discharge, do admin discharge by default. If user selects that an interview was done, add other sections
 				enableSectionSBIRT(false);
@@ -156,6 +188,7 @@
 					interviewType = InterviewType.FOLLOWUP_RT;
 				
 				initializePage();
+				createBlankAssessment();
 				
 				//If followup, look at intake interview type to decide between BI and RT followup
 				if(interviewType == InterviewType.INTAKE_BI)
@@ -364,6 +397,21 @@
 				}
 			}
 			
+			//Save the current page's answers to the database
+			protected function savePage(f:InterviewForm):void
+			{
+				var data:Array = new Array();
+				data = f.saveData(data);
+
+				//Preserve the autoids when saving
+				data["autoid"] = global.activeAssessment.data.source["autoid"];
+				data["assessment_autoid"] = global.activeAssessment.data.source["assessment_autoid"];
+				
+				global.activeAssessment.data = data;
+				global.activeAssessment.subtype = interviewType; //the interview type might have changed
+				updateAssessmentDataResult.token = assessmentService.updateAssessmentData(global.activeAssessment);
+			}
+			
 			//Parse Form Data, construct Assessment data
 			protected function parseForm():void
 			{
@@ -452,6 +500,7 @@
 			{
 				if(isCurrentFormValid())
 				{
+					savePage(activeForms[currentIndex]);
 					viewStack.selectedIndex = viewStack.selectedIndex + 1;
 					if(viewStack.selectedIndex == activeTabs.length - 1)
 						nextButton.enabled = false;
@@ -464,6 +513,7 @@
 			{
 				if(isCurrentFormValid())
 				{
+					savePage(activeForms[currentIndex]);
 					viewStack.selectedIndex = viewStack.selectedIndex - 1;
 					if(viewStack.selectedIndex == 0)
 						prevButton.enabled = false;
@@ -476,6 +526,7 @@
 			{
 				if(isCurrentFormValid())
 				{
+					savePage(activeForms[currentIndex]);
 					//the tabs can change here if modality is changed, so make sure not to go beyond the last active tab
 					viewStack.selectedIndex = Math.min(viewStack.selectedIndex, activeTabs.length -1);
 					
@@ -539,6 +590,7 @@
 		<assessmentservice:AssessmentService id="assessmentService"
 											 fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
 											 showBusyCursor="true"/>
+		<s:CallResponder id="createBlankAssessmentResult" result="createBlankAssessmentResult_resultHandler(event)"/>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
 	<mx:TabBar id="tabBar" x="0" y="0" dataProvider="viewStack"

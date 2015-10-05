@@ -34,6 +34,7 @@
 				clientIDSearch.text = "";
 				clientIDAdd.text = "";
 				searchIntakeDate.text = "";
+				searchIntakeDate.selectedDate = null;
 				searchDischarge.selected = false;
 				clientList.removeAll();
 			}
@@ -139,11 +140,12 @@
 	<s:Button id="searchButton" y="211" width="105" label="Search Clients"
 			  click="searchButton_clickHandler(event)" fontWeight="normal" horizontalCenter="0"/>
 	
-	<s:DataGrid id="clientGrid" y="247" width="195" height="400" dataProvider="{clientList}"
+	<s:DataGrid id="clientGrid" y="247" width="295" height="400" dataProvider="{clientList}"
 				horizontalCenter="0" requestedRowCount="5" resizableColumns="false">
 		<s:columns>
 			<s:ArrayList>
 				<s:GridColumn dataField="clientid" headerText="ClientID" width="120"></s:GridColumn>
+				<s:GridColumn dataField="intakeDate" headerText="Intake" width="100"></s:GridColumn>
 				<s:GridColumn dataField="load" headerText="Load" width="70">
 					<s:itemRenderer>
 						<fx:Component>

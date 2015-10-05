@@ -18,9 +18,7 @@ public class MiscService extends _Super_MiscService
         super.preInitializeService();
         // Initialization customization goes here
 		if(CDPConnectFlex.DEBUG_MODE == 0)
-			serviceControl.endpoint = "https://www.iprctech.org/cdpconnect/indiana/gateway.php";
-		else if(CDPConnectFlex.DEBUG_MODE == 1)
-			serviceControl.endpoint = "http://www.iprctech.org/cdpconnect/indianatest/gateway.php";
+			serviceControl.endpoint = CDPConnectFlex.ENDPOINT_RELEASE;
 		serviceControl.requestTimeout = 5;
     }
                

@@ -23,6 +23,11 @@
 				searchGroup.resetGroup();
 				clientGroup.resetGroup();
 			}
+			
+			public function resetSearch():void
+			{
+				searchGroup.resetGroup();
+			}
 		]]>
 	</fx:Script>
 	<fx:Declarations>

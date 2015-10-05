@@ -7,9 +7,12 @@
 					xmlns:styles="com.adobe.fiber.styles.*"
 					xmlns:clientservice="services.clientservice.*"
 					xmlns:miscservice="services.miscservice.*"
-					width="400" height="300">
+					width="715" height="600">
 	<fx:Script>
 		<![CDATA[
+			import components.assessment.AssessType;
+			import components.assessment.InterviewType;
+			
 			import flash.globalization.DateTimeFormatter;
 			import flash.globalization.LocaleID;
 			
@@ -26,6 +29,8 @@
 			import valueObjects.GrantVO;
 			
 			protected var global:CDPConnectFlex = FlexGlobals.topLevelApplication as CDPConnectFlex;
+			[Bindable]protected var dciGpra:ArrayList = new ArrayList(["DCI","GPRA"]);
+			[Bindable]protected var interviewTypes:ArrayList = new ArrayList(["Intake","Discharge","Followup"]);
 			protected var gpraHeaders:String = "autoid,ClientID,ClientType,InterviewTypeCode,InterviewDate,CooccurringScreen,CooccurringScreenStatus,GrantNo,ConductedInterview,DateOfBirth," +
 				"GenderCode,GenderOtherSpecify,HispanicLatino,EthnicCentralAmerican,EthnicCuban,EthnicDominican,EthnicMexican,EthnicPuertoRican,EthnicSouthAmerican,EthnicOther," +
 				"EthnicOtherSpec,RaceBlack,RaceAsian,RaceAmericanIndian,RaceNativeHawaiian,RaceAlaskaNative,RaceWhite,MilitaryServed,ActiveDuty,NeverDeployed,IraqAfghanistan,PersianGulf," +
@@ -144,6 +149,10 @@
 				grantCode.text = global.activeGrant.grantCode;
 			}
 			
+			protected function exportInterviewsButton_clickHandler(event:MouseEvent):void
+			{
+			}
+			
 		]]>
 	</fx:Script>
 	<fx:Style> 
@@ -163,21 +172,36 @@
 								 showBusyCursor="true"/>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
-	<s:Group x="0" y="0" width="1024" height="768">
-		<s:Panel x="162" y="0" width="372" height="183" title="Reports">
+	<s:Group x="0" y="0" width="715" height="100%">
+		<s:Panel y="0" width="372" height="262" horizontalCenter="0"
+				 title="Batch Export Interviews">
 			<s:layout>
-				<s:TileLayout horizontalGap="20" paddingLeft="10" paddingRight="10" paddingTop="15"
-							  requestedColumnCount="2" verticalGap="30"/>
+				<s:VerticalLayout/>
 			</s:layout>
-			<s:Label text="Export New DCIs to CSV"/>
+			<s:Form>
+				<s:FormItem label="GPRA or DCI?">
+					<s:DropDownList id="dciGPRADropdown" dataProvider="{dciGpra}"></s:DropDownList>
+				</s:FormItem>
+				<s:FormItem label="Interview Type">
+					<s:DropDownList id="interviewTypeDropdown" dataProvider="{interviewTypes}"></s:DropDownList>
+				</s:FormItem>
+				<s:FormItem label="New Interviews Only">
+					<s:CheckBox id="newOnlyCheckbox" selected="true"/>
+				</s:FormItem>
+				<s:FormItem label="Record Batch">
+					<s:CheckBox id="recordBatchCheckbox" selected="true"/>
+				</s:FormItem>
+				<s:Button id="exportInterviewsButton" label="Export" click="exportInterviewsButton_clickHandler(event)"/>
+			</s:Form>
+			<!--<s:Label text="Export New DCIs to CSV"/>
 			<s:Button id="exportNewGPRAsButton" label="Run" click="exportNewGPRAsButton_clickHandler(event)"/>
 			<s:Label text="Export All DCIs to CSV"/>
 			<s:Button id="exportAllGPRAsButton" label="Run" click="exportAllGPRAsButton_clickHandler(event)"/>
 			<s:Label text="Export All Clients to CSV"/>
-			<s:Button id="exportClientsButton" label="Run" click="exportClientsButton_clickHandler(event)"/>
+			<s:Button id="exportClientsButton" label="Run" click="exportClientsButton_clickHandler(event)"/>-->
 		</s:Panel>
 		<mx:ProgressBar id="uploadProgress" x="392" y="417" indeterminate="true" visible="false"/>
-		<s:Panel x="162" y="206" width="372" height="225" title="DCI Settings">
+		<s:Panel y="312" width="372" height="225" horizontalCenter="0" title="DCI Settings">
 			<s:Form x="0" y="0">
 				<s:FormItem label="SAMHSA Center">
 					<s:DropDownList id="samhsaCenter" dataProvider="{new ArrayList(['CSAT','CMHS','CSAP'])}"></s:DropDownList>

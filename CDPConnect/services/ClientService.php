@@ -206,12 +206,12 @@ class ClientService
     	$clientid = str_replace("*", "%", $clientid);	
     	if(strlen($clientid) == 0 && strlen($intakeDate) == 0 && !$checkDischarge) //no search terms
     	{
-    		$stmt = $this->connection->prepare("SELECT autoid, clientid FROM client_tbl");
+    		$stmt = $this->connection->prepare("SELECT c.autoid, c.clientid, a.date FROM client_tbl c LEFT JOIN assessment_tbl a ON c.autoid=a.client_autoid AND a.subtype < 4");
     		$this->throwExceptionOnError();
     	}
     	else if(strlen($intakeDate) == 0 && !$checkDischarge) //just search clientID
     	{
-	    	$stmt = $this->connection->prepare("SELECT autoid, clientid FROM client_tbl WHERE clientid LIKE ?");
+	    	$stmt = $this->connection->prepare("SELECT c.autoid, c.clientid, a.date FROM client_tbl c LEFT JOIN assessment_tbl a ON c.autoid=a.client_autoid AND a.subtype < 4 WHERE c.clientid LIKE ?");
 	    	$this->throwExceptionOnError();
 	    	
 	    	$stmt->bind_param('s', $clientid);
@@ -219,7 +219,7 @@ class ClientService
     	}
         else if(strlen($clientid) == 0 && !$checkDischarge) //just intakeDate
         {
-        	$stmt = $this->connection->prepare("SELECT c.autoid, c.clientid FROM client_tbl c, assessment_tbl a WHERE c.autoid=a.client_autoid AND a.subtype < 4 AND a.date=?");
+        	$stmt = $this->connection->prepare("SELECT c.autoid, c.clientid, a.date FROM client_tbl c, assessment_tbl a WHERE c.autoid=a.client_autoid AND a.subtype < 4 AND a.date=?");
 	    	$this->throwExceptionOnError();
 	    	
 	    	$stmt->bind_param('s', $intakeDate);
@@ -227,12 +227,12 @@ class ClientService
         }
     	else if(strlen($clientid) == 0 && strlen($intakeDate) == 0) //just checkDischarge
         {
-        	$stmt = $this->connection->prepare("SELECT c.autoid, c.clientid FROM client_tbl c WHERE NOT EXISTS (SELECT NULL FROM assessment_tbl a WHERE c.autoid=a.client_autoid AND a.subtype>3 AND a.subtype<7)");
+        	$stmt = $this->connection->prepare("SELECT c.autoid, c.clientid, a.date FROM client_tbl c LEFT JOIN assessment_tbl a ON c.autoid=a.client_autoid AND a.subtype < 4 WHERE NOT EXISTS (SELECT NULL FROM assessment_tbl b WHERE c.autoid=b.client_autoid AND b.subtype>3 AND b.subtype<7)");
 	    	$this->throwExceptionOnError();
         }
     	else if(!$checkDischarge) //clientID and intakeDate
         {
-        	$stmt = $this->connection->prepare("SELECT c.autoid, c.clientid FROM client_tbl c, assessment_tbl a WHERE c.autoid=a.client_autoid AND c.clientid LIKE ? AND a.subtype < 4 AND a.date=?");
+        	$stmt = $this->connection->prepare("SELECT c.autoid, c.clientid, a.date FROM client_tbl c, assessment_tbl a WHERE c.autoid=a.client_autoid AND c.clientid LIKE ? AND a.subtype < 4 AND a.date=?");
 	    	$this->throwExceptionOnError();
 	    	
 	    	$stmt->bind_param('ss', $clientid, $intakeDate);
@@ -240,7 +240,7 @@ class ClientService
         }
     	else if(strlen($intakeDate) == 0) //clientID and checkDischarge
         {
-        	$stmt = $this->connection->prepare("SELECT c.autoid, c.clientid FROM client_tbl c WHERE c.clientid LIKE ? AND NOT EXISTS (SELECT NULL FROM assessment_tbl a WHERE c.autoid=a.client_autoid AND a.subtype>3 AND a.subtype<7)");
+        	$stmt = $this->connection->prepare("SELECT c.autoid, c.clientid, a.date FROM client_tbl c LEFT JOIN assessment_tbl a ON c.autoid=a.client_autoid AND a.subtype < 4 WHERE c.clientid LIKE ? AND NOT EXISTS (SELECT NULL FROM assessment_tbl b WHERE c.autoid=b.client_autoid AND b.subtype>3 AND b.subtype<7)");
 	    	$this->throwExceptionOnError();
 	    	
 	    	$stmt->bind_param('s', $clientid);
@@ -248,7 +248,7 @@ class ClientService
         }
     	else if(strlen($clientid) == 0) //intakeDate and checkDischarge
         {
-        	$stmt = $this->connection->prepare("SELECT c.autoid, c.clientid FROM client_tbl c, assessment_tbl a WHERE c.autoid=a.client_autoid AND a.subtype < 4 AND a.date=? 
+        	$stmt = $this->connection->prepare("SELECT c.autoid, c.clientid, a.date FROM client_tbl c, assessment_tbl a WHERE c.autoid=a.client_autoid AND a.subtype < 4 AND a.date=? 
         		AND NOT EXISTS (SELECT NULL FROM assessment_tbl b WHERE c.autoid=b.client_autoid AND b.subtype>3 AND b.subtype<7)");
 	    	$this->throwExceptionOnError();
 	    	
@@ -257,7 +257,7 @@ class ClientService
         }
     	else //all three
         {
-        	$stmt = $this->connection->prepare("SELECT c.autoid, c.clientid FROM client_tbl c, assessment_tbl a WHERE c.clientid LIKE ? 
+        	$stmt = $this->connection->prepare("SELECT c.autoid, c.clientid, a.date FROM client_tbl c, assessment_tbl a WHERE c.clientid LIKE ? 
         		AND c.autoid=a.client_autoid AND a.subtype < 4 AND a.date=? 
         		AND NOT EXISTS (SELECT NULL FROM assessment_tbl b WHERE c.autoid=b.client_autoid AND b.subtype>3 AND b.subtype<7)");
 	    	$this->throwExceptionOnError();
@@ -271,13 +271,13 @@ class ClientService
         
         $clients = array();
     	$client = new ClientVO();
-        $stmt->bind_result($client->autoid, $client->clientid);
+        $stmt->bind_result($client->autoid, $client->clientid, $client->intakeDate);
 		
         while($stmt->fetch())
         {
 	        array_push($clients, $client);
 	        $client = new ClientVO();
-	        $stmt->bind_result($client->autoid, $client->clientid);
+	        $stmt->bind_result($client->autoid, $client->clientid, $client->intakeDate);
 	    }
         
         $stmt->free_result();
