@@ -66,7 +66,7 @@ package components.validators
 			if(q is QuestionText || q is QuestionTextRefusable)
 				v.property = "text";
 			else if(q is QuestionList)
-				v.property = "selectedIndex";
+				v.property = "selectedItem";
 			q.validators.push(v);
 		}
 		

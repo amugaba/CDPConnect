@@ -144,8 +144,8 @@
 				horizontalCenter="0" requestedRowCount="5" resizableColumns="false">
 		<s:columns>
 			<s:ArrayList>
-				<s:GridColumn dataField="clientid" headerText="ClientID" width="120"></s:GridColumn>
-				<s:GridColumn dataField="intakeDate" headerText="Intake" width="100"></s:GridColumn>
+				<s:GridColumn dataField="clientid" headerText="ClientID" width="130"></s:GridColumn>
+				<s:GridColumn dataField="intakeDate" headerText="Intake" width="80"></s:GridColumn>
 				<s:GridColumn dataField="load" headerText="Load" width="70">
 					<s:itemRenderer>
 						<fx:Component>

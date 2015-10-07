@@ -61,7 +61,6 @@
 					
 					if(q.isSkipped)
 					{
-						//gpraData[q.codeName] = null; //question is being skipped, put null for N/A
 						continue;
 					}
 					else if(q is QuestionTextRefusable)
@@ -94,7 +93,7 @@
 					
 					if(data[q.codeName] == null)
 					{
-						q.disable(); //skipped
+						//q.disable(); //skipped //for now treat this as incomplete, see what happens
 					}
 					else if(q is QuestionTextRefusable)
 					{

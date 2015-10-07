@@ -42,11 +42,11 @@
 				BindingUtils.bindSetter(function():void{
 					if(global.pageGPRA.recordForm.qConductedInterview.answer == YES_VALUE)
 					{
-						(qFollowupStatus.validator as DropDownValidator).validAnswers = ["Completed interview within specified window","Completed interview outside specified window"];
+						(qFollowupStatus.validators[1] as DropDownValidator).validAnswers = ["Completed interview within specified window","Completed interview outside specified window"];
 					}
 					else
 					{
-						(qFollowupStatus.validator as DropDownValidator).validAnswers = ["Deceased at time of due date","Located, but refused, unspecified","Located, but unable to gain institutional access",
+						(qFollowupStatus.validators[1] as DropDownValidator).validAnswers = ["Deceased at time of due date","Located, but refused, unspecified","Located, but unable to gain institutional access",
 							"Located, but otherwise unable to gain access","Located, but withdrawn from project","Unable to locate, moved","Unable to locate, other"];
 					}
 				}, global.pageGPRA.recordForm.qConductedInterview.inputControl, "selectedIndex");

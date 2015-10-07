@@ -110,7 +110,7 @@
 			
 			protected function hispanicHandler(val:String):void
 			{
-				var dv:DropDownValidator = qHispanicLatino.validator as DropDownValidator;
+				var dv:DropDownValidator = qHispanicLatino.validators[1] as DropDownValidator;
 				for each (var q:QuestionClass in ethnicityQuestions)
 					if(q.answer == YES_VALUE)
 					{

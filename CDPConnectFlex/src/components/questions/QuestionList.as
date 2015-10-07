@@ -1,12 +1,15 @@
 package components.questions
 {
 	
+	import components.validators.Valid;
+	
 	import flash.display.InteractiveObject;
 	
 	import mx.binding.utils.BindingUtils;
 	import mx.binding.utils.ChangeWatcher;
 	import mx.collections.ArrayList;
 	import mx.core.UIComponent;
+	import mx.validators.Validator;
 	
 	import spark.components.DropDownList;
 	import spark.events.IndexChangeEvent;
@@ -16,7 +19,7 @@ package components.questions
 		public var input:DropDownList;
 		public var defaultValue:int;
 
-		public function QuestionList(codeName:String,label:String,choices:ArrayList,defaultValue:int,editable:Boolean=true)
+		public function QuestionList(codeName:String,label:String,choices:ArrayList,defaultValue:int=-1,editable:Boolean=true)
 		{
 			super(codeName,label);
 			input = new DropDownList();
@@ -27,6 +30,12 @@ package components.questions
 			this.enabled = editable;
 			BindingUtils.bindSetter(showErrorsNow, input, "errorString");
 			input.setStyle("showErrorTip",false);
+			
+			var v:Validator = new Validator();
+			v.required = true;
+			v.source = input;
+			v.property = "selectedItem";
+			validators.push(v);
 		}
 		
 		public override function get answer():String

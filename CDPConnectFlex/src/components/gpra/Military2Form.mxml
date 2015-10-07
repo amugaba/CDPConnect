@@ -51,7 +51,7 @@
 				//Validators
 				Valid.addDropDownValidator(qFamilyActiveDuty,[NO_VALUE,REFUSED_VALUE,DONT_KNOW_VALUE]);
 				Valid.addRequiredValidator(qServiceMemExpOther);
-				(qFamilyActiveDuty.validators[0] as DropDownValidator).errorMessage = "Incorrect number of family members added below.";
+				(qFamilyActiveDuty.validators[1] as DropDownValidator).errorMessage = "Incorrect number of family members added below.";
 				
 				//Control Logic
 				addSkipDropDown(qServiceMemRelationship,["Other"],[qServiceMemExpOther],true);
@@ -81,7 +81,7 @@
 			
 			public function updateFamilyValidator():void
 			{
-				var dv:DropDownValidator = qFamilyActiveDuty.validators[0] as DropDownValidator;
+				var dv:DropDownValidator = qFamilyActiveDuty.validators[1] as DropDownValidator;
 				if(familyVeterans.length == 0)
 				{
 					dv.validAnswers = [NO_VALUE,REFUSED_VALUE,DONT_KNOW_VALUE];
