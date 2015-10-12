@@ -120,18 +120,6 @@
 					crimeTab,health1Tab,health2Tab,health3Tab,health4Tab,socialTab,followupTab,dischargeTab,dischargeServices1Tab,dischargeServices2Tab,saveTab);
 			}
 			
-			//Add all of the tabs and forms to the view stack
-			protected function createTab(form:InterviewForm, tabLabel:String):NavigatorContent
-			{
-				var nc:NavigatorContent = new NavigatorContent();
-				nc.percentWidth = 100;
-				nc.percentHeight = 100;
-				nc.label = tabLabel;
-				nc.addElement(form);
-				viewStack.addElement(nc);
-				return nc;
-			}
-			
 			protected override function populateRecordForm():void
 			{
 				recordForm.populateForm();

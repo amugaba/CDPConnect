@@ -24,7 +24,6 @@
 			public var qSBIRTContinue:QuestionList = new QuestionList("SBIRTContinue","Was he/she willing to continue his/her participation in the SBIRT program",new ArrayList(["Yes","No"]));
 		
 			private var scoreWidth:int = 50;
-			private var autopaged:Boolean = false;
 		
 			public override function createForm():void
 			{
@@ -55,21 +54,8 @@
 				//Control Logic
 				addSkipTextRange(qOtherScreen,[qOtherScreenSpec],0,999,true);
 				addSkipDropDown(qSBIRTScreen,["Negative"],[qAUDIT,qCAGE,qDAST,qDAST10,qNIAAA,qASSIST,qOtherScreen]);
-				
-				//Test auto-page on form completion
-				BindingUtils.bindSetter(onFormCompleted, qSBIRTContinue.input, "selectedItem");
 			}
 			
-			private function onFormCompleted(val:String):void
-			{
-				//validate form, if valid, move to next page if this is the first time
-				var errors:ArrayList = validateForm();
-				if(errors.length == 0 && !autopaged)
-				{
-					global.pageGPRA.goToNextPage();
-					autopaged = true;
-				}
-			}
 		]]>
 	</fx:Script>
 	<fx:Declarations>

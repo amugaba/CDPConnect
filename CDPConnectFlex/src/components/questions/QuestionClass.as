@@ -39,6 +39,7 @@ package components.questions
 		public var errorToolTip:ToolTip;
 		public static var nf:NumberFormatter = new NumberFormatter( "en-US" );
 		protected var global:CDPConnectFlex = FlexGlobals.topLevelApplication as CDPConnectFlex;
+		public var parentForm:QuestionForm;
 		
 		public function QuestionClass(codeName:String, questionLabel:String = "")
 		{

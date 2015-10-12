@@ -6,6 +6,7 @@
 	<fx:Script>
 		<![CDATA[
 			import components.pages.DciPage;
+			import components.pages.InstrumentPage;
 			import components.skips.SkipMultipleHandler;
 			import components.skips.SkipPattern;
 			import components.skips.SkipPatternMultiple;
@@ -13,6 +14,7 @@
 			import components.validators.DateAgeValidator;
 			import components.validators.DropDownValidator;
 			
+			import mx.binding.utils.BindingUtils;
 			import mx.collections.ArrayCollection;
 			import mx.collections.ArrayList;
 			import mx.controls.HRule;
@@ -25,11 +27,14 @@
 			import mx.validators.Validator;
 			
 			import spark.components.NavigatorContent;
+			import spark.events.DropDownEvent;
 			import spark.events.IndexChangeEvent;
 			
 			protected var global:CDPConnectFlex = FlexGlobals.topLevelApplication as CDPConnectFlex;
 			public var questions:Vector.<QuestionClass> = new Vector.<QuestionClass> ();
 			public var created:Boolean = false;
+			public var parentInstrument:InstrumentPage;
+			private var autopaged:Boolean = false;
 			
 			public function addQuestion(q:QuestionClass, width:int = -1):void
 			{
@@ -37,6 +42,13 @@
 				addElement(q);
 				if(width != -1)
 					q.inputControl.width = width;
+				q.parentForm = this;
+				
+				//dropdowns should check if its form is completed
+				if(q is QuestionList)
+				{
+					q.inputControl.addEventListener(DropDownEvent.CLOSE,checkFormCompleted);
+				}
 			}
 			
 			public function removeQuestion(q:QuestionClass):void
@@ -232,6 +244,40 @@
 			protected function formatErrorMessage(q:QuestionClass, res:ValidationResult):String
 			{
 				return q.codeName + " - " + res.errorMessage;
+			}
+			
+			public function checkFormCompleted(str:String):void
+			{
+				//validate form, if valid, move to next page if this is the first time
+				if(!autopaged)
+				{
+					var hasErrors:Boolean = false;
+					for each(var q:QuestionClass in questions)
+					{
+						for each(var val:Validator in q.validators)
+						{
+							if(val == null || !val.enabled)
+								continue;
+							
+							if(!q.isSkipped && q.inputControl.enabled)
+							{
+								var ev:ValidationResultEvent = val.validate();
+								if(ev.results != null && ev.results.length > 0)
+								{
+									hasErrors = true;
+									q.errorString = "";
+									break;
+								}
+							}
+						}
+					}
+					
+					if(!hasErrors)
+					{
+						parentInstrument.goToNextPage();
+						autopaged = true;
+					}
+				}
 			}
 		]]>
 	</fx:Script>
