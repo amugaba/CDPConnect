@@ -24,7 +24,7 @@
 			public var qViolenceInterpersonal:QuestionList = new QuestionList("ViolenceInterpersonal","Interpersonal violence (including physical, sexual, or psychological)",ynr,1);
 			public var qViolenceMilitary:QuestionList = new QuestionList("ViolenceMilitary","Military trauma",ynr,1);
 			public var qViolenceOther:QuestionList = new QuestionList("ViolenceOther","Other",ynr,1);
-			public var qViolenceOtherSpec:QuestionText = new QuestionText("ViolenceOtherSpec","Other (specify)","");
+			public var qViolenceOtherSpec:QuestionText = new QuestionText("ViolenceOtherSpec","Other (specify)");
 			
 			public var qNightmares:QuestionList = new QuestionList("Nightmares","Have had nightmares about it or thought about it when you did not want to?",ynrd,1);
 			public var qTriedHard:QuestionList = new QuestionList("TriedHard","Tried hard not to think about it or went out of your way to avoid situations that remind you of them?",ynrd,1);

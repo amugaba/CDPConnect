@@ -14,12 +14,12 @@
 			import mx.validators.NumberValidator;
 			
 			public var qSexActivity:QuestionList = new QuestionList("SexActivity","During the past 30 days, did you engage in sexual activity?",new ArrayList(["Yes","No","Not permitted to ask",REFUSED_VALUE, DONT_KNOW_VALUE]),1);
-			public var qSexContacts:QuestionTextRefusable = new QuestionTextRefusable("SexContacts","Sexual contacts (vaginal, oral, or anal) did you have?","0");
+			public var qSexContacts:QuestionTextRefusable = new QuestionTextRefusable("SexContacts","Sexual contacts (vaginal, oral, or anal) did you have?");
 			public var qSexUnprotContacts:QuestionTextRefusable = new QuestionTextRefusable("SexUnprot","Unprotected sexual contacts did you have?","0");
 			
-			public var qSexUnprotHIVAids:QuestionTextRefusable = new QuestionTextRefusable("SexUnprotHIVAids","HIV positive or has AIDS","0");
-			public var qSexUnprotInjDrugUser:QuestionTextRefusable = new QuestionTextRefusable("SexUnprotInjDrugUser","An injection drug user","0");
-			public var qSexUnprotHigh:QuestionTextRefusable = new QuestionTextRefusable("SexUnprotHigh","High on some substance","0");
+			public var qSexUnprotHIVAids:QuestionTextRefusable = new QuestionTextRefusable("SexUnprotHIVAids","HIV positive or has AIDS");
+			public var qSexUnprotInjDrugUser:QuestionTextRefusable = new QuestionTextRefusable("SexUnprotInjDrugUser","An injection drug user");
+			public var qSexUnprotHigh:QuestionTextRefusable = new QuestionTextRefusable("SexUnprotHigh","High on some substance");
 			
 			public var qiHIVTest:QuestionList = new QuestionList("iHIVTest","Have you ever been tested for HIV?",ynrd,1);
 			public var qiHIVTestResult:QuestionList = new QuestionList("iHIVTestResult","Do you know the results of your HIV testing?",yn,0);
@@ -61,9 +61,18 @@
 					(qSexUnprotHIVAids.validator as NumberValidator).maxValue = qSexUnprotContacts.answerNumber;
 					(qSexUnprotInjDrugUser.validator as NumberValidator).maxValue = qSexUnprotContacts.answerNumber;
 					(qSexUnprotHigh.validator as NumberValidator).maxValue = qSexUnprotContacts.answerNumber;
-					qSexUnprotHIVAids.validator.validate();
-					qSexUnprotInjDrugUser.validator.validate();
-					qSexUnprotHigh.validator.validate();
+					if(qSexUnprotContacts.answerNumber > 0)
+					{
+						qSexUnprotHIVAids.validator.validate();
+						qSexUnprotInjDrugUser.validator.validate();
+						qSexUnprotHigh.validator.validate();
+					}
+					else
+					{
+						qSexUnprotHIVAids.removeErrorMessage();
+						qSexUnprotInjDrugUser.removeErrorMessage();
+						qSexUnprotHigh.removeErrorMessage();
+					}
 				}, qSexUnprotContacts.inputControl, "text");
 				
 				(qSexUnprotHIVAids.validator as NumberValidator).exceedsMaxError = "Cannot be greater than 'Unprotected contacts'";
@@ -74,6 +83,12 @@
 				addSkipDropDown(qSexActivity,["Yes"],[qSexContacts,qSexUnprotContacts],true);
 				addSkipTextNumber(qSexUnprotContacts,[qSexUnprotHIVAids,qSexUnprotInjDrugUser,qSexUnprotHigh],["0"]);
 				addSkipDropDown(qiHIVTest,["Yes"],[qiHIVTestResult],true);
+			}
+			
+			public override function clearQuestionAnswers():void
+			{
+				super.clearQuestionAnswers();
+				qSexUnprotContacts.answer = "";
 			}
 		]]>
 	</fx:Script>

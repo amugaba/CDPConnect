@@ -7,6 +7,7 @@
 	<fx:Script>
 		<![CDATA[
 			import components.pages.DciPage;
+			import components.pages.InstrumentPage;
 			import components.questions.QuestionClass;
 			import components.questions.QuestionList;
 			import components.questions.QuestionText;
@@ -24,11 +25,13 @@
 			import mx.controls.Text;
 			import mx.core.FlexGlobals;
 			import mx.events.FlexEvent;
+			import mx.events.ValidationResultEvent;
 			import mx.validators.NumberValidator;
 			import mx.validators.ValidationResult;
 			import mx.validators.Validator;
 			
 			import spark.components.NavigatorContent;
+			import spark.events.DropDownEvent;
 			import spark.events.IndexChangeEvent;
 			
 			protected static var yn:ArrayList = new ArrayList([YES_VALUE,NO_VALUE]);
@@ -48,7 +51,30 @@
 			public static var DONT_KNOW_VALUE:String = "Don't Know";
 			public static var MISSING_VALUE:String = "Missing Data";
 			
-			public var viewstackIndex:int = 0;	
+			public var viewstackIndex:int = 0;
+			public var parentInstrument:InstrumentPage;
+			private var autopaged:Boolean = false;
+			
+			public override function addQuestion(q:QuestionClass, width:int=-1):void
+			{
+				super.addQuestion(q,width);
+				
+				//dropdowns should check if its form is completed
+				if(q is QuestionList)
+				{
+					q.inputControl.addEventListener(DropDownEvent.CLOSE,checkFormCompleted);
+				}
+			}
+			
+			//Create or reset form, then do skips, clear dropdowns, and remove errors
+			public override function initForm():void
+			{
+				super.initForm();
+				doAllSkips();
+				clearQuestionAnswers();
+				callLater(removeAllErrors);
+				autopaged = false;
+			}
 
 			public override function saveData(gpraData:Array):Array
 			{
@@ -94,6 +120,7 @@
 					if(data[q.codeName] == null)
 					{
 						//q.disable(); //skipped //for now treat this as incomplete, see what happens
+						continue;
 					}
 					else if(q is QuestionTextRefusable)
 					{
@@ -128,6 +155,20 @@
 							valInt = data[q.codeName];
 						
 						ql.answer = getValueFromDBIndex(valInt, ql);
+					}
+					q.refreshSkips();
+				}
+			}
+			
+			//By default, all drop downs are cleared, no text inputs are cleared
+			//Individual forms should overwrite this method to clear a different set of questions
+			public function clearQuestionAnswers():void
+			{
+				for each(var q:QuestionClass in questions)
+				{
+					if(q is QuestionList)
+					{
+						(q as QuestionList).setAnswerIndex(-1);
 					}
 				}
 			}
@@ -266,6 +307,40 @@
 			protected override function formatErrorMessage(q:QuestionClass, res:ValidationResult):String
 			{
 				return (parent.parent.parent as NavigatorContent).label + " - " + q.codeName + " - " + res.errorMessage;
+			}
+			
+			public function checkFormCompleted(str:String):void
+			{
+				//validate form, if valid, move to next page if this is the first time
+				if(!autopaged)
+				{
+					var hasErrors:Boolean = false;
+					for each(var q:QuestionClass in questions)
+					{
+						for each(var val:Validator in q.validators)
+						{
+							if(val == null || !val.enabled)
+								continue;
+							
+							if(!q.isSkipped && q.inputControl.enabled)
+							{
+								var ev:ValidationResultEvent = val.validate(null,true);
+								if(ev.results != null && ev.results.length > 0)
+								{
+									hasErrors = true;
+									//q.errorString = "";
+									break;
+								}
+							}
+						}
+					}
+					
+					if(!hasErrors)
+					{
+						parentInstrument.goToPage(parentInstrument.viewStack.selectedIndex + 1);
+						autopaged = true;
+					}
+				}
 			}
 		]]>
 	</fx:Script>

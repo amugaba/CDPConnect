@@ -27,14 +27,11 @@
 			import mx.validators.Validator;
 			
 			import spark.components.NavigatorContent;
-			import spark.events.DropDownEvent;
 			import spark.events.IndexChangeEvent;
 			
 			protected var global:CDPConnectFlex = FlexGlobals.topLevelApplication as CDPConnectFlex;
 			public var questions:Vector.<QuestionClass> = new Vector.<QuestionClass> ();
 			public var created:Boolean = false;
-			public var parentInstrument:InstrumentPage;
-			private var autopaged:Boolean = false;
 			
 			public function addQuestion(q:QuestionClass, width:int = -1):void
 			{
@@ -43,12 +40,6 @@
 				if(width != -1)
 					q.inputControl.width = width;
 				q.parentForm = this;
-				
-				//dropdowns should check if its form is completed
-				if(q is QuestionList)
-				{
-					q.inputControl.addEventListener(DropDownEvent.CLOSE,checkFormCompleted);
-				}
 			}
 			
 			public function removeQuestion(q:QuestionClass):void
@@ -117,37 +108,40 @@
 				return h;
 			}
 			
-			public function addSkipDropDown(sourceQuestion:QuestionClass, skipAnswers:Array, skipQuestions:Array, inverse:Boolean = false):void
+			public function addSkipDropDown(sourceQuestion:QuestionClass, skipAnswers:Array, skipQuestions:Array, inverse:Boolean = false):SkipPattern
 			{
 				var skip:SkipPattern = new SkipPattern(sourceQuestion,skipQuestions,skipAnswers,[IndexChangeEvent.CHANGE],inverse);
 				sourceQuestion.skipPatterns.push(skip);
+				return skip;
 			}
 			
-			public function addSkipDropDownMultiple(handler:SkipMultipleHandler, sourceQuestion:QuestionClass, skipAnswers:Array):void
+			public function addSkipDropDownMultiple(handler:SkipMultipleHandler, sourceQuestion:QuestionClass, skipAnswers:Array):SkipPatternMultiple
 			{
 				var skip:SkipPatternMultiple = new SkipPatternMultiple(handler,sourceQuestion,skipAnswers,[IndexChangeEvent.CHANGE]);
 				sourceQuestion.skipPatterns.push(skip);
+				return skip;
 			}
-			public function addSkipTextNumberMultiple(handler:SkipMultipleHandler, sourceQuestion:QuestionClass, skipAnswers:Array):void
+			public function addSkipTextNumberMultiple(handler:SkipMultipleHandler, sourceQuestion:QuestionClass, skipAnswers:Array):SkipPatternMultiple
 			{
 				var skip:SkipPatternMultiple = new SkipPatternMultiple(handler,sourceQuestion,skipAnswers,[FlexEvent.VALUE_COMMIT,FocusEvent.MOUSE_FOCUS_CHANGE]);
 				sourceQuestion.skipPatterns.push(skip);
+				return skip;
 			}
 			public function createSkipMultipleHandler(skipQuestions:Array):SkipMultipleHandler
 			{
 				return new SkipMultipleHandler(skipQuestions);
 			}
-			public function addSkipTextNumber(sourceQuestion:QuestionClass, skipQuestions:Array, skipAnswers:Array):void
+			public function addSkipTextNumber(sourceQuestion:QuestionClass, skipQuestions:Array, skipAnswers:Array):SkipPattern
 			{
-				//(getQuestion(sourceQuestion) as QuestionTextNumber).addSkip(qArray,min,max,invert);
 				var skip:SkipPattern = new SkipPattern(sourceQuestion,skipQuestions,skipAnswers,[FlexEvent.VALUE_COMMIT,FocusEvent.MOUSE_FOCUS_CHANGE]);
 				sourceQuestion.skipPatterns.push(skip);
+				return skip;
 			}
-			public function addSkipTextRange(sourceQuestion:QuestionClass, skipQuestions:Array, min:int=0,max:int=0,invert:Boolean=false):void
+			public function addSkipTextRange(sourceQuestion:QuestionClass, skipQuestions:Array, min:int=0,max:int=0,invert:Boolean=false):SkipPattern
 			{
-				//(getQuestion(sourceQuestion) as QuestionTextNumber).addSkip(qArray,min,max,invert);
 				var skip:SkipPattern = new SkipPatternRange(sourceQuestion,skipQuestions,min,max,invert,[FlexEvent.VALUE_COMMIT,FocusEvent.MOUSE_FOCUS_CHANGE]);
 				sourceQuestion.skipPatterns.push(skip);
+				return skip;
 			}
 			
 			public function createText(text:String,style:String, width:int=-1):Text
@@ -244,40 +238,6 @@
 			protected function formatErrorMessage(q:QuestionClass, res:ValidationResult):String
 			{
 				return q.codeName + " - " + res.errorMessage;
-			}
-			
-			public function checkFormCompleted(str:String):void
-			{
-				//validate form, if valid, move to next page if this is the first time
-				if(!autopaged)
-				{
-					var hasErrors:Boolean = false;
-					for each(var q:QuestionClass in questions)
-					{
-						for each(var val:Validator in q.validators)
-						{
-							if(val == null || !val.enabled)
-								continue;
-							
-							if(!q.isSkipped && q.inputControl.enabled)
-							{
-								var ev:ValidationResultEvent = val.validate();
-								if(ev.results != null && ev.results.length > 0)
-								{
-									hasErrors = true;
-									q.errorString = "";
-									break;
-								}
-							}
-						}
-					}
-					
-					if(!hasErrors)
-					{
-						parentInstrument.goToNextPage();
-						autopaged = true;
-					}
-				}
 			}
 		]]>
 	</fx:Script>

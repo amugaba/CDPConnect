@@ -21,11 +21,11 @@
 			
 			public var qFamilyActiveDuty:QuestionList = new QuestionList("FamilyActiveDuty","Is anyone in your immediate family currently serving as a member of one of the branches of the United States Uniformed Services on active duty, reserve components or National Guard?",ynrd,1);
 			public var qServiceMemRelationship:QuestionList = new QuestionList("ServiceMemRelationship","What is the relationship of that person (Service Member) to you?",new ArrayList(["Mother","Father","Brother","Sister","Spouse","Partner","Daughter","Son","Self","Other"]),0);
-			public var qServiceMemExpOther:QuestionText = new QuestionText("ServiceMemExpOther","Other, specify","");
-			public var qServiceMemExpDeployed:QuestionList = new QuestionList("ServiceMemExpDeployed","Deployed in support of combat operations (e.g., Iraq or Afghanistan)?",ynrd,1);
-			public var qServiceMemExpInjured:QuestionList = new QuestionList("ServiceMemExpInjured","Was physically injured during combat operations?",ynrd,1);
-			public var qServiceMemExpCombatStress:QuestionList = new QuestionList("ServiceMemExpCombatStress","Developed combat stress symptoms/ difficulties adjusting following deployment, including PTSD, depression, or suicidal thoughts?",ynrd,1);
-			public var qServiceMemExpDeceased:QuestionList = new QuestionList("ServiceMemExpDeceased","Died or was killed?",ynrd,1);
+			public var qServiceMemExpOther:QuestionText = new QuestionText("ServiceMemExpOther","Other, specify");
+			public var qServiceMemExpDeployed:QuestionList = new QuestionList("ServiceMemExpDeployed","Deployed in support of combat operations (e.g., Iraq or Afghanistan)?",ynrd,-1);
+			public var qServiceMemExpInjured:QuestionList = new QuestionList("ServiceMemExpInjured","Was physically injured during combat operations?",ynrd,-1);
+			public var qServiceMemExpCombatStress:QuestionList = new QuestionList("ServiceMemExpCombatStress","Developed combat stress symptoms/ difficulties adjusting following deployment, including PTSD, depression, or suicidal thoughts?",ynrd,-1);
+			public var qServiceMemExpDeceased:QuestionList = new QuestionList("ServiceMemExpDeceased","Died or was killed?",ynrd,-1);
 			
 			[Bindable] public var familyVeterans:ArrayList = new ArrayList();
 			
@@ -39,6 +39,7 @@
 				addQuestion(qFamilyActiveDuty, 150);
 				createText("The following four questions relate to experiences you or a member of your immediate family may have had while serving.","h1",590);
 				addElement(qServiceMemRelationship);
+				qServiceMemRelationship.input.width = 110;
 				addElement(qServiceMemExpOther);
 				createText("Has the Service Member experienced any of the following?","h1");
 				addElement(qServiceMemExpDeployed);
@@ -49,6 +50,7 @@
 				setElementIndex(military2Group,numElements-1);
 				
 				//Validators
+				qFamilyActiveDuty.validators.pop();//remove the default required validator
 				Valid.addDropDownValidator(qFamilyActiveDuty,[NO_VALUE,REFUSED_VALUE,DONT_KNOW_VALUE]);
 				Valid.addRequiredValidator(qServiceMemExpOther);
 				(qFamilyActiveDuty.validators[0] as DropDownValidator).errorMessage = "Incorrect number of family members added below.";
@@ -150,6 +152,11 @@
 					familyVeterans.addItem([relation,relationOther,deployed,injured,stressed,dead]);
 				}
 				updateFamilyValidator();
+			}
+			
+			public override function clearQuestionAnswers():void
+			{
+				qServiceMemRelationship.input.selectedIndex = -1;
 			}
 		]]>
 	</fx:Script>

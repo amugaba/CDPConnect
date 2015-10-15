@@ -17,13 +17,13 @@
 			
 			import spark.components.Group;
 			
-			public var qDischargeDate:QuestionText = new QuestionText("DischargeDate","On what date was the client discharged?","");
+			public var qDischargeDate:QuestionText = new QuestionText("DischargeDate","On what date was the client discharged?");
 			public var qDischargeStatus:QuestionList = new QuestionList("DischargeStatus","What is the client's discharge status?",new ArrayList(["Completion/Graduate","Termination"]),0);
 			public var qDischargeStatusTermReason:QuestionList = new QuestionList("DischargeStatusTermReason","If the client was terminated, what was the reason for termination?",new ArrayList(["Left on own against staff advice with satisfactory progress","Left on own against staff advice without satisfactory progress",
 				"Involuntarily discharged due to nonparticipation","Involuntarily discharged due to violation of rules","Referred to another program or other services with satisfactory progress","Referred to another program or other services with unsatisfactory progress",
 				"Incarcerated due to offense committed while in treatment/recovery with satisfactory progress","Incarcerated due to offense committed while in treatment/recovery with unsatisfactory progress","Incarcerated due to old warrant or charged from before entering treatment/recovery with satisfactory progress",
 				"Incarcerated due to old warrant or charged from before entering treatment/recovery with unsatisfactory progress","Transferred to another facility for health reasons","Death","Other"]),0);
-			public var qDischargeSpec:QuestionText = new QuestionText("DischargeSpec","Other (specify)","");
+			public var qDischargeSpec:QuestionText = new QuestionText("DischargeSpec","Other (specify)");
 			
 			public var qdHIVTest:QuestionList = new QuestionList("dHIVTest","Did the program test this client for HIV?",yn,1);
 			public var qdHIVTestRefer:QuestionList = new QuestionList("dHIVTestRefer","[IF NO] Did the program refer this client for testing?",yn,1);
@@ -61,6 +61,12 @@
 				addSkipDropDown(qDischargeStatus,["Completion/Graduate"],[qDischargeStatusTermReason]);
 				addSkipDropDown(qDischargeStatusTermReason,["Other"],[qDischargeSpec],true);
 				addSkipDropDown(qdHIVTest,["No"],[qdHIVTestRefer]);
+			}
+			
+			public override function clearQuestionAnswers():void
+			{
+				qDischargeStatus.setAnswerIndex(-1);
+				qDischargeStatusTermReason.setAnswerIndex(-1);
 			}
 		]]>
 	</fx:Script>

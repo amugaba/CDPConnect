@@ -129,6 +129,10 @@
 				//t.width = 150;
 				//g.addElement(t);
 			}
+			
+			public override function clearQuestionAnswers():void
+			{
+			}
 		]]>
 	</fx:Script>
 	<fx:Declarations>

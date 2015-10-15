@@ -24,7 +24,7 @@
 			public var qKorea:QuestionList = new QuestionList("Korea","Korea",yn,1);
 			public var qWWII:QuestionList = new QuestionList("WWII","World War II",yn,1);
 			public var qDeployedOther:QuestionList = new QuestionList("DeployedOther","Other combat zone",yn,1);
-			public var qDeployedOtherSpec:QuestionText = new QuestionText("DeployedOtherSpec","Other (Specify)","");
+			public var qDeployedOtherSpec:QuestionText = new QuestionText("DeployedOtherSpec","Other (Specify)");
 			
 			//Military1 Form Area
 			public override function createForm():void

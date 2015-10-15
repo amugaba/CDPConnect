@@ -21,7 +21,7 @@ package components.questions
 		public var input:TextInput;
 		public var defaultValue:String;
 		
-		public function QuestionText(codeName:String,label:String,defaultValue:String,editable:Boolean=true)
+		public function QuestionText(codeName:String,label:String,defaultValue:String="",editable:Boolean=true)
 		{
 			super(codeName,label);
 			input = new TextInput();
@@ -60,11 +60,6 @@ package components.questions
 		public override function get inputControl():UIComponent
 		{
 			return input;
-		}
-		
-		public override function removeErrorMessage():void
-		{
-			input.errorString = "";
 		}
 		
 		public override function enable():void

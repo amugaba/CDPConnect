@@ -21,7 +21,7 @@
 			public var qCigarsDays:QuestionTextRefusable = new QuestionTextRefusable("CigarsDays","Cigars","0");
 			public var qECigarettesDays:QuestionTextRefusable = new QuestionTextRefusable("ECigarettesDays","Electronic cigarettes (e-cigarettes)","0");
 			public var qOtherTobaccoDays:QuestionTextRefusable = new QuestionTextRefusable("OtherTobaccoDays","Other tobacco related products","0");
-			public var qOtherTobaccoSpec:QuestionText = new QuestionText("OtherTobaccoSpec","Other (specify)","");
+			public var qOtherTobaccoSpec:QuestionText = new QuestionText("OtherTobaccoSpec","Other (specify)");
 			
 			public override function createForm():void
 			{

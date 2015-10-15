@@ -15,10 +15,10 @@
 			import mx.collections.ArrayList;
 			import mx.validators.NumberValidator;
 			
-			public var qDischargeDate:QuestionText = new QuestionText("DischargeDate","What is the date of discharge?","");
-			public var qLastServiceDate:QuestionText = new QuestionText("LastServiceDate","On what date did the client last receive servcies?","");
+			public var qDischargeDate:QuestionText = new QuestionText("DischargeDate","What is the date of discharge?");
+			public var qLastServiceDate:QuestionText = new QuestionText("LastServiceDate","On what date did the client last receive servcies?");
 			public var qDischargeStatus:QuestionList = new QuestionList("DischargeStatus","What is the client’s discharge status?",new ArrayList(["Mutually agreed cessation of treatment","Withdrew from/Declined treatment","No contact within 90 days of last encounter","Incarcerated","Clinically referred out","Death","Other"]),0);
-			public var qDischargeSpec:QuestionText = new QuestionText("DischargeSpec","Other (specify)","");
+			public var qDischargeSpec:QuestionText = new QuestionText("DischargeSpec","Other (specify)");
 			
 			private var testResponses:ArrayList = new ArrayList(["Negative/Non-reactive","Positive/reactive","Invalid/Indeterminate"]);
 			public var qdHIVTest:QuestionList = new QuestionList("dHIVTest","Did the program test this client for HIV?",yn,1);
@@ -83,6 +83,11 @@
 				addSkipDropDown(qdHepTestConfirm,["No"],[qdHepBConfirmReceived,qdHepCConfirmReceived]);
 				addSkipDropDown(qdHepBConfirmReceived,["No"],[qdHepBConfirmResult]);
 				addSkipDropDown(qdHepCConfirmReceived,["No"],[qdHepCConfirmResult]);
+			}
+			
+			public override function clearQuestionAnswers():void
+			{
+				qDischargeStatus.setAnswerIndex(-1);
 			}
 		]]>
 	</fx:Script>

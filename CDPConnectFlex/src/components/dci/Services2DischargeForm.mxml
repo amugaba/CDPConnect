@@ -161,6 +161,10 @@
 				f.setStyle("fontWeight","bold");
 				g.addElement(f);
 			}
+			
+			public override function clearQuestionAnswers():void
+			{
+			}
 		]]>
 	</fx:Script>
 	<fx:Declarations>

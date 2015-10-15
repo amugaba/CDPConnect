@@ -14,11 +14,11 @@
 			import mx.validators.NumberValidator;
 			
 			public var qAttendVoluntary:QuestionList = new QuestionList("AttendVoluntary","If yes, specify how many times",ynrd,1);
-			public var qAttendVoluntaryTimes:QuestionTextRefusable = new QuestionTextRefusable("AttendVoluntaryTimes","","0");
+			public var qAttendVoluntaryTimes:QuestionTextRefusable = new QuestionTextRefusable("AttendVoluntaryTimes","");
 			public var qAttendReligious:QuestionList = new QuestionList("AttendReligious","If yes, specify how many times",ynrd,1);
-			public var qAttendReligiousTimes:QuestionTextRefusable = new QuestionTextRefusable("AttendReligiousTimes","","0");
+			public var qAttendReligiousTimes:QuestionTextRefusable = new QuestionTextRefusable("AttendReligiousTimes","");
 			public var qAttendOtherOrg:QuestionList = new QuestionList("AttendOtherOrg","If yes, specify how many times",ynrd,1);
-			public var qAttendOtherOrgTimes:QuestionTextRefusable = new QuestionTextRefusable("AttendOtherOrgTimes","","0");
+			public var qAttendOtherOrgTimes:QuestionTextRefusable = new QuestionTextRefusable("AttendOtherOrgTimes","");
 			
 			public var qInteractFamilyFriends:QuestionList = new QuestionList("InteractFamilyFriends","In the past 30 days, have you had interaction with family and/or friends that are supportive of your recovery?",ynrd,1);
 			public var qAccomplishedGoals:QuestionList = new QuestionList("AccomplishedGoals","In the past 30 days, I generally accomplished what I set out to do.",new ArrayList(["Strongly agree","Agree","Undecided","Disagree","Strongly disagree",REFUSED_VALUE,DONT_KNOW_VALUE]),0);

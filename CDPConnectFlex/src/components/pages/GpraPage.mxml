@@ -12,10 +12,13 @@
 			import components.assessment.InterviewForm;
 			import components.assessment.InterviewType;
 			import components.gpra.*;
+			import components.questions.QuestionClass;
+			import components.questions.QuestionList;
 			import components.validators.DateAgeValidator;
 			
 			import mx.controls.DateField;
 			import mx.events.FlexEvent;
+			import mx.events.ValidationResultEvent;
 			
 			import spark.components.NavigatorContent;
 			
@@ -207,39 +210,20 @@
 				dischargeForm.qDischargeDate.validator.enabled = enabled;
 			}
 			
-			protected override function checkModalityChange(currentForm:InterviewForm):void
+			//Check whether the current tab is Services1
+			//If so, check if the modality has changed
+			protected override function checkModalityChange():void
 			{
-				//if doing intake, check if Services1 tab chose a new modality
-				if(currentForm == services1Form)
-				{
-					var modality:int = InterviewType.INTAKE_NEG;
-					if(services1Form.qSvcReferralToTreatment.answer == "Yes" || services1Form.qSvcBriefTreatment.answer == "Yes")
-						modality = InterviewType.INTAKE_RT;
-					else if(services1Form.qSvcBriefIntervention.answer == "Yes")
-						modality = InterviewType.INTAKE_BI;
-					
-					//if the modality changed, change tabs
-					if(interviewType != modality)
-					{
-						interviewType = modality;
-						if(interviewType == InterviewType.INTAKE_NEG)
-						{
-							enableSectionB(false);
-							enableSectionCtoG(false);
-						}
-						else if(interviewType == InterviewType.INTAKE_BI)
-						{
-							enableSectionB(true);
-							enableSectionCtoG(false);
-						}
-						else if(interviewType == InterviewType.INTAKE_RT)
-						{
-							enableSectionB(true);
-							enableSectionCtoG(true);
-						}
-						determineActiveTabs();
-					}
-				}
+				if(currentIndex >= activeForms.length || activeForms[currentIndex] != services1Form)
+					return;
+				
+				var modality:int = InterviewType.INTAKE_NEG;
+				if(services1Form.qSvcReferralToTreatment.answer == "Yes" || services1Form.qSvcBriefTreatment.answer == "Yes")
+					modality = InterviewType.INTAKE_RT;
+				else if(services1Form.qSvcBriefIntervention.answer == "Yes")
+					modality = InterviewType.INTAKE_BI;
+				
+				setModality(modality);
 			}
 			
 		]]>

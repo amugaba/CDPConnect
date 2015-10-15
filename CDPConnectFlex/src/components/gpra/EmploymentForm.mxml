@@ -14,21 +14,21 @@
 			import mx.validators.NumberValidator;
 			
 			public var qTrainingProgram:QuestionList = new QuestionList("TrainingProgram","Are you currently enrolled in school or a job training program?",new ArrayList(["No/Not Enrolled","Enrolled, Full Time","Enrolled, Part Time","Other",REFUSED_VALUE,DONT_KNOW_VALUE]),0);
-			public var qTrainingProgramSpec:QuestionText = new QuestionText("TrainingProgramSpec","Other (specify)","");
+			public var qTrainingProgramSpec:QuestionText = new QuestionText("TrainingProgramSpec","Other (specify)");
 			public var qEducationYears:QuestionList = new QuestionList("EducationYears","What is the highest level of education you have finished (whether or not you received a degree)?",new ArrayList(["Never Attended","1st Grade","2nd Grade","3rd Grade","4th Grade","5th Grade","6th Grade","7th Grade","8th Grade","9th Grade","10th Grade","11th Grade","12th Grade/High School Diploma/Equivalent",
 				"College or university/1st year completed","College or university/2nd year completed/Associates degree (AA, AS)","College or university/3rd year completed","Bachelor's degree (BA, BS) or higher","Vocational/Technical program after high school but no diploma","Vocational/Technical diploma after high school",REFUSED_VALUE,DONT_KNOW_VALUE]),0);
 			
 			public var qEmployStatus:QuestionList = new QuestionList("EmployStatus","Are you currently employed?",new ArrayList(["Employed Full Time (35+ hours per week, or would have been)","Employed Part Time","Unemployed, looking for work","Unemployed, disabled","Unemployed, volunteer work","Unemployed, retired","Unemployed, not looking for work","Other",REFUSED_VALUE,DONT_KNOW_VALUE]),0);
-			public var qEmployStatusSpec:QuestionText = new QuestionText("EmployStatusSpec","Other (specify)","");
+			public var qEmployStatusSpec:QuestionText = new QuestionText("EmployStatusSpec","Other (specify)");
 
-			public var qIncomeWages:QuestionTextRefusable = new QuestionTextRefusable("IncomeWages","Wages","0");
-			public var qIncomePubAssist:QuestionTextRefusable = new QuestionTextRefusable("IncomePubAssist","Public assistance","0");
-			public var qIncomeRetirement:QuestionTextRefusable = new QuestionTextRefusable("IncomeRetirement","Retirement","0");
-			public var qIncomeDisability:QuestionTextRefusable = new QuestionTextRefusable("IncomeDisability","Disability","0");
-			public var qIncomeNonLegal:QuestionTextRefusable = new QuestionTextRefusable("IncomeNonLegal","Non-legal income","0");
-			public var qIncomeFamFriends:QuestionTextRefusable = new QuestionTextRefusable("IncomeFamFriends","Family and/or friends","0");
+			public var qIncomeWages:QuestionTextRefusable = new QuestionTextRefusable("IncomeWages","Wages");
+			public var qIncomePubAssist:QuestionTextRefusable = new QuestionTextRefusable("IncomePubAssist","Public assistance");
+			public var qIncomeRetirement:QuestionTextRefusable = new QuestionTextRefusable("IncomeRetirement","Retirement");
+			public var qIncomeDisability:QuestionTextRefusable = new QuestionTextRefusable("IncomeDisability","Disability");
+			public var qIncomeNonLegal:QuestionTextRefusable = new QuestionTextRefusable("IncomeNonLegal","Non-legal income");
+			public var qIncomeFamFriends:QuestionTextRefusable = new QuestionTextRefusable("IncomeFamFriends","Family and/or friends");
 			public var qIncomeOther:QuestionTextRefusable = new QuestionTextRefusable("IncomeOther","Other","0");
-			public var qIncomeOtherSpec:QuestionText = new QuestionText("IncomeOtherSpec","Other, specify","");
+			public var qIncomeOtherSpec:QuestionText = new QuestionText("IncomeOtherSpec","Other, specify");
 			
 			//Employment Form Area
 			public override function createForm():void
@@ -68,6 +68,12 @@
 				addSkipDropDown(qTrainingProgram,["Other"],[qTrainingProgramSpec],true);
 				addSkipDropDown(qEmployStatus,["Other"],[qEmployStatusSpec],true);
 				addSkipTextNumber(qIncomeOther,[qIncomeOtherSpec],["0"]);
+			}
+			
+			public override function clearQuestionAnswers():void
+			{
+				super.clearQuestionAnswers();
+				qIncomeOther.answer = "";
 			}
 		]]>
 	</fx:Script>

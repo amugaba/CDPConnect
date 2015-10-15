@@ -19,7 +19,7 @@ package components.questions
 		public var input:DropDownList;
 		public var defaultValue:int;
 
-		public function QuestionList(codeName:String,label:String,choices:ArrayList,defaultValue:int=-1,editable:Boolean=true)
+		public function QuestionList(codeName:String,label:String,choices:ArrayList,defaultValue:int,editable:Boolean=true)
 		{
 			super(codeName,label);
 			input = new DropDownList();
@@ -67,11 +67,6 @@ package components.questions
 		public override function get inputControl():UIComponent
 		{
 			return input;
-		}
-		
-		public override function removeErrorMessage():void
-		{
-			input.errorString = "";
 		}
 		
 		public override function enable():void

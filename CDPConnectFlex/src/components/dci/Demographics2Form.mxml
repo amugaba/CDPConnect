@@ -18,9 +18,9 @@
 			
 			public var qForeignLanguage:QuestionList = new QuestionList("ForeignLanguage","Do you speak a language other than English at home?",ynrd,1);
 			public var qForeignLanguageSpec:QuestionList = new QuestionList("ForeignLanguageSpec","What language do you speak?",new ArrayList(["Spanish","Other","Refused","Don't Know"]),0);
-			public var qForeignLanguageOtherSpec:QuestionText = new QuestionText("ForeignLanguageOtherSpec","Other (Specify)","");
+			public var qForeignLanguageOtherSpec:QuestionText = new QuestionText("ForeignLanguageOtherSpec","Other (Specify)");
 			public var qGender:QuestionList = new QuestionList("Gender","What is your gender?",new ArrayList(["Male","Female","Different identity","Refused"]),0);
-			public var qGenderOtherSpecify:QuestionText = new QuestionText("GenderOtherSpecify","Different identity, specify","");
+			public var qGenderOtherSpecify:QuestionText = new QuestionText("GenderOtherSpecify","Different identity, specify");
 			public var qSexOrientation:QuestionList = new QuestionList("SexOrientation","Which one of the following do you consider yourself to be?",new ArrayList(["Straight","Lesbian (if female) or Gay (if male)","Bisexual","Other","Refused","Don't Know"]),0);
 			public var qSexWith:QuestionList = new QuestionList("SexWith","In the past 12 months, who have you had sex with?",new ArrayList(["Men only","Women only","Both men and women","I have not had sex","Refused","Don't Know"]),0);
 			public var qSexFeelings:QuestionList = new QuestionList("SexFeelings","Which statement best describes your feelings?",new ArrayList(["I am only attracted to females","I am mostly attracted to females","I am equally attracted to females and males","I am mostly attracted to males","I am only attracted to males","I am not sure","Refused","Don't Know"]),0);
@@ -66,7 +66,7 @@
 				addSkipDropDown(qGender,["Different identity"],[qGenderOtherSpecify],true);
 				
 				//Gender related questions
-				addSkipDropDown(qGender,["Male"],[global.pageDCI.livingForm.qPregnant]);
+				//addSkipDropDown(qGender,["Male"],[global.pageDCI.livingForm.qPregnant]);
 				BindingUtils.bindSetter(function():void{
 						global.pageDCI.drugForm.setIntoxLabel(qGender.answer == "Female");
 				}, qGender.inputControl, "selectedItem");

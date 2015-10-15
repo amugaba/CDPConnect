@@ -18,12 +18,14 @@ package components.questions
 	import mx.collections.ArrayList;
 	import mx.controls.Alert;
 	import mx.controls.ToolTip;
+	import mx.core.Container;
 	import mx.core.FlexGlobals;
 	import mx.core.UIComponent;
 	import mx.managers.ToolTipManager;
 	import mx.validators.Validator;
 	
 	import spark.components.FormItem;
+	import spark.components.Group;
 	import spark.components.Label;
 	
 	public class QuestionClass extends BetterFormItem
@@ -92,7 +94,12 @@ package components.questions
 		
 		public function removeErrorMessage():void
 		{
-			//to be overridden
+			inputControl.errorString = "";
+			if(errorToolTip != null)
+			{
+				ToolTipManager.destroyToolTip(errorToolTip);
+				errorToolTip = null;
+			}
 		}
 		
 		public function enable():void
@@ -167,7 +174,7 @@ package components.questions
 				if(this == input.parent)
 					pt = contentToGlobal(pt);
 				else
-					pt = (input.parent as QuestionClass).contentToGlobal(pt);
+					pt = (input.parent as UIComponent).contentToGlobal(pt);
 				
 				//First try creating the tip to the right
 				errorToolTip = ToolTipManager.createToolTip(input.errorString,pt.x+input.width,pt.y-2,"errorTipRight",input) as ToolTip;

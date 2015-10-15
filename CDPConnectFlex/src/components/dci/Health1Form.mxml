@@ -16,23 +16,23 @@
 			
 			public var qHealthStatus:QuestionList = new QuestionList("HealthStatus","How would you rate your overall health right now?",new ArrayList(["Excellent","Very Good","Fair","Poor",REFUSED_VALUE,DONT_KNOW_VALUE]),0);
 			public var qInpatientPhysical:QuestionList = new QuestionList("InpatientPhysical","Physical complaint",ynrd,1);
-			public var qInpatientPhysicalNights:QuestionTextRefusable = new QuestionTextRefusable("InpatientPhysicalNights","","0");
+			public var qInpatientPhysicalNights:QuestionTextRefusable = new QuestionTextRefusable("InpatientPhysicalNights","");
 			public var qInpatientMental:QuestionList = new QuestionList("InpatientMental","Mental or emotional difficulties",ynrd,1);
-			public var qInpatientMentalNights:QuestionTextRefusable = new QuestionTextRefusable("InpatientMentalNights","","0");
+			public var qInpatientMentalNights:QuestionTextRefusable = new QuestionTextRefusable("InpatientMentalNights","");
 			public var qInpatientAlcoholSA:QuestionList = new QuestionList("InpatientAlcoholSA","Alcohol or substance abuse",ynrd,1);
-			public var qInpatientAlcoholSANights:QuestionTextRefusable = new QuestionTextRefusable("InpatientAlcoholSANights","","0");
+			public var qInpatientAlcoholSANights:QuestionTextRefusable = new QuestionTextRefusable("InpatientAlcoholSANights","");
 			public var qOutpatientPhysical:QuestionList = new QuestionList("OutpatientPhysical","Physical complaint",ynrd,1);
-			public var qOutpatientPhysicalTimes:QuestionTextRefusable = new QuestionTextRefusable("OutpatientPhysicalTimes","","0");
+			public var qOutpatientPhysicalTimes:QuestionTextRefusable = new QuestionTextRefusable("OutpatientPhysicalTimes","");
 			public var qOutpatientMental:QuestionList = new QuestionList("OutpatientMental","Mental or emotional difficulties",ynrd,1);
-			public var qOutpatientMentalTimes:QuestionTextRefusable = new QuestionTextRefusable("OutpatientMentalTimes","","0");
+			public var qOutpatientMentalTimes:QuestionTextRefusable = new QuestionTextRefusable("OutpatientMentalTimes","");
 			public var qOutpatientAlcoholSA:QuestionList = new QuestionList("OutpatientAlcoholSA","Alcohol or substance abuse",ynrd,1);
-			public var qOutpatientAlcoholSATimes:QuestionTextRefusable = new QuestionTextRefusable("OutpatientAlcoholSATimes","","0");
+			public var qOutpatientAlcoholSATimes:QuestionTextRefusable = new QuestionTextRefusable("OutpatientAlcoholSATimes","");
 			public var qERPhysical:QuestionList = new QuestionList("ERPhysical","Physical complaint",ynrd,1);
-			public var qERPhysicalTimes:QuestionTextRefusable = new QuestionTextRefusable("ERPhysicalTimes","","0");
+			public var qERPhysicalTimes:QuestionTextRefusable = new QuestionTextRefusable("ERPhysicalTimes","");
 			public var qERMental:QuestionList = new QuestionList("ERMental","Mental or emotional difficulties",ynrd,1);
-			public var qERMentalTimes:QuestionTextRefusable = new QuestionTextRefusable("ERMentalTimes","","0");
+			public var qERMentalTimes:QuestionTextRefusable = new QuestionTextRefusable("ERMentalTimes","");
 			public var qERAlcoholSA:QuestionList = new QuestionList("ERAlcoholSA","Alcohol or substance abuse",ynrd,1);
-			public var qERAlcoholSATimes:QuestionTextRefusable = new QuestionTextRefusable("ERAlcoholSATimes","","0");
+			public var qERAlcoholSATimes:QuestionTextRefusable = new QuestionTextRefusable("ERAlcoholSATimes","");
 			
 			//Health1 Form Area
 			public override function createForm():void

@@ -18,8 +18,8 @@
 			
 			import spark.components.TileGroup;
 			
-			public var qBirthMonth:QuestionText = new QuestionText("BirthMonth","Month:","");
-			public var qBirthYear:QuestionText = new QuestionText("BirthYear","Year:","");
+			public var qBirthMonth:QuestionText = new QuestionText("BirthMonth","Month:");
+			public var qBirthYear:QuestionText = new QuestionText("BirthYear","Year:");
 			public var qHispanicLatino:QuestionList = new QuestionList("HispanicLatino","Are you Hispanic, Latino/a, or Spanish origin?",ynr,1);
 			public var qEthnicCentralAmerican:QuestionList = new QuestionList("EthnicCentralAmerican","Central American",ynr,1);
 			public var qEthnicCuban:QuestionList = new QuestionList("EthnicCuban","Cuban",ynr,1);
@@ -28,7 +28,7 @@
 			public var qEthnicPuertoRican:QuestionList = new QuestionList("EthnicPuertoRican","Puerto Rican",ynr,1);
 			public var qEthnicSouthAmerican:QuestionList = new QuestionList("EthnicSouthAmerican","South American",ynr,1);
 			public var qEthnicOther:QuestionList = new QuestionList("EthnicOther","Other Hispanic",ynr,1);
-			public var qEthnicOtherSpecify:QuestionText = new QuestionText("EthnicOtherSpec","Other, specify","");
+			public var qEthnicOtherSpecify:QuestionText = new QuestionText("EthnicOtherSpec","Other, specify");
 			
 			public var qRaceWhite:QuestionList = new QuestionList("RaceWhite","White",ynr,1);
 			public var qRaceBlack:QuestionList = new QuestionList("RaceBlack","Black or African American",ynr,1);
@@ -102,6 +102,7 @@
 				//Validators
 				Valid.addNumberValidator(qBirthMonth, 1, 12, true);
 				Valid.addNumberValidator(qBirthYear, new Date().fullYear-100, new Date().fullYear-18, true);
+				qHispanicLatino.validators.pop();//remove the default required validator
 				Valid.addDropDownValidator(qHispanicLatino,[NO_VALUE,REFUSED_VALUE]);
 				Valid.addRequiredValidator(qEthnicOtherSpecify);
 				qEthnicOtherSpecify.answerType = String;

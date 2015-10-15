@@ -14,13 +14,13 @@
 			import mx.collections.ArrayList;
 			import mx.validators.NumberValidator;
 			
-			public var qDepression:QuestionTextRefusable = new QuestionTextRefusable("Depression","Experienced serious depression","0");
-			public var qAnxiety:QuestionTextRefusable = new QuestionTextRefusable("Anxiety","Experienced serious anxiety or tension","0");
-			public var qHallucinations:QuestionTextRefusable = new QuestionTextRefusable("Hallucinations","Experienced hallucinations","0");
-			public var qBrainFunction:QuestionTextRefusable = new QuestionTextRefusable("BrainFunction","Experienced trouble understanding, concentrating, or remembering","0");
-			public var qViolentBehavior:QuestionTextRefusable = new QuestionTextRefusable("ViolentBehavior","Experienced trouble controlling violent behavior","0");
-			public var qSuicide:QuestionTextRefusable = new QuestionTextRefusable("Suicide","Attempted suicide","0");
-			public var qPsycholEmotMedication:QuestionTextRefusable = new QuestionTextRefusable("PsycholEmotMedication","Been prescribed medication for psychological/emotional problem","0");
+			public var qDepression:QuestionTextRefusable = new QuestionTextRefusable("Depression","Experienced serious depression");
+			public var qAnxiety:QuestionTextRefusable = new QuestionTextRefusable("Anxiety","Experienced serious anxiety or tension");
+			public var qHallucinations:QuestionTextRefusable = new QuestionTextRefusable("Hallucinations","Experienced hallucinations");
+			public var qBrainFunction:QuestionTextRefusable = new QuestionTextRefusable("BrainFunction","Experienced trouble understanding, concentrating, or remembering");
+			public var qViolentBehavior:QuestionTextRefusable = new QuestionTextRefusable("ViolentBehavior","Experienced trouble controlling violent behavior");
+			public var qSuicide:QuestionTextRefusable = new QuestionTextRefusable("Suicide","Attempted suicide");
+			public var qPsycholEmotMedication:QuestionTextRefusable = new QuestionTextRefusable("PsycholEmotMedication","Been prescribed medication for psychological/emotional problem");
 			public var qPsycholEmotImpact:QuestionList = new QuestionList("PsycholEmotImpact","How much have you been bothered by these psychological or emotional problems in the past 30 days?",new ArrayList(["Not at all","Slightly","Moderately","Considerably","Extremely",REFUSED_VALUE,DONT_KNOW_VALUE]),0);
 			
 			//Health3 Form Area

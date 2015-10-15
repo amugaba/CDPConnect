@@ -8,6 +8,8 @@
 			import components.questions.QuestionList;
 			import components.questions.QuestionText;
 			import components.questions.QuestionTextRefusable;
+			import components.skips.SkipMultipleHandler;
+			import components.skips.SkipPattern;
 			import components.validators.Valid;
 			
 			import mx.binding.utils.BindingUtils;
@@ -19,16 +21,19 @@
 			public var qLivingWhere:QuestionList = new QuestionList("LivingWhere","Where have you been living most of the time?",new ArrayList(["House rented by client","House owned by client","Place not meant for habitation (e.g. a vehicle, an abandoned building, bus/train/subway station/airport or anywhere outside)",
 				"Emergency shelter, including hotel or motel","Staying or living with family/friends (e.g. room, apartment or house)","Transition housing","Substance abuse treatment facility or detox center","Residential treatment (substance abuse or mental health)","Therapeutic community or halfway house",
 				"Psychiatric hospital or other psychiatric facility","Long-term care facility or nursing home","Hospital or other residential non-psychiatric medical facility","Permanent supportive housing","Foster care home or foster care group home","Jail, prison, or juvenille detention facility","Other",REFUSED_VALUE,DONT_KNOW_VALUE]),0);
-			public var qLivingOtherSpec:QuestionText = new QuestionText("LivingOtherSpec","Other (specify)","");
-			public var qHomelessNights:QuestionTextRefusable = new QuestionTextRefusable("HomelessNights","How many nights have you been homeless?","0");
+			public var qLivingOtherSpec:QuestionText = new QuestionText("LivingOtherSpec","Other (specify)");
+			public var qHomelessNights:QuestionTextRefusable = new QuestionTextRefusable("HomelessNights","How many nights have you been homeless?");
 			public var qImpactStress:QuestionList = new QuestionList("ImpactStress","How stressful have things been for you because of your use of alcohol or other drugs?",new ArrayList(["Not at all","Somewhat","Considerably","Extremely",REFUSED_VALUE,DONT_KNOW_VALUE]),0);
 			public var qImpactActivity:QuestionList = new QuestionList("ImpactActivity","Has your use of alcohol or other drugs caused you to reduce or give up important activities?",new ArrayList(["Not at all","Somewhat","Considerably","Extremely",REFUSED_VALUE,DONT_KNOW_VALUE]),0);
 			public var qImpactEmotional:QuestionList = new QuestionList("ImpactEmotional","Has your use of alcohol and other drugs caused you to have emotional problems?",new ArrayList(["Not at all","Somewhat","Considerably","Extremely",REFUSED_VALUE,DONT_KNOW_VALUE]),0);
 			public var qPregnant:QuestionList = new QuestionList("Pregnant","Are you currently pregnant?",ynrd,1);
 			public var qChildren:QuestionList = new QuestionList("Children","Do you have children?",ynrd,1);
-			public var qChildrenNr:QuestionTextRefusable = new QuestionTextRefusable("ChildrenNr","How many children do you have?","1");
-			public var qChildrenCustodyNr:QuestionTextRefusable = new QuestionTextRefusable("ChildrenCustodyNr","How many of your children are living with someone else due to a child protection court order?","0");
-			public var qChildrenCustodyLost:QuestionTextRefusable = new QuestionTextRefusable("ChildrenCustodyLost","For how many of your children have you parental lost rights?","0");
+			public var qChildrenNr:QuestionTextRefusable = new QuestionTextRefusable("ChildrenNr","How many children do you have?");
+			public var qChildrenCustodyNr:QuestionTextRefusable = new QuestionTextRefusable("ChildrenCustodyNr","How many of your children are living with someone else due to a child protection court order?");
+			public var qChildrenCustodyLost:QuestionTextRefusable = new QuestionTextRefusable("ChildrenCustodyLost","For how many of your children have you parental lost rights?");
+			
+			private var skipPregnant:SkipPattern;
+			private var skipDrugs:SkipMultipleHandler;
 			
 			//Living Form Area
 			public override function createForm():void
@@ -74,6 +79,35 @@
 				//Control Logic
 				addSkipDropDown(qLivingWhere,["Other"],[qLivingOtherSpec],true);
 				addSkipDropDown(qChildren,["Yes"],[qChildrenNr,qChildrenCustodyNr,qChildrenCustodyLost],true);
+				
+				//Skip pregnant question is gender is Male
+				skipPregnant = addSkipDropDown(global.pageDCI.demo2Form.qGender,["Male"],[qPregnant]);
+				
+				//Skip impact questions if alcohol and drugs are 0
+				skipDrugs = createSkipMultipleHandler([qImpactStress,qImpactActivity,qImpactEmotional]);
+				addSkipTextNumberMultiple(skipDrugs,global.pageDCI.drugForm.qAlcoholDays,["0"]);
+				addSkipTextNumberMultiple(skipDrugs,global.pageDCI.drugForm.qIllegalDrugsDays,["0"]);
+				skipDrugs.allMustSkip = true;
+			}
+			
+			//process the skips from other pages
+			public override function clearQuestionAnswers():void
+			{
+				super.clearQuestionAnswers();
+				if(skipPregnant.isSkipping)
+				{
+					qPregnant.setAnswerIndex(-1);
+					qPregnant.disable();
+				}
+				if(skipDrugs.isSkipping)
+				{
+					qImpactStress.setAnswerIndex(-1);
+					qImpactStress.disable();
+					qImpactActivity.setAnswerIndex(-1);
+					qImpactActivity.disable();
+					qImpactEmotional.setAnswerIndex(-1);
+					qImpactEmotional.disable();
+				}
 			}
 		]]>
 	</fx:Script>

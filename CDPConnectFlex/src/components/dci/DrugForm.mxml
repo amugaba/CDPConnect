@@ -19,7 +19,7 @@
 			import mx.validators.ValidationResult;
 			
 			public var qAlcoholDays:QuestionTextRefusable = new QuestionTextRefusable("AlcoholDays","Alcoholic beverages","0");
-			public var qAlcoholIntoxDays:QuestionTextRefusable = new QuestionTextRefusable("AlcoholIntoxDays","Alcohol to intoxication (4 drinks in one sitting)","0");
+			public var qAlcoholIntoxDays:QuestionTextRefusable = new QuestionTextRefusable("AlcoholIntoxDays","Alcohol to intoxication (4 drinks in one sitting)");
 			private var intoxMale:String = "Alcohol to intoxication (4 or more drinks in one sitting)";
 			private var intoxFemale:String = "Alcohol to intoxication (3 or more drinks in one sitting)";
 			public var qAlcoholDrugBothDays:QuestionTextRefusable = new QuestionTextRefusable("AlcoholDrugBothDays","Both alcohol and drugs (on the same day)","0");
@@ -46,7 +46,7 @@
 			public var qMarijuanaHashRoute:QuestionList = new QuestionList("MarijuanaHashRoute","",route,0);
 			public var qOtherIllegalDrugsDays:QuestionTextRefusable = new QuestionTextRefusable("OtherIllegalDrugsDays","Other drugs","0");
 			public var qOtherIllegalDrugsRoute:QuestionList = new QuestionList("OtherIllegalDrugsRoute","",route,0);
-			public var qOtherIllegalDrugsSpec:QuestionText = new QuestionText("OtherIllegalDrugsSpec","Other (Specify)","");
+			public var qOtherIllegalDrugsSpec:QuestionText = new QuestionText("OtherIllegalDrugsSpec","Other (Specify)");
 			
 			public var drugQuestions:Array = new Array();
 			
@@ -71,8 +71,8 @@
 				addDrugQuestion(qHallucinogensDays,qHallucinogensRoute);
 				addDrugQuestion(qOpioidsDays,qOpioidsRoute);
 				addDrugQuestion(qPrescriptionOpioidsDays,qPrescriptionOpiodsRoute);
-				addDrugQuestion(qMarijuanaHashDays,qMarijuanaHashRoute);				
-				addDrugQuestion(qOtherIllegalDrugsDays,qOtherIllegalDrugsRoute);
+				addDrugQuestionNonIllegal(qMarijuanaHashDays,qMarijuanaHashRoute);				
+				addDrugQuestionNonIllegal(qOtherIllegalDrugsDays,qOtherIllegalDrugsRoute);
 				addQuestion(qOtherIllegalDrugsSpec);
 			
 				//Validators				
@@ -89,6 +89,13 @@
 					(qAlcoholDrugBothDays.validator as NumberValidator).maxValue = qAlcoholDays.answerNumber;
 					qAlcoholIntoxDays.validator.validate();
 					qAlcoholDrugBothDays.validator.validate();
+					
+					//only show error messages on questions if they're enabled
+					if(!(qAlcoholDays.answerNumber > 0))
+					{
+						qAlcoholIntoxDays.removeErrorMessage();
+						qAlcoholDrugBothDays.removeErrorMessage();
+					}
 				}, qAlcoholDays.inputControl, "text");
 				(qAlcoholIntoxDays.validator as NumberValidator).exceedsMaxError = "Cannot be greater than 'Alcoholic beverages' days";
 				(qAlcoholDrugBothDays.validator as NumberValidator).exceedsMaxError = "Cannot be greater than 'Alcoholic beverages' days";
@@ -98,6 +105,10 @@
 					(qIllegalDrugsDays.validator as NumberValidator).minValue = qAlcoholDrugBothDays.answerNumber;
 					qIllegalDrugsDays.validator.validate();
 					qIllegalDrugsDays.refreshSkips();
+					
+					//only show error messages on questions if they're enabled
+					if(!(qAlcoholDrugBothDays.answerNumber > 0))
+						qIllegalDrugsDays.removeErrorMessage();
 				}, qAlcoholDrugBothDays.inputControl, "text");
 				(qIllegalDrugsDays.validator as NumberValidator).lowerThanMinError = "Cannot be less than 'Both alcohol and drugs' days";
 				
@@ -106,14 +117,9 @@
 				
 				//Control Logic
 				addSkipTextNumber(qAlcoholDays,[qAlcoholIntoxDays,qAlcoholDrugBothDays],["0"]);
-				//might be unnecessary
-				var handler:SkipMultipleHandler = createSkipMultipleHandler([global.pageDCI.livingForm.qImpactStress,global.pageDCI.livingForm.qImpactActivity,global.pageDCI.livingForm.qImpactEmotional]);
-				addSkipTextNumberMultiple(handler,qAlcoholDays,["0"]);
-				addSkipTextNumberMultiple(handler,qIllegalDrugsDays,["0"]);
-				handler.allMustSkip = true;
 				addSkipTextNumber(qOtherIllegalDrugsDays,[qOtherIllegalDrugsSpec],["0"]);
 				//Skip all drugs except marijuana if drugDays = 0
-				addSkipTextNumber(qIllegalDrugsDays,[qCocaineCrackDays,qPrescriptionStimDays,qMethamDays,qInhalantsDays,qSedativesDays,qHallucinogensDays,qOpioidsDays,qPrescriptionOpioidsDays],["0"]);
+				addSkipTextNumber(qIllegalDrugsDays,drugQuestions,["0"]);
 			}
 			
 			protected function addDrugQuestion(daysQ:QuestionTextRefusable, routeQ:QuestionList, height:int=22):void
@@ -128,6 +134,19 @@
 				Valid.addNumberValidator(daysQ,0,0,true);
 				addSkipTextNumber(daysQ,[routeQ],["0"]);
 				drugQuestions.push(daysQ);
+			}
+			
+			protected function addDrugQuestionNonIllegal(daysQ:QuestionTextRefusable, routeQ:QuestionList, height:int=22):void
+			{				
+				addQuestion(daysQ);
+				daysQ.direction = "horizontal";
+				
+				questions.push(routeQ);
+				daysQ.addElement(routeQ.input);//maybe this is wrong
+				routeQ.inline = true;
+				
+				Valid.addNumberValidator(daysQ,0,30,true);
+				addSkipTextNumber(daysQ,[routeQ],["0"]);
 			}
 			
 			public override function validateForm():ArrayList
@@ -170,6 +189,13 @@
 					qAlcoholIntoxDays.label = intoxFemale;
 				else
 					qAlcoholIntoxDays.label = intoxMale;
+			}
+			
+			public override function clearQuestionAnswers():void
+			{
+				qAlcoholDays.answer = "";
+				qIllegalDrugsDays.answer = "";
+				qAlcoholDrugBothDays.answer = "";
 			}
 		]]>
 	</fx:Script>

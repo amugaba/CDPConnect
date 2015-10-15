@@ -83,6 +83,12 @@
 				addSkipTextNumber(daysQ,[routeQ],["0"]);
 				global.pageGPRA.drugForm.drugQuestions.push(daysQ);
 			}
+			
+			public override function clearQuestionAnswers():void
+			{
+				qInjectedDrugs.setAnswerIndex(-1);
+				qParaphenaliaUsedOthers.setAnswerIndex(-1);
+			}
 		]]>
 	</fx:Script>
 	<fx:Declarations>

@@ -17,7 +17,7 @@
 			public var qFamilySupport:QuestionList = new QuestionList("FamilySupport","In a crisis, I would have the support I need from family and friends.",agreementResponses,0);
 			public var qCommunityBelonging:QuestionList = new QuestionList("CommunityBelonging","I feel I belong in my community.",agreementResponses,0);
 			public var qWhomInTrouble:QuestionList = new QuestionList("WhomInTrouble","To whom do you turn when you are having trouble?",new ArrayList(["No One","Clergy Member","Family Member","Friends","Other",REFUSED_VALUE,DONT_KNOW_VALUE]),0);
-			public var qWhomInTroubleSpec:QuestionText = new QuestionText("WhomInTroubleSpec","Other, specify:","");
+			public var qWhomInTroubleSpec:QuestionText = new QuestionText("WhomInTroubleSpec","Other, specify:");
 			
 			//Social Form Area
 			public override function createForm():void

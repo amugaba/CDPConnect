@@ -15,14 +15,15 @@
 			import mx.binding.utils.BindingUtils;
 			import mx.collections.ArrayList;
 			import mx.controls.Alert;
+			import mx.events.ValidationResultEvent;
 			import mx.validators.NumberValidator;
 			import mx.validators.ValidationResult;
 			
 			public var qAlcoholDays:QuestionTextRefusable = new QuestionTextRefusable("AlcoholDays","Any alcohol","0");
-			public var qAlcoholIntoxManyDrinksDays:QuestionTextRefusable = new QuestionTextRefusable("AlcoholIntoxManyDrinksDays","Alcohol to intoxication (5+ drinks in one sitting)","0");
-			public var qAlcoholIntoxFewDrinksDays:QuestionTextRefusable = new QuestionTextRefusable("AlcoholIntoxFewDrinksDays","Alcohol to intoxication (4 or fewer drinks in one sitting and felt high)","0");
+			public var qAlcoholIntoxManyDrinksDays:QuestionTextRefusable = new QuestionTextRefusable("AlcoholIntoxManyDrinksDays","Alcohol to intoxication (5+ drinks in one sitting)");
+			public var qAlcoholIntoxFewDrinksDays:QuestionTextRefusable = new QuestionTextRefusable("AlcoholIntoxFewDrinksDays","Alcohol to intoxication (4 or fewer drinks in one sitting and felt high)");
 			public var qIllegalDrugsDays:QuestionTextRefusable = new QuestionTextRefusable("IllegalDrugsDays","Illegal drugs","0");
-			public var qAlcoholDrugBothDays:QuestionTextRefusable = new QuestionTextRefusable("AlcoholDrugBothDays","Both alcohol and drugs (on the same day)","0");
+			public var qAlcoholDrugBothDays:QuestionTextRefusable = new QuestionTextRefusable("AlcoholDrugBothDays","Both alcohol and drugs (on the same day)");
 			
 			private static var route:ArrayList = new ArrayList(["Oral","Nasal","Smoking","Non-IV Injection","IV",REFUSED_VALUE,DONT_KNOW_VALUE]);
 			public var qCocaineCrackDays:QuestionTextRefusable = new QuestionTextRefusable("CocaineCrackDays","Cocaine (coke, crack)","0");
@@ -88,9 +89,22 @@
 					(qAlcoholIntoxManyDrinksDays.validator as NumberValidator).maxValue = qAlcoholDays.answerNumber;
 					(qAlcoholIntoxFewDrinksDays.validator as NumberValidator).maxValue = qAlcoholDays.answerNumber;
 					(qAlcoholDrugBothDays.validator as NumberValidator).maxValue = Math.min(qAlcoholDays.answerNumber,qIllegalDrugsDays.answerNumber);
-					qAlcoholIntoxManyDrinksDays.validator.validate();
-					qAlcoholIntoxFewDrinksDays.validator.validate();
-					qAlcoholDrugBothDays.validator.validate();
+					
+					//only show error messages on questions if they're enabled
+					if(qAlcoholDays.answerNumber > 0)
+					{
+						qAlcoholIntoxManyDrinksDays.validator.validate();
+						qAlcoholIntoxFewDrinksDays.validator.validate();
+					}
+					else
+					{
+						qAlcoholIntoxManyDrinksDays.removeErrorMessage();
+						qAlcoholIntoxFewDrinksDays.removeErrorMessage();
+					}
+					if(qAlcoholDays.answerNumber > 0 && qIllegalDrugsDays.answerNumber > 0)
+						qAlcoholDrugBothDays.validator.validate();
+					else
+						qAlcoholDrugBothDays.removeErrorMessage();
 				}, qAlcoholDays.inputControl, "text");
 				
 				(qAlcoholIntoxManyDrinksDays.validator as NumberValidator).exceedsMaxError = "Cannot be greater than 'Any alcohol'";
@@ -132,13 +146,22 @@
 			protected function drugDaysHandler(val:String):void
 			{
 				(qAlcoholDrugBothDays.validator as NumberValidator).maxValue = Math.min(qAlcoholDays.answerNumber,Number(val));
-				qAlcoholDrugBothDays.validator.validate();
+				if(qAlcoholDays.answerNumber > 0 && qIllegalDrugsDays.answerNumber > 0)
+					qAlcoholDrugBothDays.validator.validate();
+				else
+					qAlcoholDrugBothDays.removeErrorMessage();
 				
 				for each(var q:QuestionClass in drugQuestions)
 				{
 					(q.validator as NumberValidator).maxValue = Number(val);
 					q.validator.validate();
 				}
+			}
+			
+			public override function clearQuestionAnswers():void
+			{
+				qAlcoholDays.answer = "";
+				qIllegalDrugsDays.answer = "";
 			}
 		]]>
 	</fx:Script>

@@ -71,6 +71,11 @@
 				addSkipDropDown(qfHepCConfirmReceived,["No"],[qfHepCConfirmResult]);
 			}
 
+			public override function clearQuestionAnswers():void
+			{
+				qStaffContact.setAnswerIndex(-1);
+				qReceivingServices.setAnswerIndex(-1);
+			}
 		]]>
 	</fx:Script>
 	<fx:Declarations>

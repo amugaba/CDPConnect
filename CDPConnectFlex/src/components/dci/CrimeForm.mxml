@@ -13,10 +13,10 @@
 			import mx.collections.ArrayList;
 			import mx.validators.NumberValidator;
 			
-			public var qArrestedDays:QuestionTextRefusable = new QuestionTextRefusable("ArrestedDays","How many times have you been arrested?","0");
-			public var qArrestedDrugDays:QuestionTextRefusable = new QuestionTextRefusable("ArrestedDrugDays","How many times have you been arrested for drug-related offenses?","0");
-			public var qArrestedConfineDays:QuestionTextRefusable = new QuestionTextRefusable("ArrestedConfineDays","How many nights have you spent in jail/prison?","0");
-			public var qNrCrimes:QuestionTextRefusable = new QuestionTextRefusable("NrCrimes","How many times have you committed a crime?","0");
+			public var qArrestedDays:QuestionTextRefusable = new QuestionTextRefusable("ArrestedDays","How many times have you been arrested?");
+			public var qArrestedDrugDays:QuestionTextRefusable = new QuestionTextRefusable("ArrestedDrugDays","How many times have you been arrested for drug-related offenses?");
+			public var qArrestedConfineDays:QuestionTextRefusable = new QuestionTextRefusable("ArrestedConfineDays","How many nights have you spent in jail/prison?");
+			public var qNrCrimes:QuestionTextRefusable = new QuestionTextRefusable("NrCrimes","How many times have you committed a crime?");
 			public var qAwaitTrial:QuestionList = new QuestionList("AwaitTrial","Are you currently awaiting charges, trial, or sentencing?",ynrd,1);
 			public var qParoleProbation:QuestionList = new QuestionList("ParoleProbation","Are you currently on parole/probation?",ynrd,1);
 			

@@ -20,7 +20,7 @@
 			public var qClientType:QuestionList = new QuestionList("ClientType","Client Type",new ArrayList(["Treatment Client","Client in Recovery"]),0);
 			public var qInterviewTypeCode:QuestionList = new QuestionList("InterviewTypeCode","Interview Type",new ArrayList(["Intake","6 Month Followup","12 Month Followup","3 Month Followup","Discharge"]),0);
 			public var qConductedInterview:QuestionList = new QuestionList("ConductedInterview","Did you conduct a followup/discharge interview?",yn,0);
-			public var qInterviewDate:QuestionText = new QuestionText("InterviewDate","Interview Date","");
+			public var qInterviewDate:QuestionText = new QuestionText("InterviewDate","Interview Date");
 			public var qCooccurringScreen:QuestionList = new QuestionList("CooccurringScreen","Was the client screened by your program for co-occurring mental health and substance use disorders?",yn,1);
 			public var qCooccurringScreenStatus:QuestionList = new QuestionList("CooccurringScreenStatus","Did the client screen positive for co-occurring mental health and substance use disorders?",yn,1);
 			public var qFollowupSelected:QuestionList = new QuestionList("followupSelected","Was the client selected for follow-up, and did the client agree to follow-up?",yn,1);
@@ -52,6 +52,18 @@
 				
 				//Prepopulate
 				populateForm();
+			}
+			
+			public override function resetForm():void
+			{
+				super.resetForm();
+				populateForm();
+			}
+			
+			
+			public override function clearQuestionAnswers():void
+			{
+				qFollowupSelected.setAnswerIndex(-1);
 			}
 			
 			public function populateForm():void
@@ -88,7 +100,6 @@
 				qInterviewTypeCode.refreshSkips();
 				qConductedInterview.refreshSkips();
 			}
-			
 			
 		]]>
 	</fx:Script>

@@ -18,7 +18,7 @@
 			
 			public var qFollowupStatus:QuestionList = new QuestionList("FollowupStatus","What is the follow-up status of the client?",new ArrayList(["Deceased at time of due date","Completed interview within specified window","Completed interview outside specified window","Located, but refused, unspecified",
 				"Located, but unable to gain institutional access","Located, but otherwise unable to gain access","Located, but withdrawn from project","Unable to locate, moved","Unable to locate, other"]),1);
-			public var qFollowupStatusSpec:QuestionText = new QuestionText("FollowupStatusSpec","Other, specify:","");
+			public var qFollowupStatusSpec:QuestionText = new QuestionText("FollowupStatusSpec","Other, specify:");
 			public var qReceivingServices:QuestionList = new QuestionList("ReceivingServices","Is the client still receiving services from your program?",yn,1);
 			
 			//Followup Form Area

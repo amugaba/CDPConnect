@@ -47,6 +47,7 @@
 			protected var currentIndex:int = 0;//tracks the tab index currently selected
 			protected var assessType:int;
 			protected var submitted:Boolean = false;
+			private var targetPageIndex:int;
 			
 			protected function initializePage():void
 			{
@@ -165,13 +166,13 @@
 				enableSectionJ(false);
 				enableSectionK(false);
 				
-				populateRecordForm();
+				//populateRecordForm();
 				determineActiveTabs();
-				for each(var form:InterviewForm in forms)
+				/*for each(var form:InterviewForm in forms)
 				{
 					form.doAllSkips();
-					form.removeAllErrors();
-				}
+					callLater(form.removeAllErrors);
+				}*/
 			}
 			
 			public function newDischarge():void
@@ -189,13 +190,7 @@
 				enableSectionJ(true);
 				enableSectionK(true);
 				
-				populateRecordForm();
 				determineActiveTabs();
-				for each(var form:InterviewForm in forms)
-				{
-					form.doAllSkips();
-					form.removeAllErrors();
-				}
 			}
 			
 			public function newFollowup():void
@@ -231,13 +226,7 @@
 					enableSectionJ(false);
 					enableSectionK(true);
 				}
-				populateRecordForm();
 				determineActiveTabs();
-				for each(var form:InterviewForm in forms)
-				{
-					form.doAllSkips();
-					form.removeAllErrors();
-				}
 			}
 			
 			public function loadInterview(interview:AssessmentVO):void
@@ -328,20 +317,18 @@
 					enableSectionK(true);
 				}
 				
-				populateRecordForm();
 				determineActiveTabs();
 				
 				//Load data
 				for each(var f:InterviewForm in forms)
 					f.loadData(global.activeAssessment.data.source);
 				
-				//Then process skips
-				for each(f in forms)
-					f.doAllSkips();
-				
 				//Then validate
 				for each(f in forms)
+				{
 					f.validateForm();
+					//callLater(form.removeAllErrors); //it may be worthwhile to show errors when loading so user knows what is completed
+				}
 			}
 			
 			protected function enableTab(tab:NavigatorContent, enabled:Boolean):void
@@ -456,8 +443,13 @@
 					data = f.saveData(data);
 				}
 				
-				//If doing discharge or followup, get gender from the intake
-				if(!InterviewType.isIntake(interviewType))
+				//If doing intake, check if followup status changed
+				if(InterviewType.isIntake(interviewType))
+				{
+					
+					global.activeClient.followupSelected = data["followupSelected"] == 1
+				}
+				else //If doing discharge or followup, get gender from the intake
 				{
 					data["Gender"] = global.intakeInterview.data.source["Gender"];
 					data["IntakeDate"] = global.intakeInterview.data.source["InterviewDate"];
@@ -498,103 +490,136 @@
 				file.save(output,"CodeNames.csv");
 			}
 			
-			public function goToNextPage():void
+			public function goToPage(index:int):void
 			{
-				//if the page is any page except Save/Submit, save its data
+				checkModalityChange();
+				
+				//the tabs can change here if modality is changed, so make sure not to go beyond the last active tab
+				index = Math.min(index, activeTabs.length - 1);
+				
+				viewStack.selectedIndex = index;
+				nextButton.enabled = index != activeTabs.length - 1;
+				prevButton.enabled = index != 0;
+				currentIndex = index;
+				
+				//show errortips on questions in this form
+				if(index < activeForms.length)
+				{
+					for each(var q:QuestionClass in activeForms[index].questions)
+					{
+						if(q.errorToolTip != null)
+							q.errorToolTip.visible = true;
+					}
+				}
+			}
+			
+			protected function saveCurrentPage():void
+			{
+				//if the page is any page except Save/Submit page, save its data
 				if(currentIndex < activeForms.length)
 					savePage(activeForms[currentIndex]);
-				
-				viewStack.selectedIndex = viewStack.selectedIndex + 1;
-				if(viewStack.selectedIndex == activeTabs.length - 1)
-					nextButton.enabled = false;
-				prevButton.enabled = true;
-				currentIndex = viewStack.selectedIndex;
 			}
 			
 			protected function nextButton_clickHandler(event:MouseEvent):void
 			{
-				if(isCurrentFormValid())
+				if(validateCurrentPage())
 				{
-					//if the page is any page except Save/Submit, save its data
-					if(currentIndex < activeForms.length)
-						savePage(activeForms[currentIndex]);
-					viewStack.selectedIndex = viewStack.selectedIndex + 1;
-					if(viewStack.selectedIndex == activeTabs.length - 1)
-						nextButton.enabled = false;
-					prevButton.enabled = true;
-					currentIndex = viewStack.selectedIndex;
+					saveCurrentPage();
+					goToPage(currentIndex + 1);
+				}
+				else
+				{
+					targetPageIndex = currentIndex + 1;
+					Alert.show("This page has errors. Continue anyways?","",Alert.YES|Alert.NO,null,pageTransitionWithErrors);
 				}
 			}
 			
 			protected function prevButton_clickHandler(event:MouseEvent):void
 			{
-				if(isCurrentFormValid())
+				if(validateCurrentPage())
 				{
-					//if the page is any page except Save/Submit, save its data
-					if(currentIndex < activeForms.length)
-						savePage(activeForms[currentIndex]);
-					viewStack.selectedIndex = viewStack.selectedIndex - 1;
-					if(viewStack.selectedIndex == 0)
-						prevButton.enabled = false;
-					nextButton.enabled = true;
-					currentIndex = viewStack.selectedIndex;
+					saveCurrentPage();
+					goToPage(currentIndex - 1);
+				}
+				else
+				{
+					targetPageIndex = currentIndex - 1;
+					Alert.show("This page has errors. Continue anyways?","",Alert.YES|Alert.NO,null,pageTransitionWithErrors);
 				}
 			}
 			
-			protected function tabBar_itemClickHandler(event:ItemClickEvent):void
+			//Move to the target page but don't save
+			protected function pageTransitionWithErrors(evt:CloseEvent):void
 			{
-				if(isCurrentFormValid())
+				if(evt.detail == Alert.YES)
 				{
-					//if the page is any page except Save/Submit, save its data
-					if(currentIndex < activeForms.length)
-						savePage(activeForms[currentIndex]);
-					
-					//the tabs can change here if modality is changed, so make sure not to go beyond the last active tab
-					viewStack.selectedIndex = Math.min(viewStack.selectedIndex, activeTabs.length -1);
-					
-					prevButton.enabled = true;
-					nextButton.enabled = true;
-					if(viewStack.selectedIndex == 0)
-						prevButton.enabled = false;
-					if(viewStack.selectedIndex == activeTabs.length - 1)
-						nextButton.enabled = false;
-					currentIndex = viewStack.selectedIndex;
-					
-					//show errortips on questions in this form
+					//hide errortips on the current form
 					if(currentIndex < activeForms.length)
 					{
 						for each(var q:QuestionClass in activeForms[currentIndex].questions)
 						{
 							if(q.errorToolTip != null)
-								q.errorToolTip.visible = true;
+								q.errorToolTip.visible = false;
 						}
 					}
+					goToPage(targetPageIndex);
 				}
-				else
-					viewStack.selectedIndex = currentIndex;
 			}
 			
-			protected function isCurrentFormValid():Boolean
+			protected function tabBar_itemClickHandler(event:ItemClickEvent):void
+			{
+				if(validateCurrentPage())
+				{
+					saveCurrentPage();
+					goToPage(viewStack.selectedIndex);
+				}
+				else
+				{
+					targetPageIndex = viewStack.selectedIndex;
+					viewStack.selectedIndex = currentIndex;
+					Alert.show("This page has errors. Continue anyways?","",Alert.YES|Alert.NO,null,pageTransitionWithErrors);
+				}
+			}
+			
+			protected function validateCurrentPage():Boolean
 			{
 				if(currentIndex >= activeForms.length)
 					return true;//if the current tab is the Save page
 				
-				var currentForm:InterviewForm = activeForms[currentIndex];
-				var errors:ArrayList = currentForm.validateForm();
+				var errors:ArrayList = activeForms[currentIndex].validateForm();
 				if(errors.length != 0)
-				{
-					Alert.show("Correct the errors on this page before continuing.");
 					return false;
-				}
-				
-				checkModalityChange(currentForm);
 				
 				return true;
 			}
 			
-			protected function checkModalityChange(currentForm:InterviewForm):void
+			protected function checkModalityChange():void
 			{
 				//To be overriden
+			}
+			
+			protected function setModality(modality:int):void
+			{
+				if(interviewType != modality)
+				{
+					interviewType = modality;
+					if(interviewType == InterviewType.INTAKE_NEG)
+					{
+						enableSectionB(false);
+						enableSectionCtoG(false);
+					}
+					else if(interviewType == InterviewType.INTAKE_BI)
+					{
+						enableSectionB(true);
+						enableSectionCtoG(false);
+					}
+					else if(interviewType == InterviewType.INTAKE_RT)
+					{
+						enableSectionB(true);
+						enableSectionCtoG(true);
+					}
+					determineActiveTabs();
+				}
 			}
 			
 			protected function viewStack_creationCompleteHandler(event:FlexEvent):void

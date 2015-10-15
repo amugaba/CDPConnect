@@ -14,7 +14,7 @@ package components.questions
 	{
 		public var refuseInput:DropDownList;
 		
-		public function QuestionTextRefusable(codeName:String, label:String, defaultValue:String, editable:Boolean=true)
+		public function QuestionTextRefusable(codeName:String, label:String, defaultValue:String="", editable:Boolean=true)
 		{
 			super(codeName, label, defaultValue, editable);
 			this.input.width = 50;

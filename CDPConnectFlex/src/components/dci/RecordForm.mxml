@@ -20,7 +20,7 @@
 			public var qClientID:QuestionText = new QuestionText("ClientID","Client ID","",false);
 			public var qInterviewTypeCode:QuestionList = new QuestionList("InterviewTypeCode","Interview Type",new ArrayList(["Intake","6 Month Followup","12 Month Followup","3 Month Followup","Discharge", "Discharge: Administrative"]),0);
 			public var qConductedInterview:QuestionList = new QuestionList("ConductedInterview","Was the interview conducted?",yn,0);
-			public var qInterviewDate:QuestionText = new QuestionText("InterviewDate","Interview Date","");
+			public var qInterviewDate:QuestionText = new QuestionText("InterviewDate","Interview Date");
 			public var qCooccurringScreen:QuestionList = new QuestionList("CooccurringScreen","Was the client screened by your program for co-occurring mental health and substance use disorders?",yn,1);
 			public var qCooccurringScreenStatus:QuestionList = new QuestionList("CooccurringScreenStatus","Did the client screen positive for co-occurring mental health and substance use disorders?",yn,1);
 			public var qFollowupSelected:QuestionList = new QuestionList("followupSelected","Was the client selected for follow-up, and did the client agree to follow-up?",yn,1);
@@ -53,11 +53,17 @@
 				populateForm();
 			}
 			
+			public override function resetForm():void
+			{
+				super.resetForm();
+				populateForm();
+			}
+			
 			public function populateForm():void
 			{
 				qClientID.answer = String(global.activeClient.clientid);
 				
-				if(InterviewType.isIntake(global.pageGPRA.interviewType))
+				if(InterviewType.isIntake(parentInstrument.interviewType))
 				{
 					qInterviewTypeCode.answer = "Intake";
 					if(questions.indexOf(qFollowupSelected) == -1) //followup Q is only shown in Intake
@@ -68,26 +74,30 @@
 					if(questions.indexOf(qFollowupSelected) != -1)
 						removeQuestion(qFollowupSelected);
 					
-					if(InterviewType.isFollowup(global.pageGPRA.interviewType))
+					if(InterviewType.isFollowup(parentInstrument.interviewType))
 					{
 						qInterviewTypeCode.answer = "6 Month Followup";
 					}
-					else if(InterviewType.DISCHARGE_BI == global.pageGPRA.interviewType || InterviewType.DISCHARGE_RT == global.pageGPRA.interviewType)
+					else if(InterviewType.DISCHARGE_BI == parentInstrument.interviewType || InterviewType.DISCHARGE_RT == parentInstrument.interviewType)
 					{
 						qInterviewTypeCode.answer = "Discharge";
 						qConductedInterview.answer = "Yes";
 					}
-					else if(InterviewType.DISCHARGE_ADMIN== global.pageGPRA.interviewType)
+					else if(InterviewType.DISCHARGE_ADMIN== parentInstrument.interviewType)
 					{
 						qInterviewTypeCode.answer = "Discharge";
 						qConductedInterview.answer = "No";
 					}
 				}
 				
+				qInterviewTypeCode.refreshSkips();
 				qConductedInterview.refreshSkips();
 			}
 			
-			
+			public override function clearQuestionAnswers():void
+			{
+				qFollowupSelected.setAnswerIndex(-1);
+			}
 		]]>
 	</fx:Script>
 	<fx:Declarations>
