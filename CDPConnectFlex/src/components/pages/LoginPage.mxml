@@ -156,19 +156,43 @@
 				}
 			}
 			
+			/**
+			 * Forgot password section.
+			 * 1. Ask if user is sure.
+			 * 2. If yes, check if username is correct.
+			 * 3. If yes, reset password and email user.
+			 * 4. Notify user that password was sent.
+			 * */
 			protected function forgotPasswordButton_clickHandler(event:MouseEvent):void
 			{
-				emailPasswordResult.token = userService.emailPassword(usernameInput.text);
+				Alert.show("Are you sure you wish to reset your password?\n\nYou will be sent an email with a temporary password that you can use to login.","Reset Password",Alert.YES|Alert.NO,null,forglotPasswordHandler);
 			}
 			
-			protected function emailPasswordResult_resultHandler(event:ResultEvent):void
+			protected function forglotPasswordHandler(event:CloseEvent):void
 			{
-				if(emailPasswordResult.lastResult)
-					Alert.show("Password has been sent to your email address.", "SUCCESS");
-				else
-					Alert.show("Username not found.", "ERROR");
+				if(event.detail == Alert.YES)
+				{
+					getUserResult.token = userService.getUser(usernameInput.text);
+				}
 			}
 			
+			protected function getUserResult_resultHandler(event:ResultEvent):void
+			{
+				if(getUserResult.lastResult != null)
+				{
+					resetPasswordResult.token = userService.resetPassword(getUserResult.lastResult);
+				}
+				else
+					Alert.show("Check that the username entered is correct and try again.", "Username Incorrect");
+			}
+
+			protected function resetPasswordResult_resultHandler(event:ResultEvent):void
+			{
+				if(resetPasswordResult.lastResult)
+					Alert.show("Your password has been reset.\n\nA temporary password has been sent to your email address.", "SUCCESS");
+				else
+					Alert.show("Your password could not be reset. Your email address may be invalid. Contact your technical support provider.", "ERROR");
+			}
 
 			public function resetPage():void
 			{
@@ -242,12 +266,13 @@
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 		<s:CallResponder id="loginUserResult" result="loginUserResult_resultHandler(event)"/>
-		<s:CallResponder id="emailPasswordResult" result="emailPasswordResult_resultHandler(event)"/>
 		<userservice:UserService id="userService"
 								 fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)"
 								 showBusyCursor="true"/>
 		<s:CallResponder id="signEULAResult"/>
 		<s:CallResponder id="updatePasswordResult" result="updatePasswordResult_resultHandler(event)"/>
+		<s:CallResponder id="getUserResult" result="getUserResult_resultHandler(event)"/>
+		<s:CallResponder id="resetPasswordResult" result="resetPasswordResult_resultHandler(event)"/>
 	</fx:Declarations>
 	<s:Group x="0" y="0" width="715" height="800" chromeColor="#6376A5" >
 		<s:Image x="-93" y="-137" source="assets/blueWallpaperCropped.jpg"/>
