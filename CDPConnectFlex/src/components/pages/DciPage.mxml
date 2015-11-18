@@ -150,7 +150,7 @@
 				if(enabled)
 				{
 					var dv:DateAgeValidator = recordForm.qInterviewDate.validator as DateAgeValidator;
-					dv.max = 365;
+					dv.max = 1825;
 				}
 				
 				demoForm.qBirthMonth.validator.enabled = enabled;
@@ -195,7 +195,7 @@
 					
 					//The followup date cannot be before the intake date
 					var dv:DateAgeValidator = recordForm.qInterviewDate.validator as DateAgeValidator;
-					dv.max = 1 + (new Date().time - DateField.stringToDate(global.intakeInterview.date,"MM/DD/YYYY").time) / 1000 / 60 / 60 / 24;
+					dv.max = 1 + (new Date().time - DateField.stringToDate(global.intakeInterview.data.source["InterviewDate"],"MM/DD/YYYY").time) / 1000 / 60 / 60 / 24;
 				}
 			}
 			
@@ -210,9 +210,9 @@
 					else
 						livingForm.qPregnant.disable();
 					
-					//The followup date cannot be before the intake date
+					//The discharge date cannot be before the intake date
 					var dv:DateAgeValidator = recordForm.qInterviewDate.validator as DateAgeValidator;
-					dv.max = 1 + (new Date().time - DateField.stringToDate(global.intakeInterview.date,"MM/DD/YYYY").time) / 1000 / 60 / 60 / 24;
+					dv.max = 1 + (new Date().time - DateField.stringToDate(global.intakeInterview.data.source["InterviewDate"],"MM/DD/YYYY").time) / 1000 / 60 / 60 / 24;
 				}
 				dischargeForm.qDischargeDate.validator.enabled = enabled;
 			}
@@ -235,7 +235,7 @@
 			
 			protected override function allowInterviewDateChange(adminMode:Boolean):void
 			{
-				recordForm.qInterviewDate.enabled = adminMode;
+				recordForm.qInterviewDate.input.editable = adminMode;
 			}
 		]]>
 	</fx:Script>

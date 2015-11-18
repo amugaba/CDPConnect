@@ -41,7 +41,7 @@
 				addQuestion(qFollowupSelected);
 				
 				//Validators
-				Valid.addDateAgeValidator(qInterviewDate,0,DateAgeValidator.DAY,365,DateAgeValidator.DAY);
+				Valid.addDateAgeValidator(qInterviewDate,0,DateAgeValidator.DAY,1825,DateAgeValidator.DAY);
 				qInterviewDate.answerType = String;
 				
 				//Control Logic
@@ -92,7 +92,6 @@
 				
 				qInterviewTypeCode.refreshSkips();
 				qConductedInterview.refreshSkips();
-				qInterviewDate.enabled = true;
 			}
 			
 			public override function clearQuestionAnswers():void

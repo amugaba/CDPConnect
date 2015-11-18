@@ -166,13 +166,8 @@
 				enableSectionJ(false);
 				enableSectionK(false);
 				
-				//populateRecordForm();
 				determineActiveTabs();
-				/*for each(var form:InterviewForm in forms)
-				{
-					form.doAllSkips();
-					callLater(form.removeAllErrors);
-				}*/
+				allowInterviewDateChange(true);
 			}
 			
 			public function newDischarge():void
@@ -191,6 +186,7 @@
 				enableSectionK(true);
 				
 				determineActiveTabs();
+				allowInterviewDateChange(true);
 			}
 			
 			public function newFollowup():void
@@ -227,6 +223,7 @@
 					enableSectionK(true);
 				}
 				determineActiveTabs();
+				allowInterviewDateChange(true);
 			}
 			
 			public function loadInterview(interview:AssessmentVO):void

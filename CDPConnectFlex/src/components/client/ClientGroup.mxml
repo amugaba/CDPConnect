@@ -282,7 +282,7 @@
 		<s:columns>
 			<s:ArrayList>
 				<s:GridColumn dataField="type" headerText="Type" width="150" itemRenderer="components.client.assessmentGridRenderer"></s:GridColumn>
-				<s:GridColumn dataField="date" headerText="Date" width="75"></s:GridColumn>
+				<s:GridColumn dataField="date" headerText="Date" width="75" itemRenderer="components.client.assessmentGridRenderer"></s:GridColumn>
 				<s:GridColumn dataField="complete" headerText="Fin" width="31"></s:GridColumn>
 				<s:GridColumn dataField="load" headerText="Load" width="60">
 					<s:itemRenderer>

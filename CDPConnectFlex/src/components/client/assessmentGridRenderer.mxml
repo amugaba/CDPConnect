@@ -19,26 +19,40 @@
 				if(item == null)
 					return;
 				
-				var instrument:String = "DCI";
-				if(item.type == AssessType.GPRA)
-					instrument = "GRPA";
-				
-				if(item.subtype == InterviewType.INTAKE_BI)
-					lblData.text = "Intake (" + instrument + " BI)";
-				else if(item.subtype == InterviewType.INTAKE_NEG)
-					lblData.text = "Intake (" + instrument + " Neg)";
-				else if(item.subtype == InterviewType.INTAKE_RT)
-					lblData.text = "Intake (" + instrument + " BT/RT)";
-				else if(item.subtype == InterviewType.FOLLOWUP_BI)
-					lblData.text = "Followup (" + instrument + " BI)";
-				else if(item.subtype == InterviewType.FOLLOWUP_RT)
-					lblData.text = "Followup (" + instrument + " RT)";
-				else if(item.subtype == InterviewType.DISCHARGE_ADMIN)
-					lblData.text = "Discharge (" + instrument + " Admin)";
-				else if(item.subtype == InterviewType.DISCHARGE_BI)
-					lblData.text = "Discharge (" + instrument + " BI)";
-				else if(item.subtype == InterviewType.DISCHARGE_RT)
-					lblData.text = "Discharge (" + instrument + " RT)";
+				//Type column
+				if(columnIndex == 0)
+				{
+					var instrument:String = "DCI";
+					if(item.type == AssessType.GPRA)
+						instrument = "GRPA";
+					
+					if(item.subtype == InterviewType.INTAKE_BI)
+						lblData.text = "Intake (" + instrument + " BI)";
+					else if(item.subtype == InterviewType.INTAKE_NEG)
+						lblData.text = "Intake (" + instrument + " Neg)";
+					else if(item.subtype == InterviewType.INTAKE_RT)
+						lblData.text = "Intake (" + instrument + " BT/RT)";
+					else if(item.subtype == InterviewType.FOLLOWUP_BI)
+						lblData.text = "Followup (" + instrument + " BI)";
+					else if(item.subtype == InterviewType.FOLLOWUP_RT)
+						lblData.text = "Followup (" + instrument + " RT)";
+					else if(item.subtype == InterviewType.DISCHARGE_ADMIN)
+						lblData.text = "Discharge (" + instrument + " Admin)";
+					else if(item.subtype == InterviewType.DISCHARGE_BI)
+						lblData.text = "Discharge (" + instrument + " BI)";
+					else if(item.subtype == InterviewType.DISCHARGE_RT)
+						lblData.text = "Discharge (" + instrument + " RT)";
+				}
+				//Date column
+				else if(columnIndex == 1)
+				{
+					//if there is an interview date, use that
+					if(item.data.source['InterviewDate'] != null)
+						lblData.text = item.data.source['InterviewDate'];
+					//otherwise use the assessment created date
+					else
+						lblData.text = item.date;
+				}
 			}
 		]]>
 	</fx:Script>
