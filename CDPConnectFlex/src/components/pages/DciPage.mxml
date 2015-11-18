@@ -233,6 +233,10 @@
 				setModality(modality);
 			}
 			
+			protected override function allowInterviewDateChange(adminMode:Boolean):void
+			{
+				recordForm.qInterviewDate.enabled = adminMode;
+			}
 		]]>
 	</fx:Script>
 	<fx:Declarations>

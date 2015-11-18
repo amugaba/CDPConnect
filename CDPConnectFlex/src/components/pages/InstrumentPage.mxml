@@ -329,6 +329,8 @@
 					f.validateForm();
 					//callLater(form.removeAllErrors); //it may be worthwhile to show errors when loading so user knows what is completed
 				}
+				
+				allowInterviewDateChange(global.adminMode);
 			}
 			
 			protected function enableTab(tab:NavigatorContent, enabled:Boolean):void
@@ -513,7 +515,7 @@
 				}
 			}
 			
-			protected function saveCurrentPage():void
+			public function saveCurrentPage():void
 			{
 				//if the page is any page except Save/Submit page, save its data
 				if(currentIndex < activeForms.length)
@@ -627,6 +629,11 @@
 				loadFormsAndTabs();
 				for each(var btmp:Tab in tabBar.getChildren())
 					tabButtons.push(btmp);
+			}
+			
+			protected function allowInterviewDateChange(adminMode:Boolean):void
+			{
+				// TODO Auto Generated method stub
 			}
 			
 		]]>

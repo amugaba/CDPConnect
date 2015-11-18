@@ -10,6 +10,7 @@
 			import components.questions.QuestionTextRefusable;
 			import components.skips.SkipMultipleHandler;
 			import components.skips.SkipPattern;
+			import components.validators.DropDownValidator;
 			import components.validators.Valid;
 			
 			import mx.binding.utils.BindingUtils;
@@ -62,6 +63,10 @@
 				addQuestion(qParaphenaliaUsedOthers);
 				
 				//Validators
+				qInjectedDrugs.validators.pop();
+				var dv:DropDownValidator = Valid.addDropDownValidator(qInjectedDrugs,ynrd.source);
+				dv.errorMessage = "If a drug's Route is 'injection', answer must be 'Yes'.";
+				global.pageGPRA.drugForm.injectionValidator = dv;
 				Valid.addRequiredValidator(qOtherIllegalDrugsSpec);
 				qOtherIllegalDrugsSpec.answerType = String;
 				
@@ -78,10 +83,12 @@
 				questions.push(routeQ);
 				daysQ.addElement(routeQ.input);
 				routeQ.inline = true;
+				BindingUtils.bindSetter(global.pageGPRA.drugForm.injectionHandler, routeQ.inputControl, "selectedIndex");
 				
 				Valid.addNumberValidator(daysQ,0,0,true);
 				addSkipTextNumber(daysQ,[routeQ],["0"]);
 				global.pageGPRA.drugForm.drugQuestions.push(daysQ);
+				global.pageGPRA.drugForm.routeQuestions.push(routeQ);
 			}
 			
 			public override function clearQuestionAnswers():void

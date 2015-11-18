@@ -337,6 +337,7 @@
 					
 					if(!hasErrors)
 					{
+						parentInstrument.saveCurrentPage();
 						parentInstrument.goToPage(parentInstrument.viewStack.selectedIndex + 1);
 						autopaged = true;
 					}

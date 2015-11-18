@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <assessment:InterviewForm xmlns:fx="http://ns.adobe.com/mxml/2009" 
 			 xmlns:s="library://ns.adobe.com/flex/spark" 
-			 xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%" xmlns:assessment="components.assessment.*">
+			 xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%" 
+			 labelWidth="270" xmlns:assessment="components.assessment.*">
 	<fx:Script>
 		<![CDATA[
 			import components.questions.QuestionList;
@@ -11,14 +12,17 @@
 			
 			import mx.binding.utils.BindingUtils;
 			import mx.collections.ArrayList;
+			import mx.controls.Text;
 			import mx.validators.NumberValidator;
 			
 			public var qArrestedDays:QuestionTextRefusable = new QuestionTextRefusable("ArrestedDays","How many times have you been arrested?");
 			public var qArrestedDrugDays:QuestionTextRefusable = new QuestionTextRefusable("ArrestedDrugDays","How many times have you been arrested for drug-related offenses?");
 			public var qArrestedConfineDays:QuestionTextRefusable = new QuestionTextRefusable("ArrestedConfineDays","How many nights have you spent in jail/prison?");
-			public var qNrCrimes:QuestionTextRefusable = new QuestionTextRefusable("NrCrimes","How many times have you committed a crime?");
+			public var qNrCrimes:QuestionTextRefusable = new QuestionTextRefusable("NrCrimes","How many times have you committed a crime?*");
 			public var qAwaitTrial:QuestionList = new QuestionList("AwaitTrial","Are you currently awaiting charges, trial, or sentencing?",ynrd,1);
 			public var qParoleProbation:QuestionList = new QuestionList("ParoleProbation","Are you currently on parole/probation?",ynrd,1);
+			
+			private var crimesPrompt:Text;
 			
 			//Crime Form Area
 			public override function createForm():void
@@ -29,6 +33,7 @@
 				addQuestion(qArrestedDrugDays,50);
 				addQuestion(qArrestedConfineDays,50);
 				addQuestion(qNrCrimes,50);
+				crimesPrompt = createText("     *This must be >= the number of days of drug use.","ital");
 				addDivider();
 				addQuestion(qAwaitTrial);
 				addQuestion(qParoleProbation);
@@ -62,6 +67,7 @@
 				BindingUtils.bindSetter(function():void{
 					(qNrCrimes.validator as NumberValidator).minValue = Number(global.pageGPRA.drugForm.qIllegalDrugsDays.answer);
 					(qNrCrimes.validator as NumberValidator).lowerThanMinError = "Must be >= section B 'Illegal drug days', which is " + global.pageGPRA.drugForm.qIllegalDrugsDays.answer + ".";
+					crimesPrompt.text = "     *This must be >= the number of days of drug use, which is " + global.pageGPRA.drugForm.qIllegalDrugsDays.answer + ".";
 				}, global.pageGPRA.drugForm.qIllegalDrugsDays.inputControl, "text");
 				
 				

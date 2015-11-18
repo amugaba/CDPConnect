@@ -171,6 +171,9 @@
 			
 			protected override function enableSectionK(enabled:Boolean):void
 			{
+				//GPRA should not have discharge services for followup
+				if(InterviewType.isFollowup(interviewType))
+					enabled = false;
 				enableTab(dischargeServices1Tab,enabled);
 				enableTab(dischargeServices2Tab,enabled);
 			}
@@ -224,6 +227,11 @@
 					modality = InterviewType.INTAKE_BI;
 				
 				setModality(modality);
+			}
+			
+			protected override function allowInterviewDateChange(adminMode:Boolean):void
+			{
+				recordForm.qInterviewDate.enabled = adminMode;
 			}
 			
 		]]>

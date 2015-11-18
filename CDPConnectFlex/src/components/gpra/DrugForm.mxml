@@ -10,6 +10,7 @@
 			import components.questions.QuestionTextRefusable;
 			import components.skips.SkipMultipleHandler;
 			import components.skips.SkipPattern;
+			import components.validators.DropDownValidator;
 			import components.validators.Valid;
 			
 			import mx.binding.utils.BindingUtils;
@@ -50,6 +51,8 @@
 			public var qOpiatesOxycoRoute:QuestionList = new QuestionList("OpiatesOxycoRoute","",route,0);
 			
 			public var drugQuestions:Array = new Array();
+			public var routeQuestions:Array = new Array();
+			public var injectionValidator:DropDownValidator = null;
 			
 			//Drug1 Form Area
 			public override function createForm():void
@@ -87,7 +90,7 @@
 				//intox and both days are <= alc days
 				BindingUtils.bindSetter(function():void{
 					(qAlcoholIntoxManyDrinksDays.validator as NumberValidator).maxValue = qAlcoholDays.answerNumber;
-					(qAlcoholIntoxFewDrinksDays.validator as NumberValidator).maxValue = qAlcoholDays.answerNumber;
+					(qAlcoholIntoxFewDrinksDays.validator as NumberValidator).maxValue = qAlcoholDays.answerNumber - qAlcoholIntoxManyDrinksDays.answerNumber;
 					(qAlcoholDrugBothDays.validator as NumberValidator).maxValue = Math.min(qAlcoholDays.answerNumber,qIllegalDrugsDays.answerNumber);
 					
 					//only show error messages on questions if they're enabled
@@ -107,8 +110,23 @@
 						qAlcoholDrugBothDays.removeErrorMessage();
 				}, qAlcoholDays.inputControl, "text");
 				
+				//IntoxFew <= Alcohol - IntoxMany
+				BindingUtils.bindSetter(function():void{
+					(qAlcoholIntoxFewDrinksDays.validator as NumberValidator).maxValue = qAlcoholDays.answerNumber - qAlcoholIntoxManyDrinksDays.answerNumber;
+					
+					//only show error messages on questions if they're enabled
+					if(qAlcoholDays.answerNumber > 0)
+					{
+						qAlcoholIntoxFewDrinksDays.validator.validate();
+					}
+					else
+					{
+						qAlcoholIntoxFewDrinksDays.removeErrorMessage();
+					}
+				}, qAlcoholIntoxManyDrinksDays.inputControl, "text");
+				
 				(qAlcoholIntoxManyDrinksDays.validator as NumberValidator).exceedsMaxError = "Cannot be greater than 'Any alcohol'";
-				(qAlcoholIntoxFewDrinksDays.validator as NumberValidator).exceedsMaxError = "Cannot be greater than 'Any alcohol'";
+				(qAlcoholIntoxFewDrinksDays.validator as NumberValidator).exceedsMaxError = "The sum of both Intox questions must be <= 'Any Alcohol'";
 				(qAlcoholDrugBothDays.validator as NumberValidator).exceedsMaxError = "Cannot be greater than 'Any alcohol' or 'Illegal drugs'";
 				
 				//individual drugs must be <= total drugs
@@ -137,10 +155,32 @@
 				questions.push(routeQ);
 				daysQ.addElement(routeQ.input);//maybe this is wrong
 				routeQ.inline = true;
+				BindingUtils.bindSetter(injectionHandler, routeQ.inputControl, "selectedIndex");
 				
 				Valid.addNumberValidator(daysQ,0,0,true);
 				addSkipTextNumber(daysQ,[routeQ],["0"]);
 				drugQuestions.push(daysQ);
+				routeQuestions.push(routeQ);
+			}
+			
+			//If any drugs have Injection as their route, then the Inject question must be Yes
+			public function injectionHandler(val:String):void
+			{
+				if(injectionValidator == null)
+					return;
+				
+				for each(var q:QuestionClass in routeQuestions)
+				{
+					if(q.answer == "Non-IV Injection" || q.answer == "IV")
+					{
+						injectionValidator.validAnswers = ["Yes"];
+						injectionValidator.validate();
+						return;
+					}
+				}
+				
+				injectionValidator.validAnswers = ynrd.source;
+				injectionValidator.validate();
 			}
 			
 			protected function drugDaysHandler(val:String):void

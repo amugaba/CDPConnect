@@ -92,6 +92,7 @@
 				
 				qInterviewTypeCode.refreshSkips();
 				qConductedInterview.refreshSkips();
+				qInterviewDate.enabled = true;
 			}
 			
 			public override function clearQuestionAnswers():void

@@ -48,7 +48,7 @@ package components.validators
 			q.validators.push(nv);
 		}
 		
-		public static function addDropDownValidator(q:QuestionClass, validAnswers:Array):void
+		public static function addDropDownValidator(q:QuestionClass, validAnswers:Array):DropDownValidator
 		{
 			var dv:DropDownValidator = new DropDownValidator();
 			dv.required = true;
@@ -56,6 +56,7 @@ package components.validators
 			dv.property = "selectedItem";
 			dv.validAnswers = validAnswers;
 			q.validators.push(dv);
+			return dv;
 		}
 		
 		public static function addRequiredValidator(q:QuestionClass):void
